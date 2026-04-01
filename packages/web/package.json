@@ -1,0 +1,22 @@
+{
+  "name": "@krvavy-chaos/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@krvavy-chaos/shared": "workspace:*",
+    "@sveltejs/adapter-vercel": "^6.3.3",
+    "@sveltejs/kit": "^2.55.0",
+    "svelte": "^5.55.1"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "typescript": "^5.6.2",
+    "vite": "^8.0.3"
+  }
+}

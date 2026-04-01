@@ -1,0 +1,15 @@
+{
+  "name": "krvavy-chaos",
+  "private": true,
+  "scripts": {
+    "dev:extension": "pnpm --filter @krvavy-chaos/extension dev",
+    "dev:web": "pnpm --filter @krvavy-chaos/web dev",
+    "build:extension": "pnpm --filter @krvavy-chaos/extension build",
+    "build:web": "pnpm --filter @krvavy-chaos/web build",
+    "build": "pnpm -r build"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

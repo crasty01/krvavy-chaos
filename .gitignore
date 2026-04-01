@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.svelte-kit/
+build/
+*.zip
+.vercel/
+.env
+.env.*
+!.env.example
