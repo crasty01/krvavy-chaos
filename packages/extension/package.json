@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@krvavy-chaos/shared": "workspace:*",
+    "jwt-decode": "^4.0.0",
     "vite-plugin-zip-pack": "^1.2.4"
   },
   "devDependencies": {

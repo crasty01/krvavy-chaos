@@ -1,0 +1,105 @@
+:root {
+  --color-transparent: transparent;
+  --color-current: currentcolor;
+  --color-inherit: inherit;
+  --color-black: #0000000;
+	--color-white: #fffffff;
+
+  /* custom color palette */
+	--color-accent-50: #f9f5ff;
+	--color-accent-100: #f0e7ff;
+	--color-accent-200: #e4d4ff;
+	--color-accent-300: #d0b2ff;
+	--color-accent-400: #a66bff;
+	--color-accent-500: #9751fb;
+	--color-accent-600: #802eef;
+	--color-accent-700: #6c1ed2;
+	--color-accent-800: #5d1eab;
+	--color-accent-900: #4d198a;
+	--color-accent-950: #310566;
+
+	--color-neutral-50: #fafafa;
+	--color-neutral-100: #f4f4f5;
+	--color-neutral-200: #e3e3e8;
+	--color-neutral-300: #d2d2da;
+	--color-neutral-400: #9d9dae;
+	--color-neutral-500: #686878;
+	--color-neutral-600: #4e4e5f;
+	--color-neutral-700: #3c3c49;
+	--color-neutral-800: #26262b;
+	--color-neutral-900: #17171c;
+	--color-neutral-950: #08080c;
+
+	--size-2xs: 0.563rem;
+  --size-xs:  0.75rem;
+  --size-sm:  1rem;
+  --size-md:  1.333rem;
+  --size-lg:  1.778rem;
+  --size-xl:  2.37rem;
+  --size-2xl: 3.16rem;
+  --size-3xl: 4.214rem;
+  --size-4xl: 5.619rem;
+
+	/* Font Families */
+  --font-primary: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --base-line-height: 1.6;
+}
+
+:where(p) { font-size: var(--size-sm); line-height: 1.6; max-width: 60ch; }
+:where(h1) { font-size: var(--size-4xl); line-height: 1.1; }
+:where(h2) { font-size: var(--size-3xl); line-height: 1.1; }
+:where(h3) { font-size: var(--size-2xl); line-height: 1.2; }
+:where(h4) { font-size: var(--size-xl); line-height: 1.2; }
+:where(h5) { font-size: var(--size-lg); line-height: 1.3; }
+:where(h6) { font-size: var(--size-md); line-height: 1.3; }
+
+html, body {
+  font-family: var(--font-primary);
+  font-size: var(--base-size);
+  line-height: var(--base-line-height);
+  color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
+  background-color: light-dark(var(--color-neutral-50), var(--color-neutral-900));
+  
+  /* Font smoothing: Highly recommended for variable fonts to look crisp */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* JetBrains Mono - Normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 800; /* JetBrains Mono weight range */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono - Italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Italic-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Poppins - Normal */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Poppins - Italic */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Italic-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
