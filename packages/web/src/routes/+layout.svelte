@@ -59,6 +59,7 @@ main {
 }
 
 header {
+	min-height: 5rem;
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
@@ -69,6 +70,7 @@ header {
 }
 
 footer {
+	min-height: 5rem;
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
