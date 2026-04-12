@@ -21,6 +21,12 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
 	const isPublic = pathname === '/' || pathname.startsWith('/api/auth');
 
 	if (!event.locals.user && !isPublic) {
+		if (pathname.startsWith('/api/')) {
+			return new Response(JSON.stringify({ error: 'Nepřihlášen' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
 		throw redirect(302, '/');
 	}
 

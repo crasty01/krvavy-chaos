@@ -12,7 +12,7 @@
 </script>
 
 <section>
-	<h1>krvavý chaos</h1>
+	<h1 class="title">krvavý chaos</h1>
 	<p>
 		Twitch overlay editor pro český Blood on the Clocktower komunitní stream
 		„Krvavá hodina odbila".

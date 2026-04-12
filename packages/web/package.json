@@ -18,6 +18,9 @@
 		"db:studio": "drizzle-kit studio",
 		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
 	},
+	"dependencies": {
+		"@krvavy-chaos/shared": "workspace:*"
+	},
 	"devDependencies": {
 		"@better-auth/cli": "~1.4.21",
 		"@eslint/compat": "^2.0.3",

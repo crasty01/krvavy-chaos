@@ -1,13 +1,13 @@
 export * from './auth.schema';
 
 import { relations, sql } from "drizzle-orm";
-import { sqliteTable, text, integer, index, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, primaryKey, foreignKey } from "drizzle-orm/sqlite-core";
 import { user, session, account } from "./auth.schema";
 
 // ─── Player ──────────────────────────────────────────────────────────
 
 export const player = sqliteTable("player", {
-  playerId: text("player_id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   createdBy: text("created_by")
     .notNull()
@@ -19,17 +19,29 @@ export const player = sqliteTable("player", {
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .$onUpdate(() => new Date())
     .notNull(),
+}, (table) => [
+  index("player_createdBy_idx").on(table.createdBy),
+  index("player_name_idx").on(table.name),
+]);
+
+export const platform = sqliteTable("platform", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  urlTemplate: text("url_template").notNull(),
+  icon: text("icon"),
 });
 
 export const playerSocialLink = sqliteTable(
   "player_social_link",
   {
-    playerSocialLinkId: text("player_social_link_id").primaryKey(),
+    id: text("id").primaryKey(),
     playerId: text("player_id")
       .notNull()
-      .references(() => player.playerId, { onDelete: "cascade" }),
-    platform: text("platform").notNull(),
-    url: text("url").notNull(),
+      .references(() => player.id, { onDelete: "cascade" }),
+    platformId: text("platform_id")
+      .notNull()
+      .references(() => platform.id, { onDelete: "restrict" }),
+    handle: text("handle").notNull(),
   },
   (table) => [index("playerSocialLink_playerId_idx").on(table.playerId)],
 );
@@ -37,7 +49,7 @@ export const playerSocialLink = sqliteTable(
 // ─── Game ────────────────────────────────────────────────────────────
 
 export const game = sqliteTable("game", {
-  gameId: text("game_id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   script: text("script", { mode: "json" }).notNull(),
   createdBy: text("created_by")
@@ -50,18 +62,20 @@ export const game = sqliteTable("game", {
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .$onUpdate(() => new Date())
     .notNull(),
-});
+}, (table) => [
+  index("game_createdBy_idx").on(table.createdBy),
+]);
 
 export const gamePlayer = sqliteTable(
   "game_player",
   {
-    gamePlayerId: text("game_player_id").primaryKey(),
+    id: text("id").primaryKey(),
     gameId: text("game_id")
       .notNull()
-      .references(() => game.gameId, { onDelete: "cascade" }),
+      .references(() => game.id, { onDelete: "cascade" }),
     playerId: text("player_id")
       .notNull()
-      .references(() => player.playerId, { onDelete: "restrict" }),
+      .references(() => player.id, { onDelete: "restrict" }),
     seatOrder: integer("seat_order").notNull(),
     characterId: text("character_id"),
     alignment: text("alignment", { enum: ["good", "evil"] }),
@@ -77,13 +91,20 @@ export const gameEditor = sqliteTable(
   {
     gameId: text("game_id")
       .notNull()
-      .references(() => game.gameId, { onDelete: "cascade" }),
+      .references(() => game.id, { onDelete: "cascade" }),
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
   },
-  (table) => [primaryKey({ columns: [table.gameId, table.userId] })],
+  (table) => [primaryKey({ columns: [table.gameId, table.userId] }), index("gameEditor_userId_idx").on(table.userId)],
 );
+
+// ─── Foreign keys ────────────────────────────────────────────────────
+
+export const userActiveGameFk = foreignKey({
+  columns: [user.activeGameId],
+  foreignColumns: [game.id],
+});
 
 // ─── Relations ───────────────────────────────────────────────────────
 
@@ -92,7 +113,7 @@ export const userRelations = relations(user, ({ one, many }) => ({
   accounts: many(account),
   activeGame: one(game, {
     fields: [user.activeGameId],
-    references: [game.gameId],
+    references: [game.id],
   }),
   createdGames: many(game, { relationName: "gameCreator" }),
   createdPlayers: many(player, { relationName: "playerCreator" }),
@@ -123,10 +144,18 @@ export const playerRelations = relations(player, ({ one, many }) => ({
   gamePlayers: many(gamePlayer),
 }));
 
+export const platformRelations = relations(platform, ({ many }) => ({
+  socialLinks: many(playerSocialLink),
+}));
+
 export const playerSocialLinkRelations = relations(playerSocialLink, ({ one }) => ({
   player: one(player, {
     fields: [playerSocialLink.playerId],
-    references: [player.playerId],
+    references: [player.id],
+  }),
+  platform: one(platform, {
+    fields: [playerSocialLink.platformId],
+    references: [platform.id],
   }),
 }));
 
@@ -143,21 +172,22 @@ export const gameRelations = relations(game, ({ one, many }) => ({
 export const gamePlayerRelations = relations(gamePlayer, ({ one }) => ({
   game: one(game, {
     fields: [gamePlayer.gameId],
-    references: [game.gameId],
+    references: [game.id],
   }),
   player: one(player, {
     fields: [gamePlayer.playerId],
-    references: [player.playerId],
+    references: [player.id],
   }),
 }));
 
 export const gameEditorRelations = relations(gameEditor, ({ one }) => ({
   game: one(game, {
     fields: [gameEditor.gameId],
-    references: [game.gameId],
+    references: [game.id],
   }),
   user: one(user, {
     fields: [gameEditor.userId],
     references: [user.id],
   }),
 }));
+

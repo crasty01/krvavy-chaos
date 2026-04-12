@@ -1,14 +1,14 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "af7d9cfd-e44e-4461-a01a-660e4cc9a1fd",
+  "id": "0a1cc179-6b79-4381-91b1-ff1a9d253755",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "game": {
       "name": "game",
       "columns": {
-        "game_id": {
-          "name": "game_id",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -52,7 +52,15 @@
           "default": "(cast(unixepoch('subsecond') * 1000 as integer))"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "game_createdBy_idx": {
+          "name": "game_createdBy_idx",
+          "columns": [
+            "created_by"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "game_created_by_user_id_fk": {
           "name": "game_created_by_user_id_fk",
@@ -90,17 +98,25 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "gameEditor_userId_idx": {
+          "name": "gameEditor_userId_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
-        "game_editor_game_id_game_game_id_fk": {
-          "name": "game_editor_game_id_game_game_id_fk",
+        "game_editor_game_id_game_id_fk": {
+          "name": "game_editor_game_id_game_id_fk",
           "tableFrom": "game_editor",
           "tableTo": "game",
           "columnsFrom": [
             "game_id"
           ],
           "columnsTo": [
-            "game_id"
+            "id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -134,8 +150,8 @@
     "game_player": {
       "name": "game_player",
       "columns": {
-        "game_player_id": {
-          "name": "game_player_id",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -194,28 +210,28 @@
         }
       },
       "foreignKeys": {
-        "game_player_game_id_game_game_id_fk": {
-          "name": "game_player_game_id_game_game_id_fk",
+        "game_player_game_id_game_id_fk": {
+          "name": "game_player_game_id_game_id_fk",
           "tableFrom": "game_player",
           "tableTo": "game",
           "columnsFrom": [
             "game_id"
           ],
           "columnsTo": [
-            "game_id"
+            "id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "game_player_player_id_player_player_id_fk": {
-          "name": "game_player_player_id_player_player_id_fk",
+        "game_player_player_id_player_id_fk": {
+          "name": "game_player_player_id_player_id_fk",
           "tableFrom": "game_player",
           "tableTo": "player",
           "columnsFrom": [
             "player_id"
           ],
           "columnsTo": [
-            "player_id"
+            "id"
           ],
           "onDelete": "restrict",
           "onUpdate": "no action"
@@ -225,11 +241,49 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "platform": {
+      "name": "platform",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "url_template": {
+          "name": "url_template",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "player": {
       "name": "player",
       "columns": {
-        "player_id": {
-          "name": "player_id",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -266,7 +320,22 @@
           "default": "(cast(unixepoch('subsecond') * 1000 as integer))"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "player_createdBy_idx": {
+          "name": "player_createdBy_idx",
+          "columns": [
+            "created_by"
+          ],
+          "isUnique": false
+        },
+        "player_name_idx": {
+          "name": "player_name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "player_created_by_user_id_fk": {
           "name": "player_created_by_user_id_fk",
@@ -289,8 +358,8 @@
     "player_social_link": {
       "name": "player_social_link",
       "columns": {
-        "player_social_link_id": {
-          "name": "player_social_link_id",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -303,15 +372,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "platform": {
-          "name": "platform",
+        "platform_id": {
+          "name": "platform_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "url": {
-          "name": "url",
+        "handle": {
+          "name": "handle",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -328,17 +397,30 @@
         }
       },
       "foreignKeys": {
-        "player_social_link_player_id_player_player_id_fk": {
-          "name": "player_social_link_player_id_player_player_id_fk",
+        "player_social_link_player_id_player_id_fk": {
+          "name": "player_social_link_player_id_player_id_fk",
           "tableFrom": "player_social_link",
           "tableTo": "player",
           "columnsFrom": [
             "player_id"
           ],
           "columnsTo": [
-            "player_id"
+            "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "player_social_link_platform_id_platform_id_fk": {
+          "name": "player_social_link_platform_id_platform_id_fk",
+          "tableFrom": "player_social_link",
+          "tableTo": "platform",
+          "columnsFrom": [
+            "platform_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
           "onUpdate": "no action"
         }
       },

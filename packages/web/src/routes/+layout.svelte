@@ -22,7 +22,10 @@
 
 <header>
 	<div class="lead">
-		<span class="logo">Krvavý chaos</span>
+		<Button.Root href="/dashboard">
+			<span class="logo">Krvavý chaos</span>
+			<Icon icon="material-symbols:water-drop-outline" />
+		</Button.Root>
 	</div>
 	<div class="tail">
 		{#if session.current.data}
@@ -52,10 +55,16 @@
 	display: grid;
 	grid-template-rows: auto 1fr auto;
 	min-height: 100vh;
+	gap: 2rem;
+	max-width: var(--max-width);
+	margin-inline: auto;
 }
 
 main {
 	padding-inline: 2rem;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
 }
 
 header {
