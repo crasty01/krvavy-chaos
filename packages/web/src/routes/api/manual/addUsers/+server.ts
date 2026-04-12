@@ -1,0 +1,150 @@
+import { TWITCH_CLIENT_ID } from '$env/static/private';
+import { db } from '$lib/server/db';
+import { user } from '$lib/server/db/auth.schema';
+import { getTwitchToken } from '$lib/server/twitch';
+import type { TwitchUser } from '@krvavy-chaos/shared/index';
+import { json, type RequestHandler } from '@sveltejs/kit';
+
+const users = [
+	'karpo_cz',
+	'nightbot',
+	'streamelements',
+	'streamlabs',
+	'hendadnd',
+	'lotros',
+	'nightbot',
+	'streamlabs',
+	'tori_elfognom',
+	'krejpet',
+	'tesikmordae',
+	'0dored',
+	'acedeamon',
+	'aiko_cz',
+	'ainokusabi666',
+	'alfroythe1st',
+	'amaterasu1212',
+	'andrewcz1',
+	'arcrazzor',
+	'argosanka',
+	'atroxsk',
+	'baconrhyth',
+	'baecon420',
+	'barewoahs_only',
+	'bednys83',
+	'bleakcrypt',
+	'buca_fun',
+	'capl3t',
+	'cathareal',
+	'chillaxtuary91',
+	'chimneysgang97',
+	'ciciin',
+	'cobalt04',
+	'cranwellstorm',
+	'dancinglemur',
+	'dark6kitten',
+	'dazzezbite',
+	'demonkittn_',
+	'deprivedlead83',
+	'dirtbikeloo23',
+	'discreet_aracel',
+	'doctoorek',
+	'doktor_mbcz',
+	'editorouter',
+	'emiratiplayer97',
+	'falstof',
+	'famousalfreda',
+	'fokusfrettch42',
+	'fredricxox',
+	'fuzzkynnetops',
+	'gloomfang_exe',
+	'golradir007',
+	'hanneskopa',
+	'hexarroy',
+	'honzic',
+	'hur1canne1',
+	'ironsmajl',
+	'isomstrike',
+	'jamsiicle',
+	'jaryk93',
+	'jsemgavrosh',
+	'justjacob31',
+	'kesetcze',
+	'krnklbytes',
+	'l0serqween',
+	'loadingplzx',
+	'lojda8313',
+	'lusttyron',
+	'm0lderpaul',
+	'mathesator',
+	'menny64',
+	'midnightercz',
+	'milton_holy',
+	'minilamicka',
+	'mooning5',
+	'ondrs_19',
+	'oplu_',
+	'palmedin',
+	'pan_tejmar',
+	'passableonion',
+	'pato_752',
+	'patrikdracik',
+	'pearlus',
+	'pepa9099',
+	'peterconvict',
+	'piercing_smelt',
+	'piery',
+	'pissed_chine',
+	'pitris',
+	'quillvalor',
+	'renik55',
+	'riggerchanda',
+	'rosor1al',
+	'rustler_nine',
+	'sephihomod',
+	'silenyindex',
+	'sketchagent',
+	'smugcandy',
+	'spinkilator',
+	'stewest87',
+	'subingalvis',
+	'superescrol',
+	'tankrzm8',
+	'tartak_daario',
+	'theaveragetwitch_user',
+	'theinterveningvaluation',
+	'tom_13579',
+	'tourertv',
+	'tugamanso97',
+	'tutenhamoun',
+	'zhuleneccz',
+];
+
+export const GET: RequestHandler = async () => {
+	return json({ message: 'mock users already imported' });
+
+	const twitchToken = await getTwitchToken();
+	const headers = {
+		'Client-ID': TWITCH_CLIENT_ID,
+		'Authorization': `Bearer ${twitchToken.access_token}`,
+	};
+	const response = await Promise.all(Array.from({ length: Math.ceil(users.length / 100) }, (_, i) => {
+		const batch = users.slice(i * 100, (i + 1) * 100);
+		return fetch(`https://api.twitch.tv/helix/users?login=${batch.map(encodeURIComponent).join('&login=')}`, { headers });
+	}));
+	const data = (await Promise.all(response.map((res) => res.json()))).flatMap((res) => res.data) as Array<TwitchUser>;
+	
+	await db.insert(user).values(
+		data.map((user) => ({
+			id: user.id,
+			name: user.display_name,
+			email: `${user.login}@example.com`,
+			emailVerified: true,
+			image: user.profile_image_url,
+			activeGameId: null,
+			createdAt: new Date(user.created_at),
+			updatedAt: new Date(user.created_at),
+		}))
+	);
+
+	return json(data);
+};

@@ -1,0 +1,74 @@
+<script module lang="ts">
+	const dateFormatter = new Intl.DateTimeFormat('cs', {
+		day: '2-digit',
+		month: 'long',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	});
+</script>
+
+<script>
+	import Icon from '@iconify/svelte';
+
+	let { id, name, playersLength, editorsLength, updatedAt }: {
+		id: string;
+		name: string;
+		playersLength: number;
+		editorsLength: number;
+		updatedAt: Date;
+	} = $props();
+</script>
+
+<a href="/dashboard/games/{id}" class="game">
+	<div class="lead">
+		<h3 class="name">{name}</h3>
+		<div class="info">
+			<span>{playersLength} hráčů</span>
+			<span>{editorsLength} moderátorů</span>
+			<span>upraveno {dateFormatter.format(updatedAt)}</span>
+		</div>
+	</div>
+	<div class="tail">
+		<Icon class="icon" icon="material-symbols:chevron-right" width={20} height={20} />
+	</div>
+</a>
+
+<style>
+.game {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: .8rem 1.6rem;
+	border-radius: var(--border-radius);
+	background-color: light-dark(var(--color-neutral-100), var(--color-neutral-800));
+	color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
+	text-decoration: none;
+	transition: background-color 0.15s;
+
+	&:hover, &:focus {
+		background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+	}
+
+	& .name {
+		font-weight: 600;
+		font-size: var(--size-lg);
+	}
+
+	& .info {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+		font-size: var(--size-xs);
+		color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
+
+		& > span:not(:first-child) {
+			&::before {
+				content: '·';
+				padding-right: 1rem;
+			}
+		}
+	}
+}
+</style>

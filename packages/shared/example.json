@@ -1,0 +1,562 @@
+[
+  {
+    "id": "_meta",
+    "author": "Karpaccio",
+    "name": "Krvavý chaos - S2E1 v4",
+    "hideTitle": true,
+    "firstNight": [
+      "dusk",
+      "lunaticcz",
+      "minioninfo",
+      "sailorcz",
+      "demoninfo",
+      "courtiercz",
+      "godfathercz",
+      "devilsadvocatecz",
+      "pukkacz",
+      "grandmothercz",
+      "chambermaidcz",
+      "dawn"
+    ],
+    "otherNight": [
+      "dusk",
+      "sailorcz",
+      "courtiercz",
+      "innkeepercz",
+      "gamblercz",
+      "devilsadvocatecz",
+      "lunaticcz",
+      "exorcistcz",
+      "zombuulcz",
+      "pukkacz",
+      "shabalothcz",
+      "pocz",
+      "assassincz",
+      "godfathercz",
+      "gossipcz",
+      "professorcz",
+      "tinkercz",
+      "moonchildcz",
+      "grandmothercz",
+      "chambermaidcz",
+      "dawn"
+    ],
+    "bootlegger": [
+      "Zrcadlo - Během dne řekneš tajně jednoho hráče. Ten se po celý večer, kdy se nominuje, musí chovat zrcadlově jako jeho hráč po jedné straně (tvůj výběr). Pokud tak nebude dělat, může být až do dalšího večera opilý",
+      "Zakazané slovo - na začátku hry vybereš hráče a jedno slovo. To slovo musí hráč použít veřejně každý den před všemi (i před vypravěčem), jinak někdo jiný v noci zemře."
+    ]
+  },
+  {
+    "id": "grandmothercz",
+    "name": "Babička",
+    "image": [
+      "https://botc.app/assets/grandmother_g-CjEyeFLi.webp",
+      "https://botc.app/assets/grandmother_e-BLCIA5TL.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Začínáš s informací o jednom dobrém hráči a jeho postavě. Pokud ho zabije Démon, zemřeš také.",
+    "flavor": "Vezmi si bundu, jestli půjdeš ven, zlatíčko. A termosku. A šálu. Víš, že mám slabé srdce. Co bych si jen počala, kdybys nastydl… nebo hůř?",
+    "firstNight": 54,
+    "otherNight": 71,
+    "firstNightReminder": "Ukážte na hráče, který je její vnouče a ukažte jí žeton jeho postavy.",
+    "otherNightReminder": "Pokud Démon zabil vnouče, Babička zemře také. :reminder:",
+    "reminders": [
+      "Vnouče"
+    ]
+  },
+  {
+    "id": "sailorcz",
+    "name": "Námořník",
+    "image": [
+      "https://botc.app/assets/sailor_g-MdYxQ8zf.webp",
+      "https://botc.app/assets/sailor_e-DfZBdaxk.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Každou noc vybereš 1 živého hráče: buď ty, nebo on jste až do soumraku opilí. Nemůžeš zemřít.",
+    "flavor": "Spiju každýho z vás pod stůl! Ty! Držko jedna! Myslíš, že na mě máš? Ne? A co ty, babi? Zkoušelas někdy Old McKillyho extra kořeněnej rum? Zaručeně ti to naježí chlupy na hrudi! Tak naskakujte, aye!",
+    "firstNight": 21,
+    "otherNight": 11,
+    "firstNightReminder": "Námořník vybere 1 živého hráče. :reminder:",
+    "otherNightReminder": "Námořník vybere 1 živého hráče. :reminder:",
+    "reminders": [
+      "Opilý"
+    ]
+  },
+  {
+    "id": "chambermaidcz",
+    "name": "Komorná",
+    "image": [
+      "https://botc.app/assets/chambermaid_g-DAtPnmSz.webp",
+      "https://botc.app/assets/chambermaid_e-CdqkTS11.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Každou noc vybereš 2 živé hráče (ne sebe): dozvíš se, kolik z nich bylo tu noc probuzeno na základě jejich schopnosti.",
+    "flavor": "Já sem neviděla vůbec nic nekalýho, milostpaní. S dovolením, ale i kdybych náhodou něco zahlídla, tak to rozhodně nebyl pán domu, co se kolem jedenáctý šoulal do profesorovy laboratoře a patlal tam nějaký nóbl lektvary, přesně jak ste povídala, slečno.",
+    "firstNight": 71,
+    "otherNight": 92,
+    "firstNightReminder": "Komorná vybere 2 živé hráče. Ukažte počet prstů.",
+    "otherNightReminder": "Komorná vybere 2 živé hráče. Ukažte počet prstů.",
+    "reminders": []
+  },
+  {
+    "id": "exorcistcz",
+    "name": "Exorcista",
+    "image": [
+      "https://botc.app/assets/exorcist_g-CiIkE1hM.webp",
+      "https://botc.app/assets/exorcist_e-DoXc6R_z.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Každou noc* vybereš 1 hráče (jiného než tu minulou): pokud to bude Démon, dozví se, kdo jsi, ale tu noc se neprobudí.",
+    "flavor": "Vyháníme tě, každý nečistý duchu, každá satanská moci, každý útoku pekelného protivníka, každou legii, každou ďábelskou skupinu a sektu, ve jménu a skrze moc našeho Pána Ježíše Krista. Přikazujeme vám: odejděte a utečte daleko od Boží církve, od duší stvořených Bohem k Jeho obrazu a vykoupených drahocennou krví božského Beránka.",
+    "firstNight": 0,
+    "otherNight": 34,
+    "otherNightReminder": "Exorcista vybere 1 hráče. :reminder: Uspěte Exorcistu. Pokud Exorcista vybral Démona:Probuďte Démona. Ukažte mu žeton *TATO POSTAVA TĚ VYBRALA* a žeton Exorcisty. Ukažte na Exorcistu.",
+    "reminders": [
+      "Vybraný"
+    ]
+  },
+  {
+    "id": "innkeepercz",
+    "name": "Hostinský",
+    "image": [
+      "https://botc.app/assets/innkeeper_g-B_YjhWTM.webp",
+      "https://botc.app/assets/innkeeper_e-dzanyuqI.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Každou noc* vybereš 2 hráče: tu noc nemůžou zemřít, ale 1 z nich je až do soumraku opilý.",
+    "flavor": "Vstup, ušlechtilý poutníku, a odpočiň si od své únavy. Pij a vesel se, neboť legie Temného tě dnes v noci nebudou trápit.",
+    "firstNight": 0,
+    "otherNight": 17,
+    "otherNightReminder": "Hostinský vybere 2 hráče. :reminder::reminder::reminder:",
+    "reminders": [
+      "Chráněný",
+      "Chráněný",
+      "Opilý"
+    ]
+  },
+  {
+    "id": "gamblercz",
+    "name": "Gambler",
+    "image": [
+      "https://botc.app/assets/gambler_g-BJg931OP.webp",
+      "https://botc.app/assets/gambler_e-Co0D5NyD.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Každou noc* vybereš 1 hráče a zkusíš uhodnout jeho postavu: pokud bude tvůj tip špatný, zemřeš.",
+    "flavor": "Panna, vyhrávám. Orel, prohráváš.",
+    "firstNight": 0,
+    "otherNight": 19,
+    "otherNightReminder": "Gambler vybere 1 hráče. :reminder:",
+    "reminders": [
+      "Mrtvý"
+    ]
+  },
+  {
+    "id": "gossipcz",
+    "name": "Drbna",
+    "image": [
+      "https://botc.app/assets/gossip_g-0mo_0qnq.webp",
+      "https://botc.app/assets/gossip_e-DKOgldGS.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Každý den můžeš učinit veřejné prohlášení. Pokud bude pravdivé, tu noc někdo zemře.",
+    "flavor": "Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla. Bla.",
+    "firstNight": 0,
+    "otherNight": 56,
+    "otherNightReminder": "Pokud se Drbně podařilo zabít hráče, zemře. :reminder:",
+    "reminders": [
+      "Mrtvý"
+    ]
+  },
+  {
+    "id": "professorcz",
+    "name": "Profesor",
+    "image": [
+      "https://botc.app/assets/professor_g-h2X7rvhv.webp",
+      "https://botc.app/assets/professor_e-BpuIeGol.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Jednou za hru, v noci*, vybereš 1 mrtvého hráče: pokud je to Měšťan, je oživen.",
+    "flavor": "Postup je jednoduchý. Připojte hydraulický konfabulátor k upravenému zesilovači chi matice, přidejte 20 ml pseudodorafinu, udržujte jeho úroveň Z nad 20 % a váš manžel bude v pořádku. Teď už jen potřebujeme zásah blesku.",
+    "firstNight": 0,
+    "otherNight": 63,
+    "otherNightReminder": "Profesor může vybrat 1 mrtvého hráče. :reminder::reminder:",
+    "reminders": [
+      "Živý",
+      "Bez schopnosti"
+    ]
+  },
+  {
+    "id": "minstrelcz",
+    "name": "Pěvec",
+    "image": [
+      "https://botc.app/assets/minstrel_g-M5EHa7zy.webp",
+      "https://botc.app/assets/minstrel_e-Cv94nSeJ.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Když Přisluhovač zemře popravou, všichni hráči (až na Pocestné) jsou až do soumraku dalšího dne opilí.",
+    "flavor": "A uslyším tě, i když nade mnou kráčíš tiše… A všechny mé sny budou teplejší a sladší… Jestli mi nezapomeneš říct, že mě miluješ… Pak budu jen v klidu spát, dokud ke mně nepřijdeš.",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": [
+      "Všichni jsou opilí"
+    ]
+  },
+  {
+    "id": "tealadycz",
+    "name": "Čajová dáma",
+    "image": [
+      "https://botc.app/assets/tealady_g-C6X-kuq2.webp",
+      "https://botc.app/assets/tealady_e-CZT3s07k.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Pokud jsou oba tví nejbližší živí sousedé (1 z každé strany) na straně dobra, nemohou zemřít.",
+    "flavor": "Je-li ti zima, čaj tě zahřeje. Je-li ti příliš horko, čaj tě ochladí. Jsi-li sklíčený, čaj tě povzbudí. Jsi-li rozrušený, čaj tě uklidní.",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": [
+      "Nemůže zemřít",
+      "Nemůže zemřít"
+    ]
+  },
+  {
+    "id": "pacifistcz",
+    "name": "Pacifista",
+    "image": [
+      "https://botc.app/assets/pacifist_g-DAkM1DME.webp",
+      "https://botc.app/assets/pacifist_e-BDyZFmeQ.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Popravení hráči dobra nemusí zemřít.",
+    "flavor": "Nedůvěřuj všem, u nichž je silný pud trestat.",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": []
+  },
+  {
+    "id": "foolcz",
+    "name": "Šašek",
+    "image": [
+      "https://botc.app/assets/fool_g-C-vzA630.webp",
+      "https://botc.app/assets/fool_e-CdlNFIsk.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Když máš zemřít poprvé, nezemřeš.",
+    "flavor": "…a král řekl: „Cože?! Já jsem přece nikdy neměl ani gumové kalhoty, natož pudinkové dělo!“ Ho-ho! Veselý den!",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": [
+      "Bez schopnosti"
+    ]
+  },
+  {
+    "id": "courtiercz",
+    "name": "Lichotník",
+    "image": [
+      "https://botc.app/assets/courtier_g-8Fhu5KML.webp",
+      "https://botc.app/assets/courtier_e-DxjU0rGy.webp"
+    ],
+    "team": "townsfolk",
+    "edition": "bmr",
+    "ability": "Jednou za hru, v noci, vybereš 1 postavu: bude opilá 3 noci a 3 dny.",
+    "flavor": "Více se bojím armády sta ovcí vedených lvem než armády sta lvů vedených ovcí.",
+    "firstNight": 30,
+    "otherNight": 16,
+    "firstNightReminder": "Lichotník může vybrat 1 postavu. :reminder::reminder:",
+    "otherNightReminder": "Lichotník může vybrat 1 postavu. :reminder::reminder:",
+    "reminders": [
+      "Opilý 3",
+      "Opilý 2",
+      "Opilý 1",
+      "Bez schopnosti"
+    ]
+  },
+  {
+    "id": "tinkercz",
+    "name": "Dráteník",
+    "image": [
+      "https://botc.app/assets/tinker_g-CS4VFqeN.webp",
+      "https://botc.app/assets/tinker_e-dpPUDqmq.webp"
+    ],
+    "team": "outsider",
+    "edition": "bmr",
+    "ability": "Můžeš kdykoli zemřít.",
+    "flavor": "Myslím, že už chápu, kde je problém. Naštěstí mám nápad! Tenhle katapult bude střílet dvakrát tak daleko jen s malou úpravou…",
+    "firstNight": 0,
+    "otherNight": 69,
+    "otherNightReminder": "Dráteník může zemřít.",
+    "reminders": [
+      "Mrtvý"
+    ]
+  },
+  {
+    "id": "moonchildcz",
+    "name": "Dítě měsíce",
+    "image": [
+      "https://botc.app/assets/moonchild_g-DKURQEzF.webp",
+      "https://botc.app/assets/moonchild_e-D-P3dKVK.webp"
+    ],
+    "team": "outsider",
+    "edition": "bmr",
+    "ability": "Když se dozvíš o své smrti, veřejně vybereš 1 živého hráče. Pokud je na straně dobra, tu noc zemře.",
+    "flavor": "Štír pohlédne stranou na milence a ty máš rozhodnutí učinit. Se stříbrným křížem na mé dlani bude tvůj osud odhalen. S ocelovým křížem u mého hrdla — a podle hvězd toho budeš litovat.",
+    "firstNight": 0,
+    "otherNight": 70,
+    "otherNightReminder": "Pokud má Dítě měsíce zabít dobrého hráče, ten zemře. :reminder:",
+    "reminders": [
+      "Mrtvý"
+    ]
+  },
+  {
+    "id": "gooncz",
+    "name": "Hňup",
+    "image": [
+      "https://botc.app/assets/goon_g-qCN1CxKh.webp",
+      "https://botc.app/assets/goon_e-DmCcVOv-.webp"
+    ],
+    "team": "outsider",
+    "edition": "bmr",
+    "ability": "Každou noc první hráč, který tě označí na základě své schopnosti, je až do soumraku opilý. Získáváš jeho příslušnost.",
+    "flavor": "Jo, šéfe. Vysvětlil jsem to tomu týpkovi fakt dobře. Už to po mně nechce slyšet znova. Ne, šéfe, doktora nepotřebuju - je to jen bodná rána. Do rána budu v pohodě.",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": [
+      "Opilý"
+    ]
+  },
+  {
+    "id": "lunaticcz",
+    "name": "Blázen",
+    "image": [
+      "https://botc.app/assets/lunatic_g-Bz2ai2Da.webp",
+      "https://botc.app/assets/lunatic_e-D53Boxpa.webp"
+    ],
+    "team": "outsider",
+    "edition": "bmr",
+    "ability": "Myslíš si, že jsi Démon, ale nejsi. Démon ví, kdo jsi a koho v noci vybíráš.",
+    "flavor": "Já jsem noc… myslím.",
+    "firstNight": 17,
+    "otherNight": 33,
+    "firstNightReminder": "Pokud je ve hře alespoň 7 hráčů, probuďte Blázna.Ukažte mu žeton *TOTO JSOU TVÍ PŘISLUHOVAČI*. Ukažte na libovolné hráče.Ukažte mu žeton *TYTO POSTAVY NEJSOU VE HŘE*. Ukažte mu 3 žetony dobrých postav.Uspěte Blázna. Probuďte Démona.Ukažte mu žeton *TY JSI* a pak žeton Démona.Ukažte mu žeton *TENTO HRÁČ JE* a pak žeton Blázna. Ukažte na Blázna.",
+    "otherNightReminder": "Udělejte vše tak, aby to vypadalo, že jedná skutečný Démon.Uspěte Blázna. Probuďte Démona.Ukažte žeton Blázna a ukažte na hráče, které Blázen vybral.",
+    "reminders": [
+      "Vybraný",
+      "Vybraný",
+      "Vybraný"
+    ],
+    "remindersGlobal": [
+      "Je Blázen"
+    ],
+    "special": [
+      {
+        "type": "reveal",
+        "name": "replace-character"
+      }
+    ]
+  },
+  {
+    "id": "godfathercz",
+    "name": "Kmotr",
+    "image": [
+      "https://botc.app/assets/godfather_e-CszxqtFl.webp",
+      "https://botc.app/assets/godfather_g-BHOpUHNN.webp"
+    ],
+    "team": "minion",
+    "edition": "bmr",
+    "ability": "Začínáš s informací, kteří Podivíni jsou ve hře. Pokud 1 z nich ve dne zemře, vybereš tu noc 1 hráče: ten zemře. [-1 nebo +1 Podivín]",
+    "flavor": "Normálně je to jen obchod. Ale když urazíš mou dceru, urazíš mě. A když urazíš mě, urazíš moji rodinu. Měl bys být opravdu opatrnější - byla by škoda, kdyby tě potkala nějaká nešťastná nehoda.",
+    "firstNight": 33,
+    "otherNight": 55,
+    "firstNightReminder": "Ukažte mu žetony postav všech Podivínů ve hře.",
+    "otherNightReminder": "Pokud dnes zemřel Podivín, Kmotr vybere hráče. :reminder:",
+    "reminders": [
+      "Dnes zemřel",
+      "Mrtvý"
+    ],
+    "setup": true
+  },
+  {
+    "id": "devilsadvocatecz",
+    "name": "Ďáblův advokát",
+    "image": [
+      "https://botc.app/assets/devilsadvocate_e-6olcm7Cx.webp",
+      "https://botc.app/assets/devilsadvocate_g-DeyJHzxG.webp"
+    ],
+    "team": "minion",
+    "edition": "bmr",
+    "ability": "Každou noc vybereš živého hráče (jiného než tu minulou): pokud by měl být následující den popraven, nezemře.",
+    "flavor": "Můj klient, pokud by námitka byla zamítnuta, se zprošťuje viny na základě toho, že žaloba nedodržela ustanovení §27.B - nesprávná nebo zavádějící konjugace slovesa. Skutečnost, že devět porotců zemřelo minulou noc, je prostě dostatečný důvod, což je, jak stanovil precedent Wills proti Thulovi, dalším důvodem k zproštění viny.",
+    "firstNight": 35,
+    "otherNight": 24,
+    "firstNightReminder": "Ďáblův advokát vybere živého hráče. :reminder:",
+    "otherNightReminder": "Ďáblův advokát vybere živého hráče. :reminder:",
+    "reminders": [
+      "Přežije popravu"
+    ]
+  },
+  {
+    "id": "assassincz",
+    "name": "Nájemný vrah",
+    "image": [
+      "https://botc.app/assets/assassin_e-BDitHnVO.webp",
+      "https://botc.app/assets/assassin_g-D_zJwNaF.webp"
+    ],
+    "team": "minion",
+    "edition": "bmr",
+    "ability": "Jednou za hru, v noci*, vybereš 1 hráče: ten zemře, i pokud by z jakéhokoli důvodu nemohl.",
+    "flavor": "...",
+    "firstNight": 0,
+    "otherNight": 54,
+    "otherNightReminder": "Nájemný vrah může vybrat 1 hráče. :reminder::reminder:",
+    "reminders": [
+      "Mrtvý",
+      "Bez schopnosti"
+    ]
+  },
+  {
+    "id": "mastermindcz",
+    "name": "Strůjce",
+    "image": [
+      "https://botc.app/assets/mastermind_e-lwTDvV6G.webp",
+      "https://botc.app/assets/mastermind_g-BzBbXNuB.webp"
+    ],
+    "team": "minion",
+    "edition": "bmr",
+    "ability": "Pokud Démon zemře popravou (což ukončí hru), hraje se ještě 1 den. Je-li pak někdo popraven, jeho tým prohrává.",
+    "flavor": "Chapadla té příšery jsou přibita ke dveřím kostela. Matky a děti tančí v ulicích. Výborně. Všechno probíhá přesně tak, jak jsem plánoval.",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": []
+  },
+  {
+    "id": "zombuulcz",
+    "name": "Zombuul",
+    "image": [
+      "https://botc.app/assets/zombuul_e-DzySLzke.webp",
+      "https://botc.app/assets/zombuul_g-B4MTwk5-.webp"
+    ],
+    "team": "demon",
+    "edition": "bmr",
+    "ability": "Každou noc*, pokud ten den nikdo nezemřel, vybereš 1 hráče: ten zemře. Když zemřeš poprvé, žiješ a jevíš se jako mrtvý.",
+    "flavor": "Já ne. Rozumím. Tvým způsobům. Brachu. Ukaž mi. Hlínu. Kde svatý. Leží. Spí. Já taky. Musím spát. Brzy.",
+    "firstNight": 0,
+    "otherNight": 39,
+    "otherNightReminder": "Pokud dnes nikdo nezemřel, Zombuul vybere 1 hráče. :reminder:",
+    "reminders": [
+      "Dnes zemřel",
+      "Mrtvý"
+    ]
+  },
+  {
+    "id": "pukkacz",
+    "name": "Pukka",
+    "image": [
+      "https://botc.app/assets/pukka_e-CmZzVHPM.webp",
+      "https://botc.app/assets/pukka_g-D7il5SFF.webp"
+    ],
+    "team": "demon",
+    "edition": "bmr",
+    "ability": "Každou noc vybereš 1 hráče: je otrávený. Hráč otrávený předchozí noc zemře a přestane být otrávený.",
+    "flavor": "Byli jste opravdu laskaví, když jste mě přivítali ve svém krásném domě. Moc se omlouvám, že jsem vás nechtěně poškrábal. Malá věc. Nevadí. Ale prosím, vezměte toto zlaté párátko jako pokorný projev mé lítosti.",
+    "firstNight": 42,
+    "otherNight": 40,
+    "firstNightReminder": "Pukka vybere hráče. :reminder:",
+    "otherNightReminder": "Pukka vybere hráče. :reminder: Hráč otrávený předchozí noc zemře a poté se stane zdravým. :reminder:",
+    "reminders": [
+      "Otrávený",
+      "Mrtvý"
+    ]
+  },
+  {
+    "id": "shabalothcz",
+    "name": "Shabaloth",
+    "image": [
+      "https://botc.app/assets/shabaloth_e-DsCO_Txn.webp",
+      "https://botc.app/assets/shabaloth_g-BUwNFN-9.webp"
+    ],
+    "team": "demon",
+    "edition": "bmr",
+    "ability": "Každou noc* vybereš 2 hráče: ti zemřou. Hráč zabitý předchozí noc může být vyvržen zpět (oživen).",
+    "flavor": "Blarg f'taag nm mataan! No sho gumtha m'sik na yuuu. Fluuuuuuuuurg h-sikkkh.",
+    "firstNight": 0,
+    "otherNight": 41,
+    "otherNightReminder": "Hráč vybraný Shabalothem předchozí noc může být vyvržen zpět.:reminder: Shabaloth vybere 2 hráče. :reminder::reminder:",
+    "reminders": [
+      "Mrtvý",
+      "Mrtvý",
+      "Živý"
+    ]
+  },
+  {
+    "id": "pocz",
+    "name": "Pó",
+    "image": [
+      "https://botc.app/assets/po_e-BkxsM_xT.webp",
+      "https://botc.app/assets/po_g-blqsHHpB.webp"
+    ],
+    "team": "demon",
+    "edition": "bmr",
+    "ability": "Každou noc* můžeš vybrat 1 hráče: ten zemře. Pokud ses naposled rozhodl nikoho nevybrat, tuto noc vybereš 3 hráče.",
+    "flavor": "Chtěl bys květinu? Jsem tak osamělý.",
+    "firstNight": 0,
+    "otherNight": 42,
+    "otherNightReminder": "Pó buď vybere 1 hráče, NEBO vybere 3 hráče, pokud naposledy nevybral nikoho. :reminder: nebo :reminder::reminder::reminder:",
+    "reminders": [
+      "Mrtvý",
+      "Mrtvý",
+      "Mrtvý",
+      "3 útoky"
+    ]
+  },
+  "gardener",
+  "bootlegger",
+  {
+    "id": "booncz",
+    "name": "Boon",
+    "image": [
+      "https://www.bloodstar.xyz/p/elesty/krvavy_chaos_imgs/boon_krvavy_chaos_imgs.png"
+    ],
+    "team": "fabled",
+    "edition": "custom",
+    "ability": "Hráči mohou dostat požehnání do dalších her",
+    "flavor": "Tohle bylo výborné, to chci vidět znovu! Tady máš něco malého jako motivaci pro příště!",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": [
+      "Tiskový mluvčí",
+      "Vladař",
+      "Vlezdoprdel",
+      "Opilý",
+      "Opilý",
+      "Opilý",
+      "Opilý",
+      "Opilý"
+    ]
+  },
+  {
+    "id": "voiceofchatcz",
+    "name": "Hlas chatu",
+    "image": [
+      "https://www.bloodstar.xyz/p/elesty/krvavy_chaos_imgs/voiceofchat_krvavy_chaos_imgs.png"
+    ],
+    "team": "fabled",
+    "edition": "custom",
+    "ability": "V případě nejasného výkladu pravidel u speciálních postav, či jejích interakcí s ostatními, vypravěč veřejně oznámí NASTAL ČAS CHATU, odmlčí se a vyhlásí anketu. Po ukončení hlasování oznámí CHAT ROZHODL a veřejně oznámí úpravu pravidel",
+    "flavor": "Někdy i malá změna, může způsobit spoustu problémů. Naštestí tyto problémy za mě řeší jiní.",
+    "firstNight": 0,
+    "otherNight": 0,
+    "reminders": []
+  }
+]
