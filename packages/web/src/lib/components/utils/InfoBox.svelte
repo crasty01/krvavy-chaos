@@ -68,10 +68,9 @@
 
 <style>
 .infobox {
-	--clr-bg-light: var(--color-accent-100);
-	--clr-bg-dark: var(--color-accent-900);
-	--clr-fg-light: var(--color-accent-800);
-	--clr-fg-dark: var(--color-accent-200);
+	--clr-light: var(--color-accent-100);
+	--clr-dark: var(--color-accent-900);
+	--clr-c: 0.08;
 
 	display: flex;
 	align-items: center;
@@ -79,10 +78,9 @@
 	padding: 1rem;
 	width: 100%;
 	border-radius: var(--border-radius);
-	margin-bottom: 1rem;
 
 	& .infobox__icon {
-		font-size: 1.25rem;
+		font-size: var(--size-md);
 		line-height: 1;
 		margin-top: 0.125rem;
 		flex-shrink: 0;
@@ -99,15 +97,14 @@
 	}
 
 	& .infobox__message {
-		font-size: 0.875rem;
+		font-size: var(--size-xs);
 		color: inherit;
-		line-height: 1.4;
 	}
 
 	& .infobox__close {
 		all: unset;
 		cursor: pointer;
-		font-size: 1.125rem;
+		font-size: var(--size-md);
 		opacity: 0.5;
 		line-height: 1;
 		transition: opacity 0.15s ease;
@@ -119,29 +116,29 @@
 
 	&.infobox--info {
 		background-color: light-dark(
-			oklch(from var(--clr-bg-light) l c 250),
-			oklch(from var(--clr-bg-dark) l c 250)
+			oklch(from var(--clr-light) l var(--clr-c) 250),
+			oklch(from var(--clr-dark) l var(--clr-c) 250)
 		);
 	}
 
 	&.infobox--success {
 		background-color: light-dark(
-			oklch(from var(--clr-bg-light) l c 145),
-			oklch(from var(--clr-bg-dark) l c 145)
+			oklch(from var(--clr-light) l var(--clr-c) 145),
+			oklch(from var(--clr-dark) l var(--clr-c) 145)
 		);
 	}
 
 	&.infobox--warning {
 		background-color: light-dark(
-			oklch(from var(--clr-bg-light) l c 70),
-			oklch(from var(--clr-bg-dark) l c 70)
+			oklch(from var(--clr-light) l var(--clr-c) 70),
+			oklch(from var(--clr-dark) l var(--clr-c) 70)
 		);
 	}
 
 	&.infobox--error {
 		background-color: light-dark(
-			oklch(from var(--clr-bg-light) l c 25),
-			oklch(from var(--clr-bg-dark) l c 25)
+			oklch(from var(--clr-light) l var(--clr-c) 25),
+			oklch(from var(--clr-dark) l var(--clr-c) 25)
 		);
 	}
 }

@@ -59,16 +59,28 @@
 	& .info {
 		display: flex;
 		flex-direction: row;
-		gap: 1rem;
+		gap: 0.4rem;
 		font-size: var(--size-xs);
 		color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
 
 		& > span:not(:first-child) {
 			&::before {
 				content: '·';
-				padding-right: 1rem;
+				padding-right: 0.4rem;
 			}
 		}
+	}
+
+	& .lead {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	& .tail {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 	}
 }
 </style>

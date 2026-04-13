@@ -30,7 +30,7 @@
 	--color-neutral-900: #17171c;
 	--color-neutral-950: #08080c;
 
-	--size-2xs: 0.563rem;
+	/* --size-2xs: 0.563rem;
   --size-xs:  0.75rem;
   --size-sm:  1rem;
   --size-md:  1.333rem;
@@ -38,7 +38,18 @@
   --size-xl:  2.37rem;
   --size-2xl: 3.16rem;
   --size-3xl: 4.214rem;
-  --size-4xl: 5.619rem;
+  --size-4xl: 5.619rem; */
+
+	--size-2xs: 0.694rem;
+	--size-xs: 0.833rem;
+	--size-sm: 1rem;
+	--size-md: 1.2rem;
+	--size-lg: 1.44rem;
+	--size-xl: 1.728rem;
+	--size-2xl: 2.074rem;
+	--size-3xl: 2.488rem;
+	--size-4xl: 2.986rem;
+
 
 	/* Font Families */
   --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
@@ -49,7 +60,10 @@
 	--max-width: 1200px;
 }
 
-:where(p) { font-size: var(--size-sm); line-height: 1.6; max-width: 60ch; }
+:where(p, span) {
+	max-width: 60ch;
+}
+
 :where(h1) { font-size: var(--size-3xl); line-height: 1.1; }
 :where(h2) { font-size: var(--size-2xl); line-height: 1.1; }
 :where(h3) { font-size: var(--size-1xl); line-height: 1.2; }
@@ -57,10 +71,13 @@
 :where(h5) { font-size: var(--size-md); line-height: 1.3; }
 :where(h6) { font-size: var(--size-sm); line-height: 1.3; }
 
-:where(.title) { font-size: var(--size-4xl); line-height: 1.1; }
+:where(h1, h2, h3, h4, h5, h6) {
+	font-weight: 900;
+	font-family: var(--font-primary);
+}
 
 html, body {
-  font-family: var(--font-primary);
+  font-family: var(--font-mono);
   font-size: var(--base-size);
   line-height: var(--base-line-height);
   color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
@@ -106,4 +123,18 @@ html, body {
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
+}
+
+/* custom styles */
+
+:where(ul) {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	padding: 0;
+	margin: 0;
+
+	& :where(li) {
+		list-style: none;
+	}
 }

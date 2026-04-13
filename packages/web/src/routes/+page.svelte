@@ -24,6 +24,11 @@
 </section>
 
 <style>
+
+.title {
+	font-size: var(--size-4xl);
+}
+
 section {
 	display: grid;
 	height: 100%;

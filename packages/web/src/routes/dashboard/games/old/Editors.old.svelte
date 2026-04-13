@@ -65,16 +65,14 @@
 	<div class="editors__searched">
 		{#if searchedUserIds.size > 0 && search.length > 0}
 			<ul class="list">
-				{#each searchedUserIds as userId}
+				{#each searchedUserIds as userId (userId)}
 					{@const user = userMap.get(userId)!}
-					{#key userId}
-						<li class="list-item">
-							<AvatarWithLabel name={user.name} src={user.image} />
-							<Button.Root data-button-round type="button" onclick={() => selectedUserIds.add(user.id)}>
-								<Icon icon="material-symbols:add" />
-							</Button.Root>
-						</li>
-					{/key}
+					<li class="list-item">
+						<AvatarWithLabel name={user.name} src={user.image} />
+						<Button.Root data-button-round type="button" onclick={() => selectedUserIds.add(user.id)}>
+							<Icon icon="material-symbols:add" />
+						</Button.Root>
+					</li>
 				{/each}
 			</ul>
 		{:else}
@@ -86,17 +84,15 @@
 	<div class="editors__selected">
 		{#if selectedUserIds.size > 0}
 			<ul class="list">
-				{#each selectedUserIds as userId}
+				{#each selectedUserIds as userId (userId)}
 					{@const user = userMap.get(userId)}
 					{#if user}
-						{#key userId}
-							<li class="list-item">
-								<AvatarWithLabel name={user.name} src={user.image} />
-								<Button.Root data-button-round type="button" onclick={() => selectedUserIds.delete(user.id)}>
-									<Icon icon="material-symbols:delete" />
-								</Button.Root>
-							</li>
-						{/key}
+						<li class="list-item">
+							<AvatarWithLabel name={user.name} src={user.image} />
+							<Button.Root data-button-round type="button" onclick={() => selectedUserIds.delete(user.id)}>
+								<Icon icon="material-symbols:delete" />
+							</Button.Root>
+						</li>
 					{/if}
 				{/each}
 			</ul>

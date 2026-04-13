@@ -88,7 +88,7 @@ footer {
 	padding-inline: 2rem;
 	padding-block: 1rem;
 
-	font-size: 0.875rem;
+	font-size: var(--size-xs);
 	font-family: var(--font-mono);
 }
 </style>
