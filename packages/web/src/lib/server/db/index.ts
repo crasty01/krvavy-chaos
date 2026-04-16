@@ -22,3 +22,9 @@ export type PlayerSocialLink = typeof schema.playerSocialLink.$inferSelect;
 export type Game = typeof schema.game.$inferSelect;
 export type GamePlayer = typeof schema.gamePlayer.$inferSelect;
 export type GameEditor = typeof schema.gameEditor.$inferSelect;
+
+export type GameFull = Game & {
+	gamePlayers: Array<GamePlayer & { player: Player }>;
+	editors: Array<GameEditor & { user: User }>;
+	creator: User;
+};

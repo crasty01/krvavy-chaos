@@ -1,13 +1,10 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
+import Icon from '@iconify/svelte';
 import { Button } from 'bits-ui';
+import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
 
 let { breadcrumbs }: {
-	breadcrumbs: Array<{
-		label: string;
-		href: string;
-		icon?: string;
-	}>;
+	breadcrumbs: Array<Breadcrumb>;
 } = $props();
 </script>
 
@@ -35,6 +32,9 @@ let { breadcrumbs }: {
 	align-items: center;
 	background-color: hsl(from light-dark(var(--color-neutral-100), var(--color-neutral-800)) h s l / 0.2);
 	border-radius: var(--border-radius);
+	margin-block: 0.2rem;
+	margin-inline: 1rem;
+	width: calc(100% - 2rem);
 
 	li {
 		display: contents;

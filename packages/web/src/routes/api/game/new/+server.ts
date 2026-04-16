@@ -1,14 +1,21 @@
 import { db } from '$lib/server/db';
 import { game } from '$lib/server/db/schema';
+import type { ScriptMetadata } from '@krvavy-chaos/shared/validate/script';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const id = crypto.randomUUID();
 
+	const _metadata: ScriptMetadata = {
+		id: '_meta',
+		name: 'Nová hra',
+		author: locals.user.name,
+	};
+
 	const _game = {
 		id: id,
 		name: 'Nová hra',
-		script: [{ id: '_meta', name: 'Nový skript', author: locals.user.name }],
+		script: [_metadata],
 		createdBy: locals.user.id,
 	};
 

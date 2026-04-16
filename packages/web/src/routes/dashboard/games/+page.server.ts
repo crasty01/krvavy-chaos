@@ -2,6 +2,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { game, gameEditor } from '$lib/server/db/schema';
 import type { PageServerLoad } from './$types';
+import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const ownGames = await db.query.game.findMany({
@@ -28,5 +29,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		orderBy: (game, { desc }) => [desc(game.updatedAt)],
 	});
 
-	return { ownGames, sharedGames };
+	return {
+		ownGames,
+		sharedGames,
+		breadcrumbs: [{
+			label: 'přehled',
+			href: '/dashboard',
+			icon: 'material-symbols:home'
+		},
+		{
+			label: 'seznam her',
+			href: '/dashboard/games',
+		}] satisfies Array<Breadcrumb>,
+	};
 };

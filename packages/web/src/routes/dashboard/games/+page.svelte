@@ -14,27 +14,13 @@
 		const game = await response.json();
 		await goto(`/dashboard/games/${encodeURIComponent(game.id)}`)
 	}
-
-	const breadcrumbs = $derived([{
-		label: 'přehled',
-		href: '/dashboard',
-		icon: 'material-symbols:home'
-	},
-	{
-		label: 'seznam her',
-		href: '/dashboard/games',
-	}]);
 </script>
 
 <svelte:head>
 	<title>Hry — Krvavý chaos</title>
 </svelte:head>
 
-<section class="breadcrumbs">
-	<Breadcrumbs {breadcrumbs} />
-</section>
-
-<section class="page">
+<div class="page">
 	<header>
 		<div class="lead">
 			<h1>seznam her</h1>
@@ -98,12 +84,15 @@
 			{/if}
 		</section>
 	{/if}
-</section>
+</div>
 
 <style>
 .page {
 	display: grid;
-	gap: 3rem;
+	align-content: flex-start;
+	gap: 2rem;
+	height: 100%;
+	overflow: auto;
 }
 
 header {
@@ -121,56 +110,3 @@ header {
 	gap: 1rem;
 }
 </style>
-
-<!-- <style>
-	.games-page {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		padding: 2rem 1rem;
-	}
-
-	.page-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-
-		& h1 {
-			font-weight: 900;
-			text-transform: uppercase;
-		}
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 4rem 1rem;
-		color: light-dark(var(--color-neutral-400), var(--color-neutral-500));
-
-		& p {
-			text-align: center;
-		}
-	}
-
-	section {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-
-		& h4 {
-			font-weight: 700;
-			text-transform: uppercase;
-			letter-spacing: 0.05em;
-			color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
-		}
-	}
-
-	.game-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-</style> -->

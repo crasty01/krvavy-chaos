@@ -3,6 +3,7 @@ export * from './auth.schema';
 import { relations, sql } from "drizzle-orm";
 import { sqliteTable, text, integer, index, primaryKey, foreignKey } from "drizzle-orm/sqlite-core";
 import { user, session, account } from "./auth.schema";
+import type { BotcScript } from '@krvavy-chaos/shared/validate/script';
 
 // ─── Player ──────────────────────────────────────────────────────────
 
@@ -51,7 +52,7 @@ export const playerSocialLink = sqliteTable(
 export const game = sqliteTable("game", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  script: text("script", { mode: "json" }).notNull(),
+  script: text("script", { mode: "json" }).$type<BotcScript>().notNull(),
   createdBy: text("created_by")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
