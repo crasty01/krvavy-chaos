@@ -7,6 +7,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const limit = parseInt(url.searchParams.get('limit') ?? '10', 10);
 
 	const results = await searchUsersByName(query, limit + 1);
-	const users = results.filter(user => user.id !== locals.user?.id).slice(0, limit);
+	const users = results.filter((u) => u.id !== locals.user?.id).slice(0, limit);
 	return json(users);
 };

@@ -6,6 +6,13 @@ loadIcons([
 	"material-symbols:manage-accounts",
 	"material-symbols:person",
 	"material-symbols:groups",
+	"material-symbols:save",
+	"material-symbols:cast",
+	"material-symbols:progress-activity",
+	"material-symbols:check-circle",
+	"material-symbols:cancel",
+	"material-symbols:close",
+	"material-symbols:add",
 ]);
 </script>
 
@@ -13,8 +20,8 @@ loadIcons([
 	import Icon from '@iconify/svelte';
 	import { Button, Tabs } from 'bits-ui';
 	import * as Editor from '$lib/components/editor';
+	import { createAsyncAction } from '$lib/functions/async.svelte';
 	import type { PageData } from './$types';
-	import Breadcrumbs from '$lib/components/utils/Breadcrumbs.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -52,8 +59,32 @@ loadIcons([
 	]);
 
 	let selectedTabkey = $state(tabs[0].key);
-	
-	$inspect(data);
+
+	const saveAction = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
+	const activateAction = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
+
+	const STATUS_ICONS = {
+		loading: 'material-symbols:progress-activity',
+		success: 'material-symbols:check-circle',
+		error: 'material-symbols:cancel',
+	} as const;
+
+	const saveIcon = $derived(saveAction.status === 'idle' ? 'material-symbols:save' : STATUS_ICONS[saveAction.status]);
+	const activateIcon = $derived(activateAction.status === 'idle' ? 'material-symbols:cast' : STATUS_ICONS[activateAction.status]);
+
+	const save = () => saveAction.trigger(async () => {
+		const res = await fetch(`/api/games/${data.game.id}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name: data.game.name, script: data.game.script }),
+		});
+		if (!res.ok) throw new Error();
+	});
+
+	const activate = () => activateAction.trigger(async () => {
+		const res = await fetch(`/api/games/${data.game.id}/activate`, { method: 'POST' });
+		if (!res.ok) throw new Error();
+	});
 </script>
 
 <svelte:head>
@@ -66,7 +97,14 @@ loadIcons([
 			<h1>editor hry</h1>
 		</div>
 		<div class="tail">
-			<span>save?</span>
+			<Button.Root data-button-variant="outline" onclick={save}>
+				<Icon icon={saveIcon} data-spin={String(saveAction.status === 'loading')} />
+				<span>uložit</span>
+			</Button.Root>
+			<Button.Root data-button-variant="accent" onclick={activate}>
+				<Icon icon={activateIcon} data-spin={String(activateAction.status === 'loading')} />
+				<span>aktivovat</span>
+			</Button.Root>
 		</div>
 	</header>
 
@@ -109,6 +147,7 @@ header {
 
 	& .lead, & .tail {
 		display: flex;
+		gap: 0.2rem;
 	}
 }
 

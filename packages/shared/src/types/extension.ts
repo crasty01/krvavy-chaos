@@ -35,7 +35,9 @@ export type TwitchExtensionAuthorized = {
 export type TwitchExtensionAuthorizedParsed = {
 	channelId: string;
 	clientId: string;
+	_token: string;
 	token: TwitchExtensionAuthToken;
+	_helixToken: string;
 	helixToken: TwitchExtensionAuthHelixToken;
 	userId: string;
 };

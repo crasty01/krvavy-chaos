@@ -45,7 +45,8 @@
 	background-color: light-dark(var(--color-neutral-100), var(--color-neutral-800));
 	color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
 	text-decoration: none;
-	transition: background-color 0.15s;
+	transition: background-color 150ms;
+	width: 100%;
 
 	&:hover, &:focus {
 		background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));

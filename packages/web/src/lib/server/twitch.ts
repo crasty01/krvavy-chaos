@@ -1,6 +1,7 @@
 import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_EXTENSION_SECRET, TWITCH_USER_ID } from '$env/static/private';
 import jwt from 'jsonwebtoken';
 import type { TwitchAuthToken } from '@krvavy-chaos/shared/index';
+import type { TwitchExtensionAuthToken } from '@krvavy-chaos/shared/types/extension';
 import type { TwitchExtensionPubSubMessage } from '@krvavy-chaos/shared/types/pubsub';
 
 let expirationTime = 0;
@@ -62,4 +63,12 @@ export const sendTwitchExtensionPubSubMessage = async (broadcasterId: string, me
 			message: JSON.stringify(message),
 		}),
 	});
+};
+
+export const verifyTwitchExtensionJWT = (token: string): TwitchExtensionAuthToken | null => {
+	try {
+		return jwt.verify(token, Buffer.from(TWITCH_EXTENSION_SECRET, 'base64')) as TwitchExtensionAuthToken;
+	} catch {
+		return null;
+	}
 };

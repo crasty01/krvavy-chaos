@@ -42,8 +42,15 @@
 	}
 
 	&[data-button-variant="outline"] {
+		--clr-bg: light-dark(var(--color-neutral-300), var(--color-neutral-700));
+
 		background-color: transparent;
 		border: 1px solid var(--clr-bg);
+
+
+		&:not([disabled]):hover, &:not([disabled]):focus-visible {
+			border-color: color-mix(in srgb, var(--clr-bg), var(--clr-mix) 20%);
+		}
 	}
 
 	&[data-button-variant="solid"] {
@@ -189,4 +196,14 @@
 	grid-template-columns: 1fr;
 	grid-template-rows: auto 1fr;
 	gap: 1rem;
+}
+
+/* Icon */
+@keyframes icon-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+svg.iconify[data-spin="true"] {
+	animation: icon-spin 800ms linear infinite;
 }

@@ -61,7 +61,7 @@ export const SpecialGlobalSchema = v.picklist([
   'dead',
 ]);
 
-export const AlignmentSchema = v.picklist(['good', 'evil']);
+export const AlignmentSchema = v.picklist(['good', 'neutral', 'evil']);
 
 // ─── Sub-objects ─────────────────────────────────────────────────────
 

@@ -18,7 +18,10 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 const handleAuthGuard: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 
-	const isPublic = pathname === '/' || pathname.startsWith('/api/auth');
+	const isPublic =
+		pathname === '/' ||
+		pathname.startsWith('/api/auth') ||
+		pathname.startsWith('/api/extension');
 
 	if (!event.locals.user && !isPublic) {
 		if (pathname.startsWith('/api/')) {

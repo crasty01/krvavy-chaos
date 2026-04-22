@@ -2,30 +2,30 @@ import { jwtDecode } from "jwt-decode";
 
 import { DEFAULT_URL_PARAMS } from '@krvavy-chaos/shared/constants';
 import type {
-	TwitchAuthorizedParsed,
-	TwitchContext,
-	TwitchSegmentName,
+	TwitchExtensionAuthorizedParsed,
+	TwitchExtensionContext,
+	TwitchExtensionSegmentName,
 	PubSubCallback,
-	TwitchExtension,
-	TwitchURLSearchParams,
-	TwitchConfigContent,
-} from '@krvavy-chaos/shared/types/twitch';
+	TwitchExtensionExtension,
+	TwitchExtensionURLSearchParams,
+	TwitchExtensionConfigContent,
+} from '@krvavy-chaos/shared/types/extension';
 
 // -- Reactive Twitch store --
 
-class TwitchStore {
-	extension: TwitchExtension;
-	auth = $state<TwitchAuthorizedParsed | null>(null);
-	context = $state<TwitchContext | null>(null);
+class TwitchExtensionStore {
+	extension: TwitchExtensionExtension;
+	auth = $state<TwitchExtensionAuthorizedParsed | null>(null);
+	context = $state<TwitchExtensionContext | null>(null);
 
-	broadcasterConfig = $state<TwitchConfigContent | null>(null);
-	developerConfig = $state<TwitchConfigContent | null>(null);
-	globalConfig = $state<TwitchConfigContent | null>(null);
+	broadcasterConfig = $state<TwitchExtensionConfigContent | null>(null);
+	developerConfig = $state<TwitchExtensionConfigContent | null>(null);
+	globalConfig = $state<TwitchExtensionConfigContent | null>(null);
 
 	isVisible = $state(true);
 	isHighlighted = $state(false);
 	position = $state<{ x: number; y: number }>({ x: 0, y: 0 });
-	urlParams: TwitchURLSearchParams;
+	urlParams: TwitchExtensionURLSearchParams;
 
 	isAuthorized = $derived(this.auth !== null);
 	isDarkTheme = $derived(this.context?.theme === 'dark');
@@ -54,18 +54,18 @@ class TwitchStore {
 	constructor() {
 		const params = new URLSearchParams(window.location.search);
 		this.urlParams = {
-			anchor: (params.get('anchor') ?? DEFAULT_URL_PARAMS.anchor) as TwitchURLSearchParams['anchor'],
+			anchor: (params.get('anchor') ?? DEFAULT_URL_PARAMS.anchor) as TwitchExtensionURLSearchParams['anchor'],
 			language: params.get('language') ?? DEFAULT_URL_PARAMS.language,
 			locale: params.get('locale') ?? DEFAULT_URL_PARAMS.locale,
-			mode: (params.get('mode') ?? DEFAULT_URL_PARAMS.mode) as TwitchURLSearchParams['mode'],
-			platform: (params.get('platform') ?? DEFAULT_URL_PARAMS.platform) as TwitchURLSearchParams['platform'],
+			mode: (params.get('mode') ?? DEFAULT_URL_PARAMS.mode) as TwitchExtensionURLSearchParams['mode'],
+			platform: (params.get('platform') ?? DEFAULT_URL_PARAMS.platform) as TwitchExtensionURLSearchParams['platform'],
 			popout: params.get('popout') === 'true',
-			state: (params.get('state') ?? DEFAULT_URL_PARAMS.state) as TwitchURLSearchParams['state'],
+			state: (params.get('state') ?? DEFAULT_URL_PARAMS.state) as TwitchExtensionURLSearchParams['state'],
 		};
 
 		this.extension = window.Twitch?.ext!;
 		if (!this.extension) {
-			console.warn('[TwitchStore] Twitch Extension Helper not available');
+			console.warn('[TwitchExtensionStore] Twitch Extension Helper not available');
 			return;
 		}
 
@@ -76,7 +76,9 @@ class TwitchStore {
 		this.extension.onAuthorized((auth) => {
 			this.auth = {
 				...auth,
+				_token: auth.token,
 				token: jwtDecode(auth.token),
+				_helixToken: auth.helixToken,
 				helixToken: jwtDecode(auth.helixToken),
 			};
 		});
@@ -86,7 +88,7 @@ class TwitchStore {
 		});
 
 		this.extension.onError((errorValue) => {
-			console.error('[TwitchExtensionStore]', errorValue);
+			console.error('[TwitchExtensionExtensionStore]', errorValue);
 		});
 
 		this.extension.onVisibilityChanged((visible) => {
@@ -122,7 +124,7 @@ class TwitchStore {
 
 	// -- Configuration --
 
-	async updateConfig(segment: TwitchSegmentName, version: string, content: TwitchConfigContent) {
+	async updateConfig(segment: TwitchExtensionSegmentName, version: string, content: TwitchExtensionConfigContent) {
 		this.extension.configuration.set(segment, version, JSON.stringify(content));
 		this.extension.send('broadcast', 'application/json', content); // can use 'global' or "wisper-<userId>", but for purpuse of this extension, broadcasting to all viewers is fine
 	};
@@ -143,4 +145,4 @@ class TwitchStore {
 	};
 }
 
-export const twitchStore = new TwitchStore();
+export const twitchStore = new TwitchExtensionStore();

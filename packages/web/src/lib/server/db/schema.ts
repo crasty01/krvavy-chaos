@@ -79,7 +79,7 @@ export const gamePlayer = sqliteTable(
       .references(() => player.id, { onDelete: "restrict" }),
     seatOrder: integer("seat_order").notNull(),
     characterId: text("character_id"),
-    alignment: text("alignment", { enum: ["good", "evil"] }),
+    alignment: text("alignment", { enum: ["good", "neutral", "evil"] }),
   },
   (table) => [
     index("gamePlayer_gameId_idx").on(table.gameId),

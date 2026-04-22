@@ -1,15 +1,193 @@
 <script lang="ts">
-import type { GameFull } from '$lib/server/db';
+import { Button } from 'bits-ui';
+import Icon from '@iconify/svelte';
+import AvatarWithLabel from '$lib/components/utils/AvatarWithLabel.svelte';
+import InputGroup from '$lib/components/form/InputGroup.svelte';
+import InfoBox from '$lib/components/utils/InfoBox.svelte';
+import type { GameFull, User } from '$lib/server/db';
 
 let { game }: {
-	game: GameFull
+	game: GameFull;
 } = $props();
+
+const isCreator = $derived(game.creator.id === game.createdBy);
+let editors = $state(game.editors);
+
+const removeEditor = async (userId: string) => {
+	await fetch(`/api/games/${game.id}/editors/${userId}`, { method: 'DELETE' });
+	editors = editors.filter((e) => e.userId !== userId);
+};
+
+let searchQuery = $state('');
+let searchResults = $state<User[]>([]);
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const onSearchInput = () => {
+	if (searchTimeout) clearTimeout(searchTimeout);
+	if (!searchQuery.trim()) {
+		searchResults = [];
+		return;
+	}
+	searchTimeout = setTimeout(async () => {
+			const limit = 8 + editors.length;
+			const res = await fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}&limit=${limit}`);
+			if (res.ok) {
+				const all: User[] = await res.json();
+				searchResults = all.filter((u) => !alreadyEditor(u.id)).slice(0, 8);
+			}
+	}, 250);
+};
+
+const addEditor = async (user: User) => {
+	await fetch(`/api/games/${game.id}/editors`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ userId: user.id }),
+	});
+	editors = [...editors, { gameId: game.id, userId: user.id, user }];
+	searchQuery = '';
+	searchResults = [];
+};
+
+const alreadyEditor = (userId: string) =>
+	userId === game.createdBy || editors.some((e) => e.userId === userId);
 </script>
 
-<span>editors | {game.id}</span>
+<h2>editoři</h2>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed interdum eleifend est a cursus. Praesent dapibus bibendum lorem vel aliquet. Fusce ac rutrum arcu. Donec commodo orci a lacinia lobortis. Suspendisse lacinia id lacus at maximus. Cras pellentesque, quam eu rutrum maximus, ante tellus ornare urna, at cursus turpis tellus non ipsum. Sed a eros ac felis rutrum aliquet id id turpis.</p>
-<p>Nunc ac vehicula urna. Aenean scelerisque, lorem sed interdum volutpat, nunc mi ullamcorper libero, nec semper quam purus id ante. Curabitur mattis tortor eget turpis dapibus viverra ut pharetra libero. Curabitur fermentum risus sit amet magna pharetra, eget aliquam arcu blandit. Proin ut pharetra erat. Aliquam malesuada libero odio, ac facilisis nulla sodales iaculis. Suspendisse id nibh quis augue convallis venenatis. Donec ultricies ligula id dolor faucibus, eget consectetur nibh blandit. Sed blandit condimentum lorem sed pellentesque. Donec eget lacus nibh.</p>
-<p>Nunc molestie ipsum quam, non bibendum enim venenatis vel. Cras feugiat nulla sit amet magna placerat, a porttitor velit vestibulum. Phasellus non commodo est. Duis sit amet vehicula mauris. Quisque posuere feugiat nisi, eget laoreet neque ornare vitae. Nullam pulvinar metus varius, blandit nibh eu, scelerisque mi. Quisque sed erat non felis fringilla convallis. Donec nec arcu ultrices, tempus est vel, eleifend neque. Aenean faucibus ullamcorper neque, vel varius nunc aliquam non. Etiam vestibulum turpis in mi tempus congue. Vestibulum cursus in elit vel fringilla. Nullam consequat eget turpis non pulvinar. Aliquam eget dolor nunc.</p>
-<p>Sed malesuada, arcu sit amet fringilla auctor, purus est vestibulum nunc, sit amet semper dolor dui sed tortor. Aliquam erat volutpat. Aliquam at commodo sem, sit amet porta ligula. Etiam quis erat id arcu semper ultricies. Donec mattis quam ac urna feugiat, id laoreet lacus vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque orci ligula, luctus ac velit at, ultricies facilisis massa. Nulla vestibulum ultrices lectus, non accumsan risus volutpat id. Duis ut magna molestie, fermentum dui sit amet, placerat est. Praesent sodales nunc ac mi scelerisque, sed eleifend velit varius. Suspendisse consectetur dui id urna sollicitudin tincidunt non sit amet libero. Vivamus porttitor, lectus in rhoncus faucibus, mi nibh accumsan nisi, porttitor lobortis leo risus ut orci. Integer hendrerit ultrices mi, eu malesuada sapien consectetur eget. Duis suscipit hendrerit sagittis. Sed fermentum, leo ut eleifend consectetur, dui odio consequat lectus, quis placerat urna turpis eu diam.</p>
-<p>Aenean quis orci turpis. Maecenas ligula diam, dictum quis turpis et, aliquet scelerisque turpis. Nulla facilisi. Vestibulum nec tortor pellentesque, scelerisque augue ut, convallis nibh. Suspendisse non lectus eleifend, consectetur neque tempus, tincidunt velit. Curabitur sit amet orci venenatis, vestibulum diam vel, suscipit massa. Ut non facilisis lorem, eu bibendum turpis. Vivamus nisi risus, auctor a viverra non, tempus nec justo. Etiam ornare bibendum lacus at cursus. Proin vel ligula varius, gravida felis nec, posuere nibh. Pellentesque viverra ipsum non semper dictum.</p>
+<div class="editors">
+	<section class="editor-list">
+		<div class="editor-pill creator">
+			<AvatarWithLabel src={game.creator.image} name={game.creator.name} />
+			<span class="badge">tvůrce</span>
+		</div>
+		{#each editors as editor (editor.userId)}
+			<div class="editor-pill">
+				<AvatarWithLabel src={editor.user.image} name={editor.user.name} />
+				{#if isCreator}
+					<Button.Root
+						data-button-variant="ghost"
+						data-button-round
+						onclick={() => removeEditor(editor.userId)}
+						aria-label="Odebrat editora"
+					>
+						<Icon icon="material-symbols:close" />
+					</Button.Root>
+				{/if}
+			</div>
+		{/each}
+	</section>
+
+	{#if isCreator}
+		<section class="editor-search">
+			<InputGroup label="přidat editora">
+				{#snippet child(id)}
+					<input
+						type="search"
+						{id}
+						bind:value={searchQuery}
+						oninput={onSearchInput}
+						placeholder="hledat uživatele"
+						autocomplete="off"
+					/>
+				{/snippet}
+			</InputGroup>
+
+			{#if searchResults.length > 0}
+				<ul class="search-results">
+					{#each searchResults as user (user.id)}
+						<li>
+							<AvatarWithLabel src={user.image} name={user.name} />
+							<Button.Root
+								data-button-variant="ghost"
+								data-button-round
+								onclick={() => addEditor(user)}
+								aria-label="Přidat editora"
+							>
+								<Icon icon="material-symbols:add" />
+							</Button.Root>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</section>
+	{:else}
+		<InfoBox>
+			Editory může spravovat pouze tvůrce hry.
+		</InfoBox>
+	{/if}
+</div>
+
+<style>
+.editors {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.editor-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.editor-pill {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.25rem 0.6rem 0.25rem 0.35rem;
+	border-radius: 9999px;
+	background-color: light-dark(var(--color-neutral-100), var(--color-neutral-800));
+	border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
+}
+
+.creator {
+	opacity: 0.6;
+}
+
+.badge {
+	font-size: 0.75rem;
+	padding: 0.1rem 0.5rem;
+	border-radius: 9999px;
+	background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+	color: light-dark(var(--color-neutral-600), var(--color-neutral-300));
+}
+
+.editor-search {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.search-results {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+
+	& li {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.2rem 0.4rem;
+		border-radius: 0.4rem;
+
+		&:hover {
+			background-color: light-dark(var(--color-neutral-100), var(--color-neutral-800));
+		}
+
+		& :global([data-button-root]) {
+			margin-left: auto;
+		}
+	}
+}
+
+input {
+	all: unset;
+	width: 100%;
+}
+</style>
+
