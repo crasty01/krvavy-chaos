@@ -6,21 +6,28 @@ import InputGroup from '$lib/components/form/InputGroup.svelte';
 import InfoBox from '$lib/components/utils/InfoBox.svelte';
 import type { GameFull, User } from '$lib/server/db';
 
-let { game }: {
+let { game = $bindable() }: {
 	game: GameFull;
 } = $props();
 
 const isCreator = $derived(game.creator.id === game.createdBy);
-let editors = $state(game.editors);
 
-const removeEditor = async (userId: string) => {
-	await fetch(`/api/games/${game.id}/editors/${userId}`, { method: 'DELETE' });
-	editors = editors.filter((e) => e.userId !== userId);
+const removeEditor = (userId: string) => {
+	game.editors = game.editors.filter((e) => e.userId !== userId);
 };
 
 let searchQuery = $state('');
-let searchResults = $state<User[]>([]);
+let searchResults = $state<Array<User>>([]);
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const updateSuggestions = async () => {
+	const limit = 8 + game.editors.length;
+	const res = await fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}&limit=${limit}`);
+	if (res.ok) {
+		const all: Array<User> = await res.json();
+		searchResults = all.filter((u) => !alreadyEditor(u.id)).slice(0, 8);
+	}
+}
 
 const onSearchInput = () => {
 	if (searchTimeout) clearTimeout(searchTimeout);
@@ -28,59 +35,24 @@ const onSearchInput = () => {
 		searchResults = [];
 		return;
 	}
-	searchTimeout = setTimeout(async () => {
-			const limit = 8 + editors.length;
-			const res = await fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}&limit=${limit}`);
-			if (res.ok) {
-				const all: User[] = await res.json();
-				searchResults = all.filter((u) => !alreadyEditor(u.id)).slice(0, 8);
-			}
-	}, 250);
+	searchTimeout = setTimeout(updateSuggestions, 250);
 };
 
-const addEditor = async (user: User) => {
-	await fetch(`/api/games/${game.id}/editors`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ userId: user.id }),
-	});
-	editors = [...editors, { gameId: game.id, userId: user.id, user }];
-	searchQuery = '';
-	searchResults = [];
+const addEditor = (user: User) => {
+	game.editors = [...game.editors, { gameId: game.id, userId: user.id, user }];
+	updateSuggestions();
 };
 
 const alreadyEditor = (userId: string) =>
-	userId === game.createdBy || editors.some((e) => e.userId === userId);
+	userId === game.createdBy || game.editors.some((e) => e.userId === userId);
 </script>
 
 <h2>editoři</h2>
 
 <div class="editors">
-	<section class="editor-list">
-		<div class="editor-pill creator">
-			<AvatarWithLabel src={game.creator.image} name={game.creator.name} />
-			<span class="badge">tvůrce</span>
-		</div>
-		{#each editors as editor (editor.userId)}
-			<div class="editor-pill">
-				<AvatarWithLabel src={editor.user.image} name={editor.user.name} />
-				{#if isCreator}
-					<Button.Root
-						data-button-variant="ghost"
-						data-button-round
-						onclick={() => removeEditor(editor.userId)}
-						aria-label="Odebrat editora"
-					>
-						<Icon icon="material-symbols:close" />
-					</Button.Root>
-				{/if}
-			</div>
-		{/each}
-	</section>
-
 	{#if isCreator}
 		<section class="editor-search">
-			<InputGroup label="přidat editora">
+			<InputGroup label="přidat editora" isVertical>
 				{#snippet child(id)}
 					<input
 						type="search"
@@ -116,13 +88,36 @@ const alreadyEditor = (userId: string) =>
 			Editory může spravovat pouze tvůrce hry.
 		</InfoBox>
 	{/if}
+
+	<section class="editor-list">
+		<div class="editor-pill creator">
+			<AvatarWithLabel src={game.creator.image} name={game.creator.name} />
+			<span class="badge">tvůrce</span>
+		</div>
+		{#each game.editors as editor (editor.userId)}
+			<div class="editor-pill">
+				<AvatarWithLabel src={editor.user.image} name={editor.user.name} />
+				{#if isCreator}
+					<Button.Root
+						data-button-variant="ghost"
+						data-button-round
+						onclick={() => removeEditor(editor.userId)}
+						aria-label="Odebrat editora"
+					>
+						<Icon icon="material-symbols:close" />
+					</Button.Root>
+				{/if}
+			</div>
+		{/each}
+	</section>
 </div>
 
 <style>
 .editors {
-	display: flex;
-	flex-direction: column;
-	gap: 1.5rem;
+	display: grid;
+	grid-template-columns: 18rem 1fr;
+	gap: 3rem;
+	align-items: start;
 }
 
 .editor-list {
@@ -130,6 +125,7 @@ const alreadyEditor = (userId: string) =>
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: 0.5rem;
+	padding-top: 1.6rem;
 }
 
 .editor-pill {

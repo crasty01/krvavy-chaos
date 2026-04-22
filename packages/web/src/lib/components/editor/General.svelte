@@ -10,64 +10,56 @@ let { game }: {
 	game: GameFull;
 } = $props();
 
-let scriptMeta = $state(game.script.find((item) => typeof item === 'object' && item.id === '_meta')! as ScriptMetadata);
+let scriptMeta = $derived(
+	game.script.find((item) => typeof item === 'object' && item.id === '_meta') as ScriptMetadata
+);
 
 const urlSchema = valibot.pipe(valibot.string(), valibot.url());
 
-let icon = $state('https://static-cdn.jtvnw.net/jtv_user_pictures/8ccc9229-4a5b-437f-9776-c4d742602e7a-profile_image-150x150.png')
-let background = $state('https://images.unsplash.com/photo-1772475385327-ae6212f900aa')
+$effect(() => { game.name = scriptMeta.name; });
 </script>
-
-<!-- <ul>
-	<li>name: {scriptMeta.name}</li>
-	<li>author: {scriptMeta.author}</li>
-	<li>hideTitle: {scriptMeta.hideTitle}</li>
-	
-	<li>logo: {scriptMeta.logo}</li>
-	<li>background: {scriptMeta.background}</li>
-	
-	<li>bootleggers: {scriptMeta.bootlegger}</li>
-</ul> -->
 
 <h2>obecné</h2>
 <div class="general">
-	<InputGroup label="name">
+	<InputGroup label="název hry">
 		{#snippet child(id)}
 			<input type="text" {id} bind:value={scriptMeta.name}>
 		{/snippet}
 	</InputGroup>
-	<InputGroup label="author">
+
+	<InputGroup label="autor">
 		{#snippet child(id)}
 			<input type="text" {id} bind:value={scriptMeta.author}>
-		{/snippet}
-	</InputGroup>
-	<InputGroup label="hideTitle">
-		{#snippet children(id)}
-			<Switch.Root {id} bind:checked={() => (scriptMeta.hideTitle ?? false), (value) => { scriptMeta.hideTitle = value }}>
-				<Switch.Thumb />
-			</Switch.Root>
 		{/snippet}
 	</InputGroup>
 	
 	<InputGroup label="logo">
 		{#snippet child(id)}
-			<input type="text" {id} bind:value={icon}>
+			<input type="text" {id} bind:value={scriptMeta.logo}>
 		{/snippet}
 		{#snippet tail()}
-			{#if valibot.is(urlSchema, icon)}
-				<ImagePreview src={icon} />
+			{#if valibot.is(urlSchema, scriptMeta.logo)}
+				<ImagePreview src={scriptMeta.logo} />
 			{/if}
 		{/snippet}
 	</InputGroup>
 
-	<InputGroup label="background">
+	<InputGroup label="pozadí">
 		{#snippet child(id)}
-			<input type="text" {id} bind:value={background}>
+			<input type="text" {id} bind:value={scriptMeta.background}>
 		{/snippet}
 		{#snippet tail()}
-			{#if valibot.is(urlSchema, background)}
-				<ImagePreview src={background} />
+			{#if valibot.is(urlSchema, scriptMeta.background)}
+				<ImagePreview src={scriptMeta.background} />
 			{/if}
+		{/snippet}
+	</InputGroup>
+
+	<InputGroup label="schovat název">
+		{#snippet children(id)}
+			<Switch.Root {id} bind:checked={() => (scriptMeta.hideTitle ?? false), (value) => { scriptMeta.hideTitle = value }}>
+				<Switch.Thumb />
+			</Switch.Root>
 		{/snippet}
 	</InputGroup>
 </div>
@@ -83,10 +75,5 @@ let background = $state('https://images.unsplash.com/photo-1772475385327-ae6212f
 		grid-template-columns: subgrid;
 		grid-column: span 2;
 	}
-}
-
-input:not([type="checkbox"]) {
-	all: unset;
-	width: 100%;
 }
 </style>

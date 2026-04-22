@@ -12,18 +12,19 @@ let isOpen = $state(false);
 
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Trigger>
-		trigger
+		{#snippet child({props})}
+			<Button.Root {...props} data-button-variant="" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+				preview
+			</Button.Root>
+		{/snippet}
 	</Dialog.Trigger>
 	<Dialog.Portal>
 		<Dialog.Overlay />
 		<Dialog.Content>
 			<header>
-				<Dialog.Title>
-					image preview
-				</Dialog.Title>
 				<Dialog.Description>
-					<Button.Root href={src}>
-						<span>{src}</span>
+					<Button.Root href={src} target="_blank">
+						<span class="ellipsis">{src}</span>
 						<Icon icon="material-symbols:arrow-outward" width=20 height=20 />
 					</Button.Root>
 				</Dialog.Description>
@@ -44,7 +45,8 @@ let isOpen = $state(false);
 :global([data-dialog-content]) {
 	& header {
 		display: grid;
-		grid-template-columns: 1fr auto 1fr;
+		grid-template-columns: 1fr auto;
+		gap: 1rem;
 		align-items: center;
 
 		:global(& [data-dialog-title]) {
@@ -55,8 +57,8 @@ let isOpen = $state(false);
 			justify-self: flex-end;
 		}
 
-		:global(& [data-dialog-description]) {
-			
+		:global(& [data-dialog-description] .ellipsis) {
+			max-width: 40rem;
 		}
 	}
 

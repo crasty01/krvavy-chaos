@@ -18,12 +18,15 @@ loadIcons([
 
 <script lang="ts">
 	import Icon from '@iconify/svelte';
+	import { untrack } from 'svelte';
 	import { Button, Tabs } from 'bits-ui';
 	import * as Editor from '$lib/components/editor';
 	import { createAsyncAction } from '$lib/functions/async.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	let game = $state(untrack(() => data.game));
 
 	let tabs = $state([
 		{
@@ -73,22 +76,32 @@ loadIcons([
 	const activateIcon = $derived(activateAction.status === 'idle' ? 'material-symbols:cast' : STATUS_ICONS[activateAction.status]);
 
 	const save = () => saveAction.trigger(async () => {
-		const res = await fetch(`/api/games/${data.game.id}`, {
+		const res = await fetch(`/api/games/${game.id}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: data.game.name, script: data.game.script }),
+			body: JSON.stringify({
+				name: game.name,
+				script: game.script,
+				editors: game.editors.map((e) => e.userId),
+				players: game.gamePlayers.map((gp) => ({
+					playerId: gp.playerId,
+					seatOrder: gp.seatOrder,
+					characterId: gp.characterId ?? null,
+					alignment: gp.alignment ?? null,
+				})),
+			}),
 		});
 		if (!res.ok) throw new Error();
 	});
 
 	const activate = () => activateAction.trigger(async () => {
-		const res = await fetch(`/api/games/${data.game.id}/activate`, { method: 'POST' });
+		const res = await fetch(`/api/games/${game.id}/activate`, { method: 'POST' });
 		if (!res.ok) throw new Error();
 	});
 </script>
 
 <svelte:head>
-	<title>{data.game.name}</title>
+	<title>{game.name}</title>
 </svelte:head>
 
 <section class="page editor">
@@ -124,7 +137,7 @@ loadIcons([
 		
 		{#each tabs as tab (tab.key)}
 			<Tabs.Content value={tab.key}>
-				<tab.component game={data.game} />
+				<tab.component {game} />
 			</Tabs.Content>
 		{/each}
 	</Tabs.Root>

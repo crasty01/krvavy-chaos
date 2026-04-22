@@ -1,16 +1,28 @@
 import { json } from '@sveltejs/kit';
 import * as v from 'valibot';
 import type { RequestHandler } from './$types';
-import { getGameById, updateGame, deleteGame, canEditGame } from '$lib/server/actions';
+import { getGameById, syncGameFull, deleteGame, canEditGame } from '$lib/server/actions';
 import { parseBody } from '$lib/server/validate';
 import { ScriptSchema } from '@krvavy-chaos/shared/types/script';
+
+const GamePlayerInputSchema = v.object({
+	playerId: v.string(),
+	seatOrder: v.pipe(v.number(), v.integer(), v.minValue(0)),
+	characterId: v.optional(v.nullable(v.string())),
+	alignment: v.optional(v.nullable(v.picklist(['good', 'neutral', 'evil']))),
+});
 
 const PatchGameSchema = v.pipe(
 	v.object({
 		name: v.optional(v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100))),
 		script: v.optional(ScriptSchema),
+		editors: v.optional(v.array(v.string())),
+		players: v.optional(v.array(GamePlayerInputSchema)),
 	}),
-	v.check((val) => val.name !== undefined || val.script !== undefined, 'Žádná data'),
+	v.check(
+		(val) => val.name !== undefined || val.script !== undefined || val.editors !== undefined || val.players !== undefined,
+		'Žádná data',
+	),
 );
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -20,14 +32,20 @@ export const GET: RequestHandler = async ({ params }) => {
 };
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
-	const { canEdit } = await canEditGame(params.id, locals.user.id);
+	const { exists, canEdit, isCreator } = await canEditGame(params.id, locals.user.id);
+	if (!exists) return json({ error: 'Hra nenalezena' }, { status: 404 });
 	if (!canEdit) return json({ error: 'Nemáš oprávnění' }, { status: 403 });
 
+	// Only creator can change editors
 	const { data, error } = await parseBody(request, PatchGameSchema);
 	if (error) return error;
 
-	const updated = await updateGame(params.id, data);
-	return json(updated);
+	if (data.editors !== undefined && !isCreator) {
+		return json({ error: 'Pouze tvůrce může měnit editory' }, { status: 403 });
+	}
+
+	await syncGameFull(params.id, locals.user.id, data);
+	return new Response(null, { status: 204 });
 };
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {

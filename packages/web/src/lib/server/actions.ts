@@ -1,19 +1,15 @@
 import { db } from './db';
-import { and, eq, like, or, sql } from 'drizzle-orm';
+import type { GamePlayer } from './db';
+import { and, eq, like, or, sql, inArray, notInArray } from 'drizzle-orm';
 import { game, user, player, gamePlayer, gameEditor, account } from './db/schema';
 import type { BotcScript, ScriptMetadata } from '@krvavy-chaos/shared/validate/script';
 
-// ─── Users ───────────────────────────────────────────────────────────
-
 export const searchUsersByName = async (query: string, limit = 20) => {
 	const sanitizedQuery = query.trim();
-
 	if (!sanitizedQuery) {
 		return [];
 	}
-
 	const maxDistance = Math.max(2, Math.ceil(sanitizedQuery.length / 3));
-
 	const results = await db
 		.select()
 		.from(user)
@@ -25,11 +21,8 @@ export const searchUsersByName = async (query: string, limit = 20) => {
 			sql`fuzzy_damlev(fuzzy_translit(lower(${user.name})), fuzzy_translit(lower(${sanitizedQuery})))`
 		)
 		.limit(limit);
-
 	return results;
 };
-
-// ─── Games ───────────────────────────────────────────────────────────
 
 export const getGameById = async (id: string) => await db.query.game.findFirst({
 	where: eq(game.id, id),
@@ -44,7 +37,6 @@ export const getGameById = async (id: string) => await db.query.game.findFirst({
 		creator: true,
 	},
 });
-
 export const createGame = async (userId: string, userName: string) => {
 	const id = crypto.randomUUID();
 	const _meta: ScriptMetadata = { id: '_meta', name: 'Nová hra', author: userName };
@@ -56,6 +48,79 @@ export const createGame = async (userId: string, userName: string) => {
 export const updateGame = async (id: string, data: { name?: string; script?: BotcScript }) => {
 	const [updated] = await db.update(game).set(data).where(eq(game.id, id)).returning();
 	return updated ?? null;
+};
+
+export const syncGameFull = async (
+	gameId: string,
+	creatorId: string,
+	data: {
+		name?: string;
+		script?: BotcScript;
+		editors?: Array<string>;
+		players?: Pick<GamePlayer, 'playerId' | 'seatOrder' | 'characterId' | 'alignment'>[];
+	},
+) => {
+	await db.transaction(async (tx) => {
+		// 1. Update name + script
+		if (data.name !== undefined || data.script !== undefined) {
+			await tx.update(game)
+				.set({ ...(data.name !== undefined && { name: data.name }), ...(data.script !== undefined && { script: data.script }) })
+				.where(eq(game.id, gameId));
+		}
+		// 2. Sync editors
+		if (data.editors !== undefined) {
+			const desired = data.editors.filter((id) => id !== creatorId);
+			const existing = await tx
+				.select({ userId: gameEditor.userId })
+				.from(gameEditor)
+				.where(eq(gameEditor.gameId, gameId));
+			const existingIds = existing.map((e) => e.userId).filter((id) => id !== creatorId);
+			const toAdd = desired.filter((id) => !existingIds.includes(id));
+			const toRemove = existingIds.filter((id) => !desired.includes(id));
+			if (toAdd.length > 0) {
+				await tx.insert(gameEditor).values(toAdd.map((userId) => ({ gameId, userId })));
+			}
+			if (toRemove.length > 0) {
+				await tx.delete(gameEditor).where(
+					and(eq(gameEditor.gameId, gameId), inArray(gameEditor.userId, toRemove)),
+				);
+			}
+		}
+		// 3. Sync game-players
+		if (data.players !== undefined) {
+			const desired = data.players;
+			const desiredPlayerIds = desired.map((p) => p.playerId);
+			const existing = await tx
+				.select()
+				.from(gamePlayer)
+				.where(eq(gamePlayer.gameId, gameId));
+			// Remove players no longer in the list
+			const toRemove = existing.filter((gp) => !desiredPlayerIds.includes(gp.playerId));
+			if (toRemove.length > 0) {
+				await tx.delete(gamePlayer).where(
+					and(eq(gamePlayer.gameId, gameId), inArray(gamePlayer.playerId, toRemove.map((r) => r.playerId))),
+				);
+			}
+			// Upsert each desired player
+			for (const p of desired) {
+				const existingRow = existing.find((gp) => gp.playerId === p.playerId);
+				if (existingRow) {
+					await tx.update(gamePlayer)
+						.set({ seatOrder: p.seatOrder, characterId: p.characterId ?? null, alignment: p.alignment ?? null })
+						.where(eq(gamePlayer.id, existingRow.id));
+				} else {
+					await tx.insert(gamePlayer).values({
+						id: crypto.randomUUID(),
+						gameId,
+						playerId: p.playerId,
+						seatOrder: p.seatOrder,
+						characterId: p.characterId ?? null,
+						alignment: p.alignment ?? null,
+					});
+				}
+			}
+		}
+	});
 };
 
 export const deleteGame = async (id: string) => {
@@ -72,20 +137,15 @@ export const canEditGame = async (gameId: string, userId: string) => {
 		.from(game)
 		.where(eq(game.id, gameId))
 		.limit(1);
-
 	if (!row) return { exists: false, canEdit: false, isCreator: false };
 	if (row.createdBy === userId) return { exists: true, canEdit: true, isCreator: true };
-
 	const [editorRow] = await db
 		.select({ gameId: gameEditor.gameId })
 		.from(gameEditor)
 		.where(and(eq(gameEditor.gameId, gameId), eq(gameEditor.userId, userId)))
 		.limit(1);
-
 	return { exists: true, canEdit: !!editorRow, isCreator: false };
 };
-
-// ─── Game Players ─────────────────────────────────────────────────────
 
 export const addGamePlayer = async (gameId: string, playerId: string, seatOrder: number) => {
 	const id = crypto.randomUUID();
@@ -114,8 +174,6 @@ export const removeGamePlayer = async (id: string) => {
 	await db.delete(gamePlayer).where(eq(gamePlayer.id, id));
 };
 
-// ─── Game Editors ─────────────────────────────────────────────────────
-
 export const addGameEditor = async (gameId: string, userId: string) => {
 	await db.insert(gameEditor).values({ gameId, userId });
 };
@@ -126,11 +184,8 @@ export const removeGameEditor = async (gameId: string, userId: string) => {
 	);
 };
 
-// ─── Players ─────────────────────────────────────────────────────────
-
 export const listPlayers = async (createdBy: string) =>
 	db.select().from(player).where(eq(player.createdBy, createdBy));
-
 export const createPlayer = async (userId: string, name: string) => {
 	const id = crypto.randomUUID();
 	const [row] = await db.insert(player).values({ id, name, createdBy: userId }).returning();
@@ -139,7 +194,6 @@ export const createPlayer = async (userId: string, name: string) => {
 
 export const getPlayerById = async (id: string) =>
 	db.query.player.findFirst({ where: eq(player.id, id), with: { socialLinks: true } });
-
 export const updatePlayer = async (id: string, data: { name?: string }) => {
 	const [updated] = await db.update(player).set(data).where(eq(player.id, id)).returning();
 	return updated ?? null;
@@ -148,8 +202,6 @@ export const updatePlayer = async (id: string, data: { name?: string }) => {
 export const deletePlayer = async (id: string) => {
 	await db.delete(player).where(eq(player.id, id));
 };
-
-// ─── Twitch Accounts ─────────────────────────────────────────────────
 
 export const getUserByTwitchId = async (twitchId: string) => {
 	const acct = await db.query.account.findFirst({

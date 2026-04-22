@@ -125,7 +125,12 @@ html, body {
   font-display: swap;
 }
 
-/* custom styles */
+.ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
 
 :where(ul) {
 	display: flex;

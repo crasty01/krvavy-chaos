@@ -3,6 +3,7 @@
 	/* all: unset; */
 	border: none;
 	display: flex;
+	justify-content: space-between;
 	flex-direction: row;
 	gap: var(--size-sm);
 	align-items: center;
