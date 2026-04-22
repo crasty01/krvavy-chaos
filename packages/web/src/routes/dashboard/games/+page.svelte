@@ -92,7 +92,7 @@
 	align-content: flex-start;
 	gap: 2rem;
 	height: 100%;
-	overflow: auto;
+	overflow-y: auto;
 }
 
 header {

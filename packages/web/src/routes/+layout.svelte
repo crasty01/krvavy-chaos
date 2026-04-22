@@ -82,7 +82,7 @@ main {
 	align-content: stretch;
 	gap: 2rem;
 	height: 100%;
-	overflow: auto;
+	overflow-y: auto;
 }
 
 header {

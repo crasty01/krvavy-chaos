@@ -10,7 +10,6 @@ const client = createClient({ url: env.DATABASE_URL, authToken: env.DATABASE_AUT
 
 export const db = drizzle(client, { schema });
 
-// ─── Types ───────────────────────────────────────────────────────
 
 export type User = typeof schema.user.$inferSelect;
 export type Session = typeof schema.session.$inferSelect;

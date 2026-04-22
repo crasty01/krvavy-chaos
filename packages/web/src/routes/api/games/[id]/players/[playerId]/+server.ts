@@ -3,7 +3,7 @@ import * as v from 'valibot';
 import type { RequestHandler } from './$types';
 import { canEditGame, getGamePlayerByPlayerAndGame, updateGamePlayer, removeGamePlayer } from '$lib/server/actions';
 import { parseBody } from '$lib/server/validate';
-import { AlignmentSchema } from '@krvavy-chaos/shared/types/script';
+import { AlignmentSchema } from '@krvavy-chaos/shared/validate/script';
 
 const PatchGamePlayerSchema = v.pipe(
 	v.object({

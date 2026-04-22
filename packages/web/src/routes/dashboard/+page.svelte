@@ -47,7 +47,7 @@ let { data }: { data: PageData } = $props();
 	align-content: flex-start;
 	gap: 2rem;
 	height: 100%;
-	overflow: auto;
+	overflow-y: auto;
 }
 
 .title {

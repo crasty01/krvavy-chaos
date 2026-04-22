@@ -6,7 +6,7 @@ import InputGroup from '$lib/components/form/InputGroup.svelte';
 import InfoBox from '$lib/components/utils/InfoBox.svelte';
 import type { GameFull, User } from '$lib/server/db';
 
-let { game = $bindable() }: {
+let { game }: {
 	game: GameFull;
 } = $props();
 

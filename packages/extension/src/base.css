@@ -98,7 +98,7 @@ html, body {
 	color: var(--text-color);
 	height: 100vh;
 	width: 100vw;
-	overflow: auto;
+	overflow-y: auto;
 }
 
 :where(ul) {

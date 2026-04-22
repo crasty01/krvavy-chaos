@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { getGameById } from '$lib/server/actions';
+import { getGameById, listPlayers, listPlatforms } from '$lib/server/actions';
 import type { PageServerLoad, Actions } from './$types';
 import type { GameFull } from '$lib/server/db';
 import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
@@ -7,7 +7,11 @@ import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
 export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!locals.user) throw error(401, 'Nepřihlášen')
 
-	const game = await getGameById(params.id);
+	const [game, allPlayers, platforms] = await Promise.all([
+		getGameById(params.id),
+		listPlayers(locals.user.id),
+		listPlatforms(),
+	]);
 
 	if (!game) throw error(404, 'Hra nenalezena');
 
@@ -18,6 +22,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		game: (game satisfies GameFull),
+		allPlayers,
+		platforms,
 		breadcrumbs: [{
 			label: 'přehled',
 			href: '/dashboard',

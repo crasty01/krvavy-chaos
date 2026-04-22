@@ -3,7 +3,7 @@ import * as v from 'valibot';
 import type { RequestHandler } from './$types';
 import { getGameById, syncGameFull, deleteGame, canEditGame } from '$lib/server/actions';
 import { parseBody } from '$lib/server/validate';
-import { ScriptSchema } from '@krvavy-chaos/shared/types/script';
+import { ScriptSchema } from '@krvavy-chaos/shared/validate/script';
 
 const GamePlayerInputSchema = v.object({
 	playerId: v.string(),
@@ -44,7 +44,14 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: 'Pouze tvůrce může měnit editory' }, { status: 403 });
 	}
 
-	await syncGameFull(params.id, locals.user.id, data);
+	await syncGameFull(params.id, locals.user.id, {
+		...data,
+		players: data.players?.map((p) => ({
+			...p,
+			characterId: p.characterId ?? null,
+			alignment: p.alignment ?? null,
+		})),
+	});
 	return new Response(null, { status: 204 });
 };
 

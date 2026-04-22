@@ -33,6 +33,7 @@ Monorepo with three packages:
 - **Destructuring**, **optional chaining** (`?.`), **nullish coalescing** (`??`) — use liberally
 - **Named exports** preferred over default exports
 - **`type`** aliases instead of `interface` — use `type Foo = { … }` everywhere
+- **`Array<T>`** instead of `T[]` — always use the generic form for array types
 - Modern ES2025 target
 
 ## Svelte

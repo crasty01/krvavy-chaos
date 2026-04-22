@@ -4,14 +4,14 @@ import InputGroup from '$lib/components/form/InputGroup.svelte';
 import ImagePreview from '$lib/components/form/ImagePreview.svelte';
 import { Switch } from 'bits-ui';
 import type { GameFull } from '$lib/server/db';
-import type { ScriptMetadata } from '@krvavy-chaos/shared/validate/script';
+import type { BotcScriptMeta } from '@krvavy-chaos/shared/validate/script';
 
 let { game }: {
 	game: GameFull;
 } = $props();
 
 let scriptMeta = $derived(
-	game.script.find((item) => typeof item === 'object' && item.id === '_meta') as ScriptMetadata
+	game.script.find((item) => typeof item === 'object' && item.id === '_meta') as BotcScriptMeta
 );
 
 const urlSchema = valibot.pipe(valibot.string(), valibot.url());

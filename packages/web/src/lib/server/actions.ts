@@ -1,8 +1,8 @@
 import { db } from './db';
 import type { GamePlayer } from './db';
 import { and, eq, like, or, sql, inArray, notInArray } from 'drizzle-orm';
-import { game, user, player, gamePlayer, gameEditor, account } from './db/schema';
-import type { BotcScript, ScriptMetadata } from '@krvavy-chaos/shared/validate/script';
+import { game, user, player, gamePlayer, gameEditor, account, platform, playerSocialLink } from './db/schema';
+import type { BotcScript, BotcScriptMeta } from '@krvavy-chaos/shared/validate/script';
 
 export const searchUsersByName = async (query: string, limit = 20) => {
 	const sanitizedQuery = query.trim();
@@ -39,7 +39,7 @@ export const getGameById = async (id: string) => await db.query.game.findFirst({
 });
 export const createGame = async (userId: string, userName: string) => {
 	const id = crypto.randomUUID();
-	const _meta: ScriptMetadata = { id: '_meta', name: 'Nová hra', author: userName };
+	const _meta: BotcScriptMeta = { id: '_meta', name: 'Nová hra', author: userName };
 	const newGame = { id, name: 'Nová hra', script: [_meta], createdBy: userId };
 	await db.insert(game).values(newGame);
 	return newGame;
@@ -57,7 +57,7 @@ export const syncGameFull = async (
 		name?: string;
 		script?: BotcScript;
 		editors?: Array<string>;
-		players?: Pick<GamePlayer, 'playerId' | 'seatOrder' | 'characterId' | 'alignment'>[];
+		players?: Array<Pick<GamePlayer, 'playerId' | 'seatOrder' | 'characterId' | 'alignment'>>;
 	},
 ) => {
 	await db.transaction(async (tx) => {
@@ -201,6 +201,20 @@ export const updatePlayer = async (id: string, data: { name?: string }) => {
 
 export const deletePlayer = async (id: string) => {
 	await db.delete(player).where(eq(player.id, id));
+};
+
+export const listPlatforms = async () => db.select().from(platform);
+
+export const addPlayerSocialLink = async (playerId: string, platformId: string, handle: string) => {
+	const id = crypto.randomUUID();
+	const [row] = await db.insert(playerSocialLink).values({ id, playerId, platformId, handle }).returning();
+	return row;
+};
+
+export const removePlayerSocialLink = async (id: string, playerId: string) => {
+	await db.delete(playerSocialLink).where(
+		and(eq(playerSocialLink.id, id), eq(playerSocialLink.playerId, playerId)),
+	);
 };
 
 export const getUserByTwitchId = async (twitchId: string) => {

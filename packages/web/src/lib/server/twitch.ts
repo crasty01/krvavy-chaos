@@ -1,6 +1,6 @@
 import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_EXTENSION_SECRET, TWITCH_USER_ID } from '$env/static/private';
 import jwt from 'jsonwebtoken';
-import type { TwitchAuthToken } from '@krvavy-chaos/shared/index';
+import type { TwitchAuthToken } from '@krvavy-chaos/shared/types/twitch';
 import type { TwitchExtensionAuthToken } from '@krvavy-chaos/shared/types/extension';
 import type { TwitchExtensionPubSubMessage } from '@krvavy-chaos/shared/types/pubsub';
 

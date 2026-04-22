@@ -6,6 +6,7 @@ loadIcons([
 	"material-symbols:manage-accounts",
 	"material-symbols:person",
 	"material-symbols:groups",
+	"material-symbols:import-export",
 	"material-symbols:save",
 	"material-symbols:cast",
 	"material-symbols:progress-activity",
@@ -13,6 +14,11 @@ loadIcons([
 	"material-symbols:cancel",
 	"material-symbols:close",
 	"material-symbols:add",
+	"material-symbols:edit",
+	"material-symbols:drag-indicator",
+	"material-symbols:keyboard-arrow-down",
+	"material-symbols:moon-stars",
+	"material-symbols:file-export-rounded",
 ]);
 </script>
 
@@ -27,6 +33,8 @@ loadIcons([
 	let { data }: { data: PageData } = $props();
 
 	let game = $state(untrack(() => data.game));
+	let allPlayers = $state(untrack(() => data.allPlayers));
+	const platforms = untrack(() => data.platforms);
 
 	let tabs = $state([
 		{
@@ -58,6 +66,12 @@ loadIcons([
 			label: "hráči",
 			icon: "material-symbols:groups",
 			component: Editor.Players,
+		},
+		{
+			key: "import-export",
+			label: "import/export",
+			icon: "material-symbols:file-export-rounded",
+			component: Editor.ImportExport,
 		},
 	]);
 
@@ -133,11 +147,13 @@ loadIcons([
 					{/snippet}
 				</Tabs.Trigger>
 			{/each}
+
+
 		</Tabs.List>
 		
 		{#each tabs as tab (tab.key)}
 			<Tabs.Content value={tab.key}>
-				<tab.component {game} />
+				<tab.component {game} {allPlayers} {platforms} />
 			</Tabs.Content>
 		{/each}
 	</Tabs.Root>
@@ -150,7 +166,7 @@ loadIcons([
 	grid-template-rows: auto 1fr;
 	gap: 2rem;
 	height: 100%;
-	overflow: auto;
+	overflow-y: auto;
 }
 
 header {
@@ -186,7 +202,7 @@ header {
 	}
 
 	& [data-tabs-content] {
-		overflow: auto;
+		overflow-y: auto;
 		height: 100%;
 		/* display: flex; */
 		flex-direction: column;

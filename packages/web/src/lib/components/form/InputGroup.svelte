@@ -2,7 +2,7 @@
 	import { Label, useId } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 
-  let { lead, tail, child, children, label, isTextarea = false, isVertical = false }: {
+  let { lead, tail, child, children, label, isTextarea = false, isVertical = false, isHiddenLabel = false }: {
 		lead?: Snippet;
 		tail?: Snippet;
 		child?: Snippet<[string]>;
@@ -10,15 +10,18 @@
 		label: string;
 		isTextarea?: boolean;
 		isVertical?: boolean;
+		isHiddenLabel?: boolean;
 	} = $props();
 
 	let id = useId();
 </script>
 
 <div class="input-group-wrapper" class:input-group-wrapper--vertical={isVertical}>
-	<Label.Root for={id}>
-		<span>{label}:</span>
-	</Label.Root>
+	{#if !isHiddenLabel}
+		<Label.Root for={id}>
+			<span>{label}:</span>
+		</Label.Root>
+	{/if}
 	{#if children}
 		{@render children(id)}
 	{:else}
@@ -59,8 +62,9 @@
 	display: flex;
 	align-items: center;
 	padding-inline-start: 0.8rem;
-	gap: 0.8rem;
+	gap: 0.4rem;
 	width: auto;
+	flex-grow: 1;
 	border: 1px solid;
 	border-color: light-dark(var(--color-neutral-500), var(--color-neutral-500));
 	background-color: light-dark(var(--color-neutral-100), var(--color-neutral-900));
@@ -85,7 +89,7 @@
 	&.input-group--is-textarea {
 		grid-template-rows: 1fr auto;
 		grid-template-areas: "content content content" "lead . tail";
-		padding-block: 0.8rem;
+		padding-block: 0.2rem;
 	}
 
 	& .input-group__lead {
