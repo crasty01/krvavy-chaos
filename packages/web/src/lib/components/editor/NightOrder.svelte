@@ -212,9 +212,8 @@
 	& h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: light-dark(#555, #aaa);
+		color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
 		margin: 0;
 	}
 }
@@ -243,15 +242,15 @@
 	cursor: default;
 
 	&:hover {
-		background: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+		background: light-dark(hsl(from var(--color-neutral-950) h s l / 4%), hsl(from var(--color-neutral-50) h s l / 6%));
 	}
 
 	&.is-sentinel {
-		color: light-dark(#7b4dc4, #c4a0ff);
+		color: light-dark(var(--color-accent-700), var(--color-accent-300));
 		font-style: italic;
 
 		& .order-index {
-			color: light-dark(#7b4dc4, #c4a0ff);
+			color: light-dark(var(--color-accent-700), var(--color-accent-300));
 			opacity: 0.7;
 		}
 	}
@@ -261,8 +260,8 @@
 	}
 
 	&.is-drag-over {
-		background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12));
-		outline: 2px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.25));
+		background: light-dark(hsl(from var(--color-neutral-950) h s l / 8%), hsl(from var(--color-neutral-50) h s l / 12%));
+		outline: 2px solid light-dark(hsl(from var(--color-neutral-950) h s l / 20%), hsl(from var(--color-neutral-50) h s l / 25%));
 		outline-offset: -2px;
 	}
 }
@@ -270,7 +269,7 @@
 .drag-handle {
 	display: flex;
 	align-items: center;
-	color: light-dark(#aaa, #666);
+	color: light-dark(var(--color-neutral-400), var(--color-neutral-500));
 	cursor: grab;
 	flex-shrink: 0;
 
@@ -281,7 +280,7 @@
 
 .order-index {
 	font-size: 0.75rem;
-	color: light-dark(#888, #777);
+	color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
 	min-width: 1.5rem;
 	text-align: right;
 	flex-shrink: 0;

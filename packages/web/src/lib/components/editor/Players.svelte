@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { Button, Dialog, Select } from 'bits-ui';
-	import Icon from '@iconify/svelte';
-	import InputGroup from '$lib/components/form/InputGroup.svelte';
-	import type { GameFull, Player, PlayerSocialLink, Platform } from '$lib/server/db';
+	import { Button, Select } from 'bits-ui';
 	import {
 		getScriptCharacters,
 		isOfficialCharacterId,
 	} from '@krvavy-chaos/shared/validate/script';
+	import Icon from '@iconify/svelte';
+	import InputGroup from '$lib/components/form/InputGroup.svelte';
+	import EditorDialog from '$lib/components/form/EditorDialog.svelte';
+	import Pill from '$lib/components/form/Pill.svelte';
+	import type { GameFull, Player, PlayerSocialLink, Platform } from '$lib/server/db';
 	import type { BotcAlignment } from '@krvavy-chaos/shared/validate/script';
 
 	let { game, allPlayers: initialPlayers = [], platforms }: {
@@ -237,6 +239,8 @@
 </header>
 
 <div class="players-editor">
+	<p>První hráč sedí nahoře, ostatní pokračují ve směru hodinových ručiček.</p>
+		
 	{#if availablePlayers.length > 0}
 		<div class="add-existing">
 			<Select.Root type="single" bind:value={addPlayerId}>
@@ -258,7 +262,6 @@
 	{/if}
 
 	{#if game.gamePlayers.length > 0}
-		<p>První hráč sedí nahoře, ostatní pokračují ve směru hodinových ručiček.</p>
 		<ul class="player-list">
 			{#each game.gamePlayers as gp, i (gp.id)}
 				<li
@@ -350,119 +353,90 @@
 	{/if}
 </div>
 
-<Dialog.Root bind:open={editOpen}>
-	<Dialog.Portal>
-		<Dialog.Overlay />
-		<Dialog.Content>
-			{#if isNewPlayer || editPlayer}
-				<header class="modal-header">
-					<Dialog.Title>{isNewPlayer ? 'nový hráč' : editPlayer?.name ?? ''}</Dialog.Title>
-					<Dialog.Close>
-						{#snippet child({ props })}
-							<Button.Root {...props} data-button-variant="ghost" data-button-round>
-								<Icon icon="material-symbols:close" />
+<EditorDialog
+	bind:open={editOpen}
+	title={isNewPlayer ? 'nový hráč' : (editPlayer?.name ?? '')}
+	onconfirm={confirmEdit}
+	oncancel={cancelEdit}
+	confirmDisabled={savingPlayer}
+>
+	{#if isNewPlayer || editPlayer}
+		<InputGroup label="jméno">
+			{#snippet child(id)}
+				<input type="text" {id} bind:value={editDraftName} />
+			{/snippet}
+		</InputGroup>
+
+		{#if platforms.length > 0}
+			<div class="editor-field-group">
+				<span class="editor-field-label">sociální sítě:</span>
+
+				<div class="add-link-form">
+					<Select.Root type="single" bind:value={newLinkPlatformId}>
+						<Select.Trigger>
+							<span>{newLinkPlatformId ? platformName(newLinkPlatformId) : 'platforma'}</span>
+							<Icon icon="material-symbols:keyboard-arrow-down" />
+						</Select.Trigger>
+						<Select.Portal>
+							<Select.Content sideOffset={4}>
+								<Select.Viewport style="max-height: 12rem; overflow-y: auto;">
+									{#each platforms as p (p.id)}
+										<Select.Item value={p.id} label={p.name}>{p.name}</Select.Item>
+									{/each}
+								</Select.Viewport>
+							</Select.Content>
+						</Select.Portal>
+					</Select.Root>
+					<InputGroup label="handle" isHiddenLabel>
+						{#snippet lead()}
+							{#if newLinkPlatformId && platformUrlPrefix(newLinkPlatformId)}
+								<span class="url-prefix">{platformUrlPrefix(newLinkPlatformId)}</span>
+							{/if}
+						{/snippet}
+						{#snippet child(id)}
+							<input
+								type="text"
+								{id}
+								bind:value={newLinkHandle}
+								placeholder="handle"
+								onkeydown={(e) => { if (e.key === 'Enter') addLink(); }}
+								disabled={addingLink}
+							/>
+						{/snippet}
+						{#snippet tail()}
+							<Button.Root
+								data-button-variant="outline"
+								onclick={addLink}
+								disabled={!newLinkPlatformId || !newLinkHandle.trim() || addingLink}
+								aria-label="Přidat odkaz"
+								style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
+							>
+								<Icon icon="material-symbols:add" />
 							</Button.Root>
 						{/snippet}
-					</Dialog.Close>
-				</header>
-
-				<div class="edit-form">
-					<InputGroup label="jméno">
-						{#snippet child(id)}
-							<input type="text" {id} bind:value={editDraftName} />
-						{/snippet}
 					</InputGroup>
-
-					{#if platforms.length > 0}
-						<div class="field-group">
-							<span class="field-label">sociální sítě:</span>
-
-							<div class="add-link-form">
-								<Select.Root type="single" bind:value={newLinkPlatformId}>
-									<Select.Trigger>
-										<span>{newLinkPlatformId ? platformName(newLinkPlatformId) : 'platforma'}</span>
-										<Icon icon="material-symbols:keyboard-arrow-down" />
-									</Select.Trigger>
-									<Select.Portal>
-										<Select.Content sideOffset={4}>
-											<Select.Viewport style="max-height: 12rem; overflow-y: auto;">
-												{#each platforms as p (p.id)}
-													<Select.Item value={p.id} label={p.name}>{p.name}</Select.Item>
-												{/each}
-											</Select.Viewport>
-										</Select.Content>
-									</Select.Portal>
-								</Select.Root>
-								<InputGroup label="handle" isHiddenLabel>
-									{#snippet lead()}
-										{#if newLinkPlatformId && platformUrlPrefix(newLinkPlatformId)}
-											<span class="url-prefix">{platformUrlPrefix(newLinkPlatformId)}</span>
-										{/if}
-									{/snippet}
-									{#snippet child(id)}
-										<input
-											type="text"
-											{id}
-											bind:value={newLinkHandle}
-											placeholder="handle"
-											onkeydown={(e) => { if (e.key === 'Enter') addLink(); }}
-											disabled={addingLink}
-										/>
-									{/snippet}
-									{#snippet tail()}
-										<Button.Root
-											data-button-variant="outline"
-											onclick={addLink}
-											disabled={!newLinkPlatformId || !newLinkHandle.trim() || addingLink}
-											aria-label="Přidat odkaz"
-											style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
-										>
-											<Icon icon="material-symbols:add" />
-										</Button.Root>
-									{/snippet}
-								</InputGroup>
-							</div>
-
-							{#if activeLinks.length > 0}
-								<ul class="link-list">
-									{#each activeLinks as link (link.id)}
-										<li class="link-row">
-											{#if platformIcon(link.platformId)}
-												<Icon icon={platformIcon(link.platformId)!} width={14} height={14} />
-											{:else}
-												<Icon icon="material-symbols:link" width={14} height={14} />
-											{/if}
-											<span class="link-handle">{link.handle}</span>
-											<Button.Root
-												data-button-variant="ghost"
-												data-button-round
-												onclick={() => removeLink(link.id)}
-												aria-label="Odebrat"
-											>
-												<Icon icon="material-symbols:close" />
-											</Button.Root>
-										</li>
-									{/each}
-								</ul>
-							{/if}
-						</div>
-					{/if}
 				</div>
 
-				<footer class="modal-footer">
-					<Button.Root data-button-variant="ghost" onclick={cancelEdit}>zrušit</Button.Root>
-					<Button.Root
-						data-button-variant="accent"
-						onclick={confirmEdit}
-						disabled={savingPlayer}
-					>
-						uložit změny
-					</Button.Root>
-				</footer>
-			{/if}
-		</Dialog.Content>
-	</Dialog.Portal>
-</Dialog.Root>
+				{#if activeLinks.length > 0}
+					<ul class="link-list">
+						{#each activeLinks as link (link.id)}
+							<li>
+								<Pill onremove={() => removeLink(link.id)}>
+									{#if platformIcon(link.platformId)}
+										<Icon icon={platformIcon(link.platformId)!} width={14} height={14} />
+									{:else}
+										<Icon icon="material-symbols:link" width={14} height={14} />
+									{/if}
+									<span class="link-handle">{link.handle}</span>
+								</Pill>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</div>
+		{/if}
+	{/if}
+</EditorDialog>
 
 <style>
 header {
@@ -555,40 +529,6 @@ header {
 }
 
 
-.modal-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0.9rem 1.2rem;
-	border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
-	flex-shrink: 0;
-
-	:global([data-dialog-title]) {
-		font-size: var(--size-sm);
-		font-weight: 700;
-	}
-}
-
-.edit-form {
-	flex: 1;
-	overflow-y: auto;
-	padding: 1.2rem;
-	display: flex;
-	flex-direction: column;
-	gap: 0.9rem;
-}
-
-.field-group {
-	display: flex;
-	flex-direction: column;
-	gap: 0.4rem;
-}
-
-.field-label {
-	font-size: 0.8rem;
-	color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
-}
-
 .link-list {
 	list-style: none;
 	margin: 0;
@@ -597,16 +537,6 @@ header {
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: 0.375rem;
-}
-
-.link-row {
-	display: flex;
-	align-items: center;
-	gap: 0.35rem;
-	padding: 0.2rem 0.35rem 0.2rem 0.5rem;
-	border-radius: 9999px;
-	background-color: light-dark(var(--color-neutral-100), var(--color-neutral-800));
-	border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
 }
 
 .link-handle {
@@ -632,14 +562,5 @@ header {
 	font-size: var(--size-xs);
 	color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
 	white-space: nowrap;
-}
-
-.modal-footer {
-	display: flex;
-	justify-content: flex-end;
-	gap: 0.5rem;
-	padding: 0.9rem 1.2rem;
-	border-top: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
-	flex-shrink: 0;
 }
 </style>

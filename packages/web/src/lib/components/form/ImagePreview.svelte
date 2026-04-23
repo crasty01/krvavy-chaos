@@ -14,20 +14,15 @@ let isOpen = $state(false);
 	<Dialog.Trigger>
 		{#snippet child({props})}
 			<Button.Root {...props} data-button-variant="" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
-				preview
+				náhled
 			</Button.Root>
 		{/snippet}
 	</Dialog.Trigger>
 	<Dialog.Portal>
 		<Dialog.Overlay />
 		<Dialog.Content>
-			<header>
-				<Dialog.Description>
-					<Button.Root href={src} target="_blank">
-						<span class="ellipsis">{src}</span>
-						<Icon icon="material-symbols:arrow-outward" width=20 height=20 />
-					</Button.Root>
-				</Dialog.Description>
+			<header class="modal-header">
+				<Dialog.Title>náhled obrázku</Dialog.Title>
 				<Dialog.Close>
 					{#snippet child({ props })}
 						<Button.Root {...props} data-button-variant="ghost" data-button-round>
@@ -36,13 +31,50 @@ let isOpen = $state(false);
 					{/snippet}
 				</Dialog.Close>
 			</header>
+
 			<img {src} {alt}>
+
+			<footer class="modal-footer">
+				<Button.Root data-button-variant="ghost" onclick={oncancel}>zavřít</Button.Root>
+				<Button.Root
+					data-button-variant="accent"
+					href={src}
+					target="_blank"
+				>
+					<span>otevřít obrázek</span>
+					<Icon icon="material-symbols:arrow-outward" />
+				</Button.Root>
+			</footer>
 		</Dialog.Content>
 	</Dialog.Portal>
 </Dialog.Root>
 
 <style>
-:global([data-dialog-content]) {
+.modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.9rem 1.2rem;
+	border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
+	flex-shrink: 0;
+
+	:global([data-dialog-title]) {
+		font-size: var(--size-sm);
+		font-weight: 700;
+	}
+}
+
+
+.modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	padding: 0.9rem 1.2rem;
+	border-top: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
+	flex-shrink: 0;
+}
+
+:global([data-dialog-content].image-preview-content) {
 	& header {
 		display: grid;
 		grid-template-columns: 1fr auto;
@@ -58,7 +90,7 @@ let isOpen = $state(false);
 		}
 
 		:global(& [data-dialog-description] .ellipsis) {
-			max-width: 40rem;
+			max-width: 20rem;
 		}
 	}
 
