@@ -1,10 +1,24 @@
 <script lang="ts">
-import { twitchStore } from './lib/services/twitch.svelte';
 import * as Anchor from './lib/components/anchor';
+import { handleGameUpdate } from './lib/functions/game.svelte';
+import { TwitchExtensionStore, twitchStore } from './lib/services/twitch.svelte';
 
-twitchStore.listen('broadcast', (target, contentType, message) => {
-	console.log('[KRVAVKA]', { target, contentType, message });
-	// TODO: handle updates
+twitchStore.listen('global', async (target, contentType, message) => {
+	const parsedMessage = TwitchExtensionStore.parseMessageSafe(message);
+	console.log('[KRVAVKA]', { target, contentType, message: parsedMessage });
+	if (!parsedMessage) return;
+
+	switch (parsedMessage.type) {
+		case 'test':
+			console.log('[KRVAVKA] test type of pubsub message:', parsedMessage.data);
+			break;
+		case 'game-update':
+			await handleGameUpdate(parsedMessage);
+			break;
+		default:
+			console.log('[KRVAVKA] unknown type of pubsub message:', (parsedMessage as any).data);
+			break;
+	}
 });
 
 let anchor = $derived(twitchStore.urlParams.anchor);

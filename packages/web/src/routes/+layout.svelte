@@ -3,14 +3,21 @@
 	import './base.css';
 	import './components.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import Icon from "@iconify/svelte";
+	import Icon, { loadIcons } from "@iconify/svelte";
 	import { authClient } from '$lib/auth-client.svelte';
-	import { Button } from 'bits-ui';
+	import { Button, Tooltip } from 'bits-ui';
 	import { fromStore } from 'svelte/store';
 	import { goto } from '$app/navigation';
 	import ThemeToggle from '$lib/components/utils/ThemeToggle.svelte';
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/utils/Breadcrumbs.svelte';
+	import { createAsyncAction } from '$lib/functions/async.svelte';
+	import InfoBox from '$lib/components/utils/InfoBox.svelte';
+
+	loadIcons([
+		'material-symbols:check',
+		'material-symbols:content-copy-outline',
+	]);
 
 	let { children } = $props();
 	let session = fromStore(authClient.useSession());
@@ -18,6 +25,17 @@
 	const signOut = () => authClient.signOut({
 		fetchOptions: { onSuccess: () => goto('/') }
 	});
+
+	const STATUS_ICONS = {
+		loading: 'material-symbols:progress-activity',
+		success: 'material-symbols:check-circle',
+		error: 'material-symbols:cancel',
+		idle: 'material-symbols:content-copy'
+	} as const;
+
+	const copyUserIdState = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
+	const copyUserId = () => copyUserIdState.trigger(() => navigator.clipboard.writeText(session.current.data!.user.id));
+	const copyUserIdIcon = $derived(STATUS_ICONS[copyUserIdState.status])
 
 	$inspect(page)
 </script>
@@ -33,6 +51,31 @@
 	</div>
 	<div class="tail">
 		{#if session.current.data}
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={200}>
+					<Tooltip.Trigger>
+						{#snippet child({ props })}
+							<Button.Root {...props} data-button-variant="outline" onclick={copyUserId}>
+								<span>{session.current.data?.user.id}</span>
+								<Icon icon={copyUserIdIcon} data-spin={String(copyUserIdState.status === 'loading')} />
+							</Button.Root>
+						{/snippet}
+					</Tooltip.Trigger>
+					<Tooltip.Portal>
+						<Tooltip.Content>
+							<Tooltip.Arrow />
+							<p>
+								Tohle je tvoje uživatelské ID. Ty i všichni spoluhráči,
+								kteří chtějí mít na svém kanále tvou aktivní hru,
+								musí toto ID vložit do nastavení rozšíření.
+							</p>
+							<span>
+								<em>*zkopíruješ ho kliknutím*</em>
+							</span>
+						</Tooltip.Content>
+					</Tooltip.Portal>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 			<Button.Root data-button-variant="solid" onclick={signOut}>
 				<span>Odhlásit se</span>
 				<Icon icon="material-symbols:arrow-outward" />
@@ -94,6 +137,12 @@ header {
 	align-items: center;
 	padding-inline: 1rem;
 	padding-block: 1rem;
+
+	& .tail {
+		display: flex;
+		gap: 0.4rem;
+		align-items: center;
+	}
 }
 
 footer {

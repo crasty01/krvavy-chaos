@@ -1,9 +1,10 @@
 import { json } from '@sveltejs/kit';
 import * as v from 'valibot';
 import type { RequestHandler } from './$types';
-import { getGameById, syncGameFull, deleteGame, canEditGame } from '$lib/server/actions';
+import { getGameById, syncGameFull, deleteGame, canEditGame, getTwitchAccountId } from '$lib/server/actions';
 import { parseBody } from '$lib/server/validate';
 import { ScriptSchema } from '@krvavy-chaos/shared/validate/script';
+import { sendTwitchExtensionPubSubMessage } from '$lib/server/twitch';
 
 const GamePlayerInputSchema = v.object({
 	playerId: v.string(),
@@ -52,6 +53,20 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			alignment: p.alignment ?? null,
 		})),
 	});
+
+	const ownerTwitchId = await getTwitchAccountId(locals.user.id);
+	if (!ownerTwitchId) return json({ error: 'Nepodařilo se najít Twitch účet' }, { status: 500 });
+
+	await sendTwitchExtensionPubSubMessage({
+		type: 'global'
+	}, {
+		type: 'game-update',
+		data: {
+			ownerId: ownerTwitchId,
+			gameId: params.id,
+		}
+	});
+
 	return new Response(null, { status: 204 });
 };
 

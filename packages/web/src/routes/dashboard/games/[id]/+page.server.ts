@@ -39,13 +39,3 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}] satisfies Array<Breadcrumb>,
 	};
 };
-
-export const actions: Actions = {
-	updateScript: async ({ request, params, locals }) => {
-		if (!locals.user) {
-			throw error(401, 'Nepřihlášen');
-		}
-		
-		// validate data, update script in database, and send Twitch PubSub message to notify clients about the update
-	},
-};

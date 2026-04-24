@@ -10,10 +10,11 @@ import type {
 	TwitchExtensionURLSearchParams,
 	TwitchExtensionConfigContent,
 } from '@krvavy-chaos/shared/types/extension';
+import type { TwitchExtensionPubSubMessage } from '@krvavy-chaos/shared/types/pubsub';
 
 // -- Reactive Twitch store --
 
-class TwitchExtensionStore {
+export class TwitchExtensionStore {
 	extension: TwitchExtensionExtension;
 	auth = $state<TwitchExtensionAuthorizedParsed | null>(null);
 	context = $state<TwitchExtensionContext | null>(null);
@@ -142,6 +143,15 @@ class TwitchExtensionStore {
 	unlisten(target: string, callback: PubSubCallback) {
 		this.#listeners.get(target)?.delete(callback);
 		this.extension.unlisten(target, callback);
+	};
+
+	static parseMessageSafe(message: string) {
+		try {
+			// TODO: add validation
+			return JSON.parse(message) as TwitchExtensionPubSubMessage;
+		} catch {
+			return null;
+		}
 	};
 }
 

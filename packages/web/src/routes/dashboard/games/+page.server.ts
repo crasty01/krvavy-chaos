@@ -1,6 +1,6 @@
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import { game, gameEditor } from '$lib/server/db/schema';
+import { game, gameEditor, user } from '$lib/server/db/schema';
 import type { PageServerLoad } from './$types';
 import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
 
@@ -29,7 +29,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		orderBy: (game, { desc }) => [desc(game.updatedAt)],
 	});
 
+	const owner = await db.query.user.findFirst({
+		where: eq(user.id, locals.user.id),
+		with: { accounts: true },
+	});
+
 	return {
+		owner,
 		ownGames,
 		sharedGames,
 		breadcrumbs: [{

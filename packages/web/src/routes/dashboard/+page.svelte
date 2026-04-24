@@ -27,6 +27,7 @@ let { data }: { data: PageData } = $props();
 				updatedAt={data.game.updatedAt}
 				editorsLength={data.game.editors.length}
 				playersLength={data.game.gamePlayers.length}
+				isActive={true}
 			/>
 		{:else}
 			<InfoBox>

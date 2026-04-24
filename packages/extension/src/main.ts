@@ -1,8 +1,8 @@
 import { mount } from 'svelte';
 import './reset.css';
 import './base.css';
-import App from './App.svelte';
 import './lib/services/twitch.svelte';
+import App from './App.svelte';
 
 const app = mount(App, {
   target: document.getElementById('app')!,

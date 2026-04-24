@@ -2,7 +2,7 @@ import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_EXTENSION_SECRET, TWITCH
 import jwt from 'jsonwebtoken';
 import type { TwitchAuthToken } from '@krvavy-chaos/shared/types/twitch';
 import type { TwitchExtensionAuthToken } from '@krvavy-chaos/shared/types/extension';
-import type { TwitchExtensionPubSubMessage } from '@krvavy-chaos/shared/types/pubsub';
+import type { TwitchExtensionPubSubMessage, TwitchExtensionPubSubMessageOptions } from '@krvavy-chaos/shared/types/pubsub';
 
 let expirationTime = 0;
 let currentToken: TwitchAuthToken | null = null;
@@ -39,13 +39,13 @@ export const getTwitchToken = async () => {
 	return await createAndCacheTwitchToken();
 };
 
-export const sendTwitchExtensionPubSubMessage = async (broadcasterId: string, message: TwitchExtensionPubSubMessage) => {
+export const sendTwitchExtensionPubSubMessage = async (options: TwitchExtensionPubSubMessageOptions, message: TwitchExtensionPubSubMessage) => {
 	const extensionToken = jwt.sign({
 		user_id: TWITCH_USER_ID,
 		role: 'external',
-		channel_id: broadcasterId,
+		channel_id: options.type === 'broadcast' ? options.broadcasterId : 'all',
 		pubsub_perms: {
-			send: ["broadcast"]
+			send: [options.type]
 		}
 	}, Buffer.from(TWITCH_EXTENSION_SECRET, 'base64'), { expiresIn: '1h' });
 
@@ -57,9 +57,9 @@ export const sendTwitchExtensionPubSubMessage = async (broadcasterId: string, me
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			target: ["broadcast"],
-			broadcaster_id: broadcasterId,
-			is_global_broadcast: false,
+			target: [options.type],
+			...(options.type === 'broadcast' ? { broadcaster_id: options.broadcasterId } : {}),
+			is_global_broadcast: options.type === 'global',
 			message: JSON.stringify(message),
 		}),
 	});

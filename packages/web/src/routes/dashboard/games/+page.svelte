@@ -5,15 +5,16 @@
 	import { Button } from 'bits-ui';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import Breadcrumbs from '$lib/components/utils/Breadcrumbs.svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	const createGame = async () => {
-		const response = await fetch('/api/game/new');
+		const response = await fetch('/api/games', { method: 'POST' });
 		const game = await response.json();
 		await goto(`/dashboard/games/${encodeURIComponent(game.id)}`)
 	}
+
+	const activeGameId = $derived(data.owner?.activeGameId);
 </script>
 
 <svelte:head>
@@ -50,6 +51,7 @@
 								updatedAt={game.updatedAt}
 								editorsLength={game.editors.length}
 								playersLength={game.gamePlayers.length}
+								isActive={activeGameId === game.id}
 							/>
 						</li>
 					{/each}
@@ -73,6 +75,7 @@
 								updatedAt={game.updatedAt}
 								editorsLength={game.editors.length}
 								playersLength={game.gamePlayers.length}
+								isActive={activeGameId === game.id}
 							/>
 						</li>
 					{/each}
