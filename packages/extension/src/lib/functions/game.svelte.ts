@@ -14,7 +14,7 @@ export const handleGameUpdate = async (payload: TwitchExtensionPubSubMessageGame
 		return;
 	}
 
-	const response = await fetch(`/api/extension/game/${payload.data.ownerId}`, {
+	const response = await fetch(`https://krvavy-chaos-web.vercel.app/api/extension/game/${payload.data.ownerId}`, {
 		headers: { Authorization: `Bearer ${twitchStore.auth?._token}` },
 	});
 	const data = await response.json();

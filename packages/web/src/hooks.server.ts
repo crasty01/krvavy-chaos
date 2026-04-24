@@ -3,6 +3,33 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { building } from '$app/environment';
 import { auth } from '$lib/server/auth';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
+import { EXTENSION_HOSTNAME } from '@krvavy-chaos/shared/constants';
+
+const EXTENSION_ORIGIN = `https://${EXTENSION_HOSTNAME}`;
+
+const handleCors: Handle = async ({ event, resolve }) => {
+	const { pathname } = event.url;
+
+	if (pathname.startsWith('/api/extension')) {
+		if (event.request.method === 'OPTIONS') {
+			return new Response(null, {
+				status: 204,
+				headers: {
+					'Access-Control-Allow-Origin': EXTENSION_ORIGIN,
+					'Access-Control-Allow-Methods': 'GET, OPTIONS',
+					'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+					'Access-Control-Max-Age': '86400',
+				},
+			});
+		}
+
+		const response = await resolve(event);
+		response.headers.set('Access-Control-Allow-Origin', EXTENSION_ORIGIN);
+		return response;
+	}
+
+	return resolve(event);
+};
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	const session = await auth.api.getSession({ headers: event.request.headers });
@@ -40,4 +67,4 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleBetterAuth, handleAuthGuard);
+export const handle: Handle = sequence(handleCors, handleBetterAuth, handleAuthGuard);
