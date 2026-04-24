@@ -28,13 +28,19 @@ export const getGameById = async (id: string) => await db.query.game.findFirst({
 	where: eq(game.id, id),
 	with: {
 		gamePlayers: {
-			with: { player: true },
+			with: {
+				player: {
+					with: { socialLinks: true }
+				}
+			},
 			orderBy: (gp, { asc }) => [asc(gp.seatOrder)],
 		},
 		editors: {
 			with: { user: true },
 		},
-		creator: true,
+		creator: {
+			with: { accounts: true },
+		},
 	},
 });
 export const createGame = async (userId: string, userName: string) => {
