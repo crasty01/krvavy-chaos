@@ -9,4 +9,7 @@ export default defineConfig({
 		svelte(),
 		zipPack({ outFileName: 'app.zip' }),
 	],
+	build: {
+		cssMinify: 'esbuild',
+	}
 })

@@ -88,7 +88,7 @@
 	let savingPlayer = $state(false);
 
 	let pendingLinks = $state<Array<{ id: string; platformId: string; handle: string }>>([]);
-	let newLinkPlatformId = $state<string | undefined>(platforms[0]?.id);
+	let newLinkPlatformId = $state<string | undefined>(untrack(() => platforms[0]?.id));
 	let newLinkHandle = $state('');
 	let addingLink = $state(false);
 

@@ -15,9 +15,6 @@ let { children }: {
 </section>
 
 <style>
-#overlay {
-}
-
 .overlay {
 	--size: min(100vw, 100vh);
 

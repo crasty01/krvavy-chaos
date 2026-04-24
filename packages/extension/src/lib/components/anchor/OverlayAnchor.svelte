@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { Alignment } from '@krvavy-chaos/shared/index';
+import type { BotcAlignment } from '@krvavy-chaos/shared/validate/script';
 import * as Overlay from '../overlay';
 
-const seats: Array<Alignment> = [
+const seats: Array<BotcAlignment> = [
 	'good',
 	'evil',
 	'evil',

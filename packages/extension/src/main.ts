@@ -1,5 +1,7 @@
 import { mount } from 'svelte';
-import './reset.css';
+import '@krvavy-chaos/shared/css/reset.css';
+import '@krvavy-chaos/shared/css/tokens.css';
+import '@krvavy-chaos/shared/css/components.css';
 import './base.css';
 import './lib/services/twitch.svelte';
 import App from './App.svelte';

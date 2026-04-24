@@ -1,43 +1,48 @@
 <script lang="ts">
-	import './reset.css';
-	import './base.css';
-	import './components.css';
-	import favicon from '$lib/assets/favicon.svg';
-	import Icon, { loadIcons } from "@iconify/svelte";
-	import { authClient } from '$lib/auth-client.svelte';
-	import { Button, Tooltip } from 'bits-ui';
-	import { fromStore } from 'svelte/store';
-	import { goto } from '$app/navigation';
-	import ThemeToggle from '$lib/components/utils/ThemeToggle.svelte';
-	import { page } from '$app/state';
-	import Breadcrumbs from '$lib/components/utils/Breadcrumbs.svelte';
-	import { createAsyncAction } from '$lib/functions/async.svelte';
-	import InfoBox from '$lib/components/utils/InfoBox.svelte';
+import '@krvavy-chaos/shared/css/reset.css';
+import '@krvavy-chaos/shared/css/tokens.css';
+import '@krvavy-chaos/shared/css/components.css';
+import './base.css';
+import favicon from '$lib/assets/favicon.svg';
+import ThemeToggle from '$lib/components/utils/ThemeToggle.svelte';
+import Breadcrumbs from '$lib/components/utils/Breadcrumbs.svelte';
+import Icon, { loadIcons } from "@iconify/svelte";
+import { authClient } from '$lib/auth-client.svelte';
+import { Button, Tooltip } from 'bits-ui';
+import { fromStore } from 'svelte/store';
+import { goto } from '$app/navigation';
+import { page } from '$app/state';
+import { createAsyncAction } from '$lib/functions/async.svelte';
+	import type { PageData } from './$types';
+	import type { Snippet } from 'svelte';
 
-	loadIcons([
-		'material-symbols:check',
-		'material-symbols:content-copy-outline',
-	]);
+loadIcons([
+	'material-symbols:check',
+	'material-symbols:content-copy-outline',
+]);
 
-	let { children } = $props();
-	let session = fromStore(authClient.useSession());
+let { children, data }: {
+	children: Snippet;
+	data: PageData;
+} = $props();
+let session = fromStore(authClient.useSession());
 
-	const signOut = () => authClient.signOut({
-		fetchOptions: { onSuccess: () => goto('/') }
-	});
+const signOut = () => authClient.signOut({
+	fetchOptions: { onSuccess: () => goto('/') }
+});
 
-	const STATUS_ICONS = {
-		loading: 'material-symbols:progress-activity',
-		success: 'material-symbols:check-circle',
-		error: 'material-symbols:cancel',
-		idle: 'material-symbols:content-copy'
-	} as const;
+const STATUS_ICONS = {
+	loading: 'material-symbols:progress-activity',
+	success: 'material-symbols:check-circle',
+	error: 'material-symbols:cancel',
+	idle: 'material-symbols:content-copy'
+} as const;
 
-	const copyUserIdState = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
-	const copyUserId = () => copyUserIdState.trigger(() => navigator.clipboard.writeText(session.current.data!.user.id));
-	const copyUserIdIcon = $derived(STATUS_ICONS[copyUserIdState.status])
+const copyUserIdState = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
+const copyUserId = () => copyUserIdState.trigger(() => navigator.clipboard.writeText(session.current.data!.user.id));
+const copyUserIdIcon = $derived(STATUS_ICONS[copyUserIdState.status])
 
-	$inspect(page)
+$inspect(page);
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -50,13 +55,13 @@
 		</Button.Root>
 	</div>
 	<div class="tail">
-		{#if session.current.data}
+		{#if data.user?.twitchAccount.id}
 			<Tooltip.Provider>
 				<Tooltip.Root delayDuration={200}>
 					<Tooltip.Trigger>
 						{#snippet child({ props })}
 							<Button.Root {...props} data-button-variant="outline" onclick={copyUserId}>
-								<span>{session.current.data?.user.id}</span>
+								<span>{data.user.twitchAccount.id}</span>
 								<Icon icon={copyUserIdIcon} data-spin={String(copyUserIdState.status === 'loading')} />
 							</Button.Root>
 						{/snippet}
@@ -65,7 +70,7 @@
 						<Tooltip.Content>
 							<Tooltip.Arrow />
 							<p>
-								Tohle je tvoje uživatelské ID. Ty i všichni spoluhráči,
+								Tohle je tvoje twitch ID. Všichni spoluhráči,
 								kteří chtějí mít na svém kanále tvou aktivní hru,
 								musí toto ID vložit do nastavení rozšíření.
 							</p>
@@ -76,6 +81,8 @@
 					</Tooltip.Portal>
 				</Tooltip.Root>
 			</Tooltip.Provider>
+		{/if}
+		{#if session.current.data}
 			<Button.Root data-button-variant="solid" onclick={signOut}>
 				<span>Odhlásit se</span>
 				<Icon icon="material-symbols:arrow-outward" />

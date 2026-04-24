@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { Alignment } from '@krvavy-chaos/shared/index';
+import type { BotcAlignment } from '@krvavy-chaos/shared/validate/script';
 
 let { playerAlignment = 'neutral', numberOfSeats, seatIndex, tokenSize = '6.2rem' }: {
-	playerAlignment?: Alignment;
+	playerAlignment?: BotcAlignment;
 	tokenSize?: string;
 	numberOfSeats: number;
 	seatIndex: number;
@@ -76,9 +76,5 @@ let tokenColor = $derived.by(() => {
 		background-color: hsla(from var(--color) h s l / 0.4);
 		box-shadow: 0 0 0.6rem 0 hsla(from var(--color) h s l / 0.4);
 	}
-}
-
-.overlay__character-info {
-
 }
 </style>
