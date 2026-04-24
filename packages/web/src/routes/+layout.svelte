@@ -39,7 +39,12 @@ const STATUS_ICONS = {
 } as const;
 
 const copyUserIdState = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
-const copyUserId = () => copyUserIdState.trigger(() => navigator.clipboard.writeText(session.current.data!.user.id));
+const copyUserId = () => copyUserIdState.trigger(async () => {
+	const accountId = data.user?.twitchAccount.accountId
+	if (accountId) {
+		await navigator.clipboard.writeText(accountId);
+	}
+});
 const copyUserIdIcon = $derived(STATUS_ICONS[copyUserIdState.status])
 
 $inspect(page);
