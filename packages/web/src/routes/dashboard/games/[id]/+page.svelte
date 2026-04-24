@@ -6,7 +6,6 @@ loadIcons([
 	"material-symbols:manage-accounts",
 	"material-symbols:person",
 	"material-symbols:groups",
-	"material-symbols:import-export",
 	"material-symbols:save",
 	"material-symbols:cast",
 	"material-symbols:progress-activity",

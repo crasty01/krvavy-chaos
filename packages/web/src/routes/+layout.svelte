@@ -61,7 +61,7 @@ $inspect(page);
 					<Tooltip.Trigger>
 						{#snippet child({ props })}
 							<Button.Root {...props} data-button-variant="outline" onclick={copyUserId}>
-								<span>{data.user.twitchAccount.id}</span>
+								<span>{data.user.twitchAccount.accountId}</span>
 								<Icon icon={copyUserIdIcon} data-spin={String(copyUserIdState.status === 'loading')} />
 							</Button.Root>
 						{/snippet}
