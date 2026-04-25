@@ -6,7 +6,12 @@ let { children }: {
 } = $props();
 </script>
 
-<section id="overlay" class="overlay">
+<section
+	id="overlay"
+	class="overlay"
+	style:--token-size="9.3vmin"
+	style:--token-padding="25.3vmin"
+>
 	<div class="overlay__wrapper">
 		<div class="overlay__content">
 			{@render children?.()}
@@ -16,7 +21,7 @@ let { children }: {
 
 <style>
 .overlay {
-	--size: min(100vw, 100vh);
+	--wrapper-size: 100vmin;
 
 	position: absolute;
 	inset: 0;
@@ -27,18 +32,18 @@ let { children }: {
 	overflow: hidden;
 
 	& .overlay__wrapper {
-		width: var(--size);
-		height: var(--size);
+		width: var(--wrapper-size);
+		height: var(--wrapper-size);
 		/* background-color: #343434; */
-		border-radius: var(--size);
+		border-radius: var(--wrapper-size);
 		overflow: hidden;
-		padding: 17.3rem;
+		padding: var(--token-padding);
 	}
 
 	& .overlay__content {
 		width: 100%;
 		height: 100%;
-		border-radius: var(--size);
+		border-radius: var(--wrapper-size);
 		position: relative;
 	}
 }

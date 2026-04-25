@@ -1,25 +1,20 @@
 <script lang="ts">
-import type { BotcAlignment } from '@krvavy-chaos/shared/validate/script';
 import * as Overlay from '../overlay';
+import { game } from '../../functions/game.svelte';
 
-const seats: Array<BotcAlignment> = [
-	'good',
-	'evil',
-	'evil',
-	'evil',
-	'evil',
-	'good',
-	'good',
-	'good',
-	'good',
-	'good',
-	'good',
-	'good',
-]
+let gameData = $derived(game.data);
+
+const gamePlayers = $derived(gameData?.gamePlayers);
 </script>
 
-<Overlay.Root>
-	{#each seats as alignment, i}
-		<Overlay.Token seatIndex={i} numberOfSeats={seats.length} playerAlignment={alignment} />
-	{/each}
-</Overlay.Root>
+{#if gamePlayers}
+	<Overlay.Root>
+		{#each gamePlayers as gamePlayer, i}
+			<Overlay.Token
+				seatIndex={i}
+				numberOfSeats={gamePlayers.length}
+				gamePlayer={gamePlayer}
+			/>
+		{/each}
+	</Overlay.Root>
+{/if}

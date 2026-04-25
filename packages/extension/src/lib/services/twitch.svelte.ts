@@ -75,6 +75,7 @@ export class TwitchExtensionStore {
 
 	initialize() {
 		this.extension.onAuthorized((auth) => {
+			console.log('[TwitchExtensionStore] Authorized', auth);
 			this.auth = {
 				...auth,
 				_token: auth.token,
@@ -89,7 +90,7 @@ export class TwitchExtensionStore {
 		});
 
 		this.extension.onError((errorValue) => {
-			console.error('[TwitchExtensionExtensionStore]', errorValue);
+			console.error('[TwitchExtensionStore]', errorValue);
 		});
 
 		this.extension.onVisibilityChanged((visible) => {
@@ -106,9 +107,10 @@ export class TwitchExtensionStore {
 
 		this.extension.configuration.onChanged(() => {
 			const cfg = this.extension.configuration;
-			this.broadcasterConfig = cfg.broadcaster ? JSON.stringify(cfg.broadcaster.content) : null;
-			this.developerConfig = cfg.developer ? JSON.stringify(cfg.developer.content) : null;
-			this.globalConfig = cfg.global ? JSON.stringify(cfg.global.content) : null;
+			console.log('[TwitchExtensionStore] Configuration changed', { broadcaster: cfg.broadcaster, developer: cfg.developer, global: cfg.global });
+			this.broadcasterConfig = cfg.broadcaster ? JSON.parse(cfg.broadcaster.content) : null;
+			this.developerConfig = cfg.developer ? JSON.parse(cfg.developer.content) : null;
+			this.globalConfig = cfg.global ? JSON.parse(cfg.global.content) : null;
 		});
 
 		this.listen('broadcast', (target, contentType, message) => {
@@ -127,7 +129,7 @@ export class TwitchExtensionStore {
 
 	async updateConfig(segment: TwitchExtensionSegmentName, version: string, content: TwitchExtensionConfigContent) {
 		this.extension.configuration.set(segment, version, JSON.stringify(content));
-		this.extension.send('broadcast', 'application/json', content); // can use 'global' or "wisper-<userId>", but for purpuse of this extension, broadcasting to all viewers is fine
+		// this.extension.send('broadcast', 'application/json', content); // can use 'global' or "wisper-<userId>", but for purpuse of this extension, broadcasting to all viewers is fine
 	};
 
 	/** Listen for raw PubSub messages on a target. */

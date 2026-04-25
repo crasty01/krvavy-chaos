@@ -1,9 +1,8 @@
 <script lang="ts">
-import type { BotcAlignment } from '@krvavy-chaos/shared/validate/script';
+import type { ExtensionGamePlayer } from '@krvavy-chaos/shared/types/web';
 
-let { playerAlignment = 'neutral', numberOfSeats, seatIndex, tokenSize = '6.2rem' }: {
-	playerAlignment?: BotcAlignment;
-	tokenSize?: string;
+let { gamePlayer, numberOfSeats, seatIndex }: {
+	gamePlayer: ExtensionGamePlayer;
 	numberOfSeats: number;
 	seatIndex: number;
 } = $props();
@@ -13,21 +12,12 @@ let popover = $state<HTMLDivElement>();
 
 const openPopover = () => popover?.showPopover();
 const closePopover = () => popover?.hidePopover();
-
-let tokenColor = $derived.by(() => {
-	switch (playerAlignment) {
-		case 'evil': return '#ff0000';
-		case 'good': return '#0000ff';
-		default: return '#ffffff';
-	}
-})
 </script>
 
 <div
 	class="overlay__character"
+	data-character-alignment={gamePlayer.alignment}
 	style:--rotation="{(360 / numberOfSeats) * seatIndex}deg"
-	style:--size="{tokenSize}"
-	style:--color="{tokenColor}"
 >
 	<div
 		role="button"
@@ -44,27 +34,37 @@ let tokenColor = $derived.by(() => {
 	</div>
 
 	<div bind:this={popover} popover="auto" {id} class="overlay__character-info">
-		<ul>
-			<li>numberOfSeats: {numberOfSeats}</li>
-			<li>seatIndex: {seatIndex}</li>
-		</ul>
+		<pre>{JSON.stringify(gamePlayer, null, 2)}</pre>
 	</div>
 </div>
 
 <style>
 .overlay__character {
 	position: absolute;
-	top: calc(var(--size) / 2);
+	top: calc(var(--token-size) / 2);
 	left: 50%;
 	bottom: 50%;
 	transform-origin: bottom center;
 	rotate: var(--rotation);
+
+
+	&[data-character-alignment="neutral"] {
+		--color: oklch(from var(--color-accent-600) l 0 h);
+	}
+
+	&[data-character-alignment="good"] {
+		--color: oklch(from var(--color-accent-600) l c 255);
+	}
+
+	&[data-character-alignment="evil"] {
+		--color: oklch(from var(--color-accent-600) l c 25);
+	}
 }
 
 .overlay__character-token {
-	width: var(--size);
-	height: var(--size);
-	border-radius: var(--size);
+	width: var(--token-size);
+	height: var(--token-size);
+	border-radius: var(--token-size);
 	position: absolute;
 	left: 0;
 	right: 0;

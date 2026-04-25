@@ -1,6 +1,6 @@
 <script lang="ts">
 import * as Anchor from '../../components/anchor';
-import { handleGameUpdate } from '../../functions/game.svelte';
+import { game } from '../../functions/game.svelte';
 import { TwitchExtensionStore, twitchStore } from '../../services/twitch.svelte';
 
 twitchStore.listen('global', async (target, contentType, message) => {
@@ -13,7 +13,7 @@ twitchStore.listen('global', async (target, contentType, message) => {
 			console.log('[KRVAVKA] test type of pubsub message:', parsedMessage.data);
 			break;
 		case 'game-update':
-			await handleGameUpdate(parsedMessage);
+			await game.handleGameUpdate(parsedMessage);
 			break;
 		default:
 			console.log('[KRVAVKA] unknown type of pubsub message:', (parsedMessage as any).data);
@@ -22,6 +22,10 @@ twitchStore.listen('global', async (target, contentType, message) => {
 });
 
 let anchor = $derived(twitchStore.urlParams.anchor);
+
+$effect(() => {
+	game.handleGameUpdate();
+});
 </script>
 
 {#if anchor === 'video_overlay'}

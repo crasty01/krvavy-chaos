@@ -110,7 +110,9 @@ export type TwitchExtensionExtension = {
 	configuration: TwitchExtensionExtConfiguration;
 	listen: (target: string, callback: PubSubCallback) => void;
 	unlisten: (target: string, callback: PubSubCallback) => void;
-	send: (target: string, contentType: string, message: string) => void;
+	send: (target: string, contentType: string, message: string | any) => void;
 };
 
-export type TwitchExtensionConfigContent = any; // TODO: define this based on the actual configuration schema used in the extension
+export type TwitchExtensionConfigContent = {
+	gameOwner?: string;
+};
