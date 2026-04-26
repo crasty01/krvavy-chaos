@@ -51,8 +51,7 @@ $inspect(page);
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
-	<title>{page.data.breadcrumbs?.at(-1)?.label ? `${page.data.breadcrumbs.at(-1)!.label} — Krvavý chaos` : 'Krvavý chaos'}</title>
+	<title>Krvavý chaos</title>
 </svelte:head>
 
 <header>

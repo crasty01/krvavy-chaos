@@ -34,8 +34,24 @@
 		...game.script.filter(isOfficialCharacterId),
 	]);
 
-	const availableFirst = $derived(allIds.filter((id) => !firstNight.includes(id)));
-	const availableOther = $derived(allIds.filter((id) => !otherNight.includes(id)));
+	const availableFirst = $derived(
+		allIds
+			.filter((id) => !firstNight.includes(id))
+			.sort((a, b) => {
+				const aSentinel = isSentinel(a), bSentinel = isSentinel(b);
+				if (aSentinel !== bSentinel) return aSentinel ? -1 : 1;
+				return displayName(a).toLowerCase().localeCompare(displayName(b).toLowerCase());
+			})
+	);
+	const availableOther = $derived(
+		allIds
+			.filter((id) => !otherNight.includes(id))
+			.sort((a, b) => {
+				const aSentinel = isSentinel(a), bSentinel = isSentinel(b);
+				if (aSentinel !== bSentinel) return aSentinel ? -1 : 1;
+				return displayName(a).toLowerCase().localeCompare(displayName(b).toLowerCase());
+			})
+	);
 
 	const displayName = (id: string) => SENTINEL_LABELS[id] ?? nameMap.get(id) ?? id;
 

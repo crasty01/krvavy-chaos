@@ -24,6 +24,10 @@ const deactivateGame = async (gameId: string) => {
 };
 </script>
 
+<svelte:head>
+	<title>Krvavý chaos | přehled</title>
+</svelte:head>
+
 <div class="page">
 	<section class="hero">
 		<h1 class="title">přehled</h1>

@@ -114,7 +114,7 @@ loadIcons([
 </script>
 
 <svelte:head>
-	<title>{game.name}</title>
+	<title>Krvavý chaos | {game.name}</title>
 </svelte:head>
 
 <section class="page editor">

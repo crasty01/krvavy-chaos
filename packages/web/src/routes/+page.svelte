@@ -11,6 +11,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Krvavý chaos</title>
+</svelte:head>
+
 <section>
 	<h1 class="title">krvavý chaos</h1>
 	<p>
