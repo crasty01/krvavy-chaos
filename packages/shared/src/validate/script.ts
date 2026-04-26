@@ -25,7 +25,6 @@ export const SpecialGlobalSchema = v.picklist([
 
 export const AlignmentSchema = v.picklist(['good', 'neutral', 'evil']);
 
-
 export const CharacterJinxSchema = v.object({
   id: v.pipe(v.string(), v.maxLength(50)),
   reason: v.pipe(v.string(), v.maxLength(500)),

@@ -1,42 +1,48 @@
-<script lang="ts">
-import type { ExtensionGamePlayer } from '@krvavy-chaos/shared/types/web';
+<script module lang="ts">
+import { game } from '../../functions/game.svelte';
+import type { BotcScript, BotcScriptCharacter } from '@krvavy-chaos/shared/validate/script';
 
-let { gamePlayer, numberOfSeats, seatIndex }: {
+const characterFilter = (item: BotcScript[number]): item is BotcScriptCharacter => {
+	return typeof item !== 'string' && item.id !== '_meta';
+} 
+
+let gameData = $derived(game.data);
+let characters = $derived(new Map(gameData?.script.filter(characterFilter).map(character => [character.id, character])));
+</script>
+
+<script lang="ts">
+import { Tooltip, type TooltipTether } from 'bits-ui';
+import type { ExtensionGamePlayer } from '@krvavy-chaos/shared/types/web';
+import type { CharacterTooltipPayload } from '.';
+
+let { gamePlayer, numberOfSeats, seatIndex, characterTether }: {
 	gamePlayer: ExtensionGamePlayer;
 	numberOfSeats: number;
 	seatIndex: number;
+	characterTether: TooltipTether<CharacterTooltipPayload>;
 } = $props();
 
-let id = $derived(crypto.randomUUID());
-let popover = $state<HTMLDivElement>();
-
-const openPopover = () => popover?.showPopover();
-const closePopover = () => popover?.hidePopover();
+let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.characterId) : undefined);
 </script>
 
-<div
-	class="overlay__character"
-	data-character-alignment={gamePlayer.alignment}
-	style:--rotation="{(360 / numberOfSeats) * seatIndex}deg"
->
+{#if character}
 	<div
-		role="button"
-		tabindex="0"
-		class="overlay__character-token"
-		onmouseenter={openPopover}
-		onmouseleave={closePopover}
-		onfocusin={openPopover}
-		onfocusout={closePopover}
-		aria-controls={id}
-		aria-haspopup="dialog"
+		class="overlay__character"
+		data-character-alignment={gamePlayer.alignment}
+		style:--rotation="{(360 / numberOfSeats) * seatIndex}deg"
 	>
-		<span class="sr-only">character token</span>
+		<Tooltip.Trigger tether={characterTether} payload={{ character, gamePlayer }}>
+			{#snippet child({ props })}
+				<div
+					{...props}
+					class="overlay__character-token"
+				>
+					<span class="sr-only">character token</span>
+				</div>
+			{/snippet}
+		</Tooltip.Trigger>
 	</div>
-
-	<div bind:this={popover} popover="auto" {id} class="overlay__character-info">
-		<pre>{JSON.stringify(gamePlayer, null, 2)}</pre>
-	</div>
-</div>
+{/if}
 
 <style>
 .overlay__character {

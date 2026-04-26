@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Button, Select, Switch } from 'bits-ui';
+import { Avatar, Button, Select, Switch } from 'bits-ui';
 import Icon from '@iconify/svelte';
 import InputGroup from '$lib/components/form/InputGroup.svelte';
 import ImagePreview from '$lib/components/form/ImagePreview.svelte';
@@ -21,10 +21,10 @@ import {
 
 let { game }: { game: GameFull } = $props();
 
-const script = $derived<BotcScript>(game.script);
-const customChars = $derived(script.filter(isScriptCharacter));
-const officialIds = $derived(script.filter(isOfficialCharacterId));
-const byTeam = $derived(getCharactersByTeam(customChars));
+let script = $derived<BotcScript>(game.script);
+let customChars = $derived(script.filter(isScriptCharacter));
+let officialIds = $derived(script.filter(isOfficialCharacterId));
+let byTeam = $derived(getCharactersByTeam(customChars));
 
 const goodAlignmentImagesLabels = ["obrázek pro základní tým (dobro)", "obrázek pro otočený tým (zlo)"];
 const evilAlignmentImagesLabels = ["obrázek pro základní tým (zlo)", "obrázek pro otočený tým (dobro)"];
@@ -134,13 +134,12 @@ const addCustom = () => {
 				<ul class="character-list">
 					{#each byTeam.get(team)! as char (char.id)}
 						<li class="character-row">
-							{#if char.image}
-								<img src={getImageUrl(char.image)} alt={char.name} class="char-img" />
-							{:else}
-								<div class="char-img-placeholder">
+							<Avatar.Root>
+								<Avatar.Image src={getImageUrl(char.image)} alt={char.name} />
+								<Avatar.Fallback>
 									<Icon icon="material-symbols:person" width={20} height={20} />
-								</div>
-							{/if}
+								</Avatar.Fallback>
+							</Avatar.Root>
 							<span class="char-name ellipsis">{char.name}</span>
 							<div class="char-actions">
 								<Button.Root
@@ -323,24 +322,12 @@ header {
 	}
 }
 
-.char-img,
-.char-img-placeholder {
+.character-row :global([data-avatar-root]) {
 	width: 2rem;
 	height: 2rem;
 	border-radius: var(--border-radius);
 	flex-shrink: 0;
-}
-
-.char-img {
-	object-fit: cover;
-}
-
-.char-img-placeholder {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
-	color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
+	border: none;
 }
 
 .char-name {

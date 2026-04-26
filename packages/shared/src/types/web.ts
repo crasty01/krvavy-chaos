@@ -40,6 +40,13 @@ export type ExtensionGameEditor = {
 	user: ExtensionUser;
 };
 
+export type ExtensionPlatform = {
+	id: string;
+	name: string;
+	urlTemplate: string | null;
+	icon: string | null;
+};
+
 export type ExtensionGame = {
 	id: string;
 	name: string;
@@ -50,4 +57,5 @@ export type ExtensionGame = {
 	gamePlayers: Array<ExtensionGamePlayer>;
 	editors: Array<ExtensionGameEditor>;
 	creator: ExtensionUser;
+	platforms: Array<ExtensionPlatform>;
 };

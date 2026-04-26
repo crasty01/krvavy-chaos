@@ -1,0 +1,1 @@
+přidat smazíní postav, uživatelů do edit popupu

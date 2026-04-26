@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyTwitchExtensionJWT } from '$lib/server/twitch';
-import { getUserByTwitchId, getGameById } from '$lib/server/actions';
+import { getUserByTwitchId, getGameById, listPlatforms } from '$lib/server/actions';
 
 export const GET: RequestHandler = async ({ request, params }) => {
 	const authHeader = request.headers.get('Authorization');
@@ -13,6 +13,11 @@ export const GET: RequestHandler = async ({ request, params }) => {
 	const owner = await getUserByTwitchId(params.id);
 	if (!owner?.activeGameId) return json(null);
 
-	const activeGame = await getGameById(owner.activeGameId);
-	return json(activeGame ?? null);
+	const [activeGame, platforms] = await Promise.all([
+		getGameById(owner.activeGameId),
+		listPlatforms(),
+	]);
+	if (!activeGame) return json(null);
+
+	return json({ ...activeGame, platforms });
 };

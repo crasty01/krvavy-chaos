@@ -30,6 +30,11 @@
   --color-neutral-900: #17171c;
   --color-neutral-950: #08080c;
 
+
+	--color-good: oklch(from var(--color-accent-600) l c 255);;
+	--color-evil: oklch(from var(--color-accent-600) l c 25);
+	--color-neutral: oklch(from var(--color-accent-600) l 0 h);;
+
   --size-2xs: 0.694rem;
   --size-xs: 0.833rem;
   --size-sm: 1rem;

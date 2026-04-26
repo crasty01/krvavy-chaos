@@ -1,4 +1,5 @@
 <script lang="ts">
+import ComponentAnchor from './lib/components/anchor/ComponentAnchor.svelte';
 import ConfigMode from './lib/components/modes/ConfigMode.svelte';
 import ViewerMode from './lib/components/modes/ViewerMode.svelte';
 import { twitchStore } from './lib/services/twitch.svelte';
@@ -15,3 +16,5 @@ let mode = $derived(twitchStore.urlParams.mode);
 		<ViewerMode />
 	{/if}
 {/if}
+
+<ComponentAnchor></ComponentAnchor>
