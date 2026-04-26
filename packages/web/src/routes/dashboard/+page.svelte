@@ -7,21 +7,26 @@ import type { PageData } from './$types';
 import InfoBox from '$lib/components/utils/InfoBox.svelte';
 import Icon from '@iconify/svelte';
 import { invalidateAll } from '$app/navigation';
+import { createAsyncAction } from '$lib/functions/async.svelte';
 
 let session = fromStore(authClient.useSession());
 let { data }: { data: PageData } = $props();
 
-let deactivating = $state(false);
+const STATUS_ICONS = {
+	loading: 'material-symbols:progress-activity',
+	success: 'material-symbols:check-circle',
+	error: 'material-symbols:cancel',
+} as const;
 
-const deactivateGame = async (gameId: string) => {
-	deactivating = true;
-	try {
-		await fetch(`/api/games/${gameId}/deactivate`, { method: 'POST' });
-		await invalidateAll();
-	} finally {
-		deactivating = false;
-	}
-};
+let deactivateAction = createAsyncAction({ minLoading: 200, minSuccess: 1500, minError: 2500 });
+const deactivateIcon = $derived(deactivateAction.status === 'idle' ? 'material-symbols:stop-circle-outline' : STATUS_ICONS[deactivateAction.status]);
+
+const deactivate = (gameId?: string) => deactivateAction.trigger(async () => {
+	if (!gameId) throw new Error();
+	const res = await fetch(`/api/games/${gameId}/deactivate`, { method: 'POST' });
+	await invalidateAll();
+	if (!res.ok) throw new Error();
+});
 </script>
 
 <svelte:head>
@@ -35,7 +40,15 @@ const deactivateGame = async (gameId: string) => {
 	</section>
 
 	<section class="active-game">
-		<h2>aktivní hra</h2>
+		<div class="lead">
+			<h2>aktivní hra</h2>
+			{#if data.game}
+				<Button.Root data-button-variant="solid" onclick={() => deactivate(data.game?.id)}>
+					<Icon icon={deactivateIcon} data-spin={String(deactivateAction.status === 'loading')} />
+					<span>deaktivovat hru</span>
+				</Button.Root>
+			{/if}
+		</div>
 
 		{#if data.game}
 			<Game
@@ -46,10 +59,6 @@ const deactivateGame = async (gameId: string) => {
 				playersLength={data.game.gamePlayers.length}
 				isActive={true}
 			/>
-			<Button.Root data-button-variant="danger" disabled={deactivating} onclick={() => deactivateGame(data.game!.id)}>
-				<Icon icon="material-symbols:stop-circle-outline" width={20} height={20} />
-				<span>{deactivating ? 'deaktivuji…' : 'deaktivovat hru'}</span>
-			</Button.Root>
 		{:else}
 			<InfoBox>
 				nenalezena žádná aktivní hra
@@ -89,5 +98,12 @@ section.active-game {
 	align-content: flex-start;
 	justify-items: flex-start;
 	gap: var(--size-sm);
+
+	& .lead {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+	}
 }
 </style>
