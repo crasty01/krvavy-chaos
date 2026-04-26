@@ -16,3 +16,13 @@ export type TwitchUser = {
   view_count: number;
   created_at: string;
 };
+
+export type TwitchURLSearchParams = {
+	anchor: 'component' | 'panel' | 'video_overlay';
+	language: string;
+	locale: string;
+	mode: 'config' | 'dashboard' | 'viewer';
+	platform: 'mobile' | 'web';
+	popout: boolean;
+	state:'testing' | 'hosted_test' | 'approved' | 'released' | 'ready_for_review' | 'in_review' | 'pending_action' | 'uploading';
+};

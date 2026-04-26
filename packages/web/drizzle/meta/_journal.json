@@ -8,6 +8,13 @@
       "when": 1775765275404,
       "tag": "0000_spicy_living_mummy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1776890850104,
+      "tag": "0001_chief_phantom_reporter",
+      "breakpoints": true
     }
   ]
 }

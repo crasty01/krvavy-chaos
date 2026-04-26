@@ -3,12 +3,20 @@ export type TwitchExtensionPubSubMessageTesting = {
 	data: any;
 };
 
-export type TwitchExtensionPubSubMessageScriptUpdate = {
-	type: 'script-update';
+export type TwitchExtensionPubSubMessageGameUpdate = {
+	type: 'game-update';
 	data: {
-		scriptUrl: string;
+		ownerId: string;
+		gameId: string;
 	};
 };
 
 export type TwitchExtensionPubSubMessage = TwitchExtensionPubSubMessageTesting
-	| TwitchExtensionPubSubMessageScriptUpdate;
+	| TwitchExtensionPubSubMessageGameUpdate;
+
+export type TwitchExtensionPubSubMessageOptions = {
+	type: 'broadcast';
+	broadcasterId: string;
+} | {
+	type: 'global';
+}

@@ -3,8 +3,8 @@ export * from './auth.schema';
 import { relations, sql } from "drizzle-orm";
 import { sqliteTable, text, integer, index, primaryKey, foreignKey } from "drizzle-orm/sqlite-core";
 import { user, session, account } from "./auth.schema";
+import type { BotcScript } from '@krvavy-chaos/shared/validate/script';
 
-// ─── Player ──────────────────────────────────────────────────────────
 
 export const player = sqliteTable("player", {
   id: text("id").primaryKey(),
@@ -27,7 +27,7 @@ export const player = sqliteTable("player", {
 export const platform = sqliteTable("platform", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  urlTemplate: text("url_template").notNull(),
+  urlTemplate: text("url_template"),
   icon: text("icon"),
 });
 
@@ -46,12 +46,11 @@ export const playerSocialLink = sqliteTable(
   (table) => [index("playerSocialLink_playerId_idx").on(table.playerId)],
 );
 
-// ─── Game ────────────────────────────────────────────────────────────
 
 export const game = sqliteTable("game", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  script: text("script", { mode: "json" }).notNull(),
+  script: text("script", { mode: "json" }).$type<BotcScript>().notNull(),
   createdBy: text("created_by")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -78,7 +77,7 @@ export const gamePlayer = sqliteTable(
       .references(() => player.id, { onDelete: "restrict" }),
     seatOrder: integer("seat_order").notNull(),
     characterId: text("character_id"),
-    alignment: text("alignment", { enum: ["good", "evil"] }),
+    alignment: text("alignment", { enum: ["good", "neutral", "evil"] }),
   },
   (table) => [
     index("gamePlayer_gameId_idx").on(table.gameId),
@@ -99,14 +98,12 @@ export const gameEditor = sqliteTable(
   (table) => [primaryKey({ columns: [table.gameId, table.userId] }), index("gameEditor_userId_idx").on(table.userId)],
 );
 
-// ─── Foreign keys ────────────────────────────────────────────────────
 
 export const userActiveGameFk = foreignKey({
   columns: [user.activeGameId],
   foreignColumns: [game.id],
 });
 
-// ─── Relations ───────────────────────────────────────────────────────
 
 export const userRelations = relations(user, ({ one, many }) => ({
   sessions: many(session),

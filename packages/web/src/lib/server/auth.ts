@@ -13,13 +13,6 @@ export const auth = betterAuth({
 		twitch: {
 			clientId: env.TWITCH_CLIENT_ID,
 			clientSecret: env.TWITCH_CLIENT_SECRET,
-			mapProfileToUser: (profile) => {
-				console.log('Twitch profile:', profile);
-				return {
-					id: profile.sub,
-				}; // Return an empty object to use default mapping
-			},
-
 		},
 	},
 	plugins: [sveltekitCookies(getRequestEvent)],

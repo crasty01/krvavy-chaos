@@ -1,9 +1,18 @@
 <script lang="ts">
+import ComponentAnchor from './lib/components/anchor/ComponentAnchor.svelte';
+import ConfigMode from './lib/components/modes/ConfigMode.svelte';
+import ViewerMode from './lib/components/modes/ViewerMode.svelte';
 import { twitchStore } from './lib/services/twitch.svelte';
 
-twitchStore.listen('broadcast', (target, contentType, message) => {
-	console.log('[KRVAVKA]', { target, contentType, message });
-})
+let mode = $derived(twitchStore.urlParams.mode);
 </script>
 
-<pre>{ twitchStore.debugJson }</pre>
+{#if twitchStore.broadcasterConfig}
+	{#if mode === 'config'}
+		<ConfigMode />
+	{:else if mode === 'dashboard'}
+		<ConfigMode />
+	{:else if mode === 'viewer'}
+		<ViewerMode />
+	{/if}
+{/if}

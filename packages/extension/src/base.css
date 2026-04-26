@@ -1,0 +1,103 @@
+:where(p, span) {
+	max-width: 60ch;
+}
+
+:where(h1) { font-size: var(--size-3xl); line-height: 1.1; }
+:where(h2) { font-size: var(--size-2xl); line-height: 1.1; }
+:where(h3) { font-size: var(--size-1xl); line-height: 1.2; }
+:where(h4) { font-size: var(--size-lg); line-height: 1.2; }
+:where(h5) { font-size: var(--size-md); line-height: 1.3; }
+:where(h6) { font-size: var(--size-sm); line-height: 1.3; }
+
+:where(h1, h2, h3, h4, h5, h6) {
+	font-weight: 900;
+	font-family: var(--font-primary);
+}
+
+html, body {
+  font-family: var(--font-mono);
+  font-size: var(--base-size);
+  line-height: var(--base-line-height);
+  color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
+  /* background-color: light-dark(var(--color-neutral-50), var(--color-neutral-900)); */
+	/* color-scheme: dark; */
+  
+  /* Font smoothing: Highly recommended for variable fonts to look crisp */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	color-scheme: dark;
+}
+
+#app {
+	height: 100vh;
+}
+
+.ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+:where(ul) {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	padding: 0;
+	margin: 0;
+
+	& :where(li) {
+		list-style: none;
+	}
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+/* JetBrains Mono - Normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 800; /* JetBrains Mono weight range */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono - Italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Italic-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter - Normal */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-VariableFont_opsz,wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - Italic */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Italic-VariableFont_opsz,wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}

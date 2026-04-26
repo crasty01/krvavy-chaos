@@ -1,21 +1,24 @@
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import { game, user } from '$lib/server/db/schema';
+import {  user } from '$lib/server/db/schema';
+import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const _user = await db.query.user.findFirst({
 		where: eq(user.id, locals.user.id),
+		with: { activeGame: { with: { gamePlayers: true, editors: true } } },
 	});
 
-	if (!_user?.activeGameId) {
-		return { game: undefined };
-	}
-
-	const _game = await db.query.game.findFirst({
-		where: eq(game.id, _user.activeGameId),
-		with: { gamePlayers: true, editors: true },
-	});
-
-	return { game: _game };
+	console.log('/dashboard load');
+	return {
+		game: _user?.activeGame ?? null,
+		breadcrumbs: [{
+			label: 'přehled',
+			href: '/dashboard',
+			icon: 'material-symbols:home'
+		}] satisfies Array<Breadcrumb>,
+	};
 };
+
+console.log('dashboard page.server.ts loaded');

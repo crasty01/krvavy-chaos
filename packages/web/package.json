@@ -18,6 +18,9 @@
 		"db:studio": "drizzle-kit studio",
 		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
 	},
+  "exports": {
+    "./*": "./src/*.ts"
+  },
 	"dependencies": {
 		"@krvavy-chaos/shared": "workspace:*"
 	},
@@ -34,6 +37,7 @@
 		"@tailwindcss/typography": "^0.5.19",
 		"@types/node": "^22",
 		"better-auth": "~1.4.21",
+		"bits-ui": "^2.17.3",
 		"drizzle-kit": "^0.31.8",
 		"drizzle-orm": "^0.45.1",
 		"eslint": "^10.0.3",

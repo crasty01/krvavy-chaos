@@ -12,7 +12,9 @@
 		<Avatar.Image {src} alt={name} />
 		<Avatar.Fallback>{name.charAt(0)}</Avatar.Fallback>
 	</Avatar.Root>
-	<Label.Root>{name}</Label.Root>
+	<Label.Root>
+		<span class="ellipsis">{name}</span>
+	</Label.Root>
 </div>
 	
 <style>
@@ -21,5 +23,10 @@
 	display: flex;
 	align-items: center;
 	gap: var(--size-xs);
+	min-width: 0;
+
+	& span.ellipsis {
+		max-width: 12rem;
+	}
 }
 </style>
