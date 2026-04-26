@@ -75,6 +75,14 @@ const cancelEdit = () => {
 	draft = null;
 };
 
+const deleteChar = () => {
+	if (!editTarget) return;
+	removeEntry(editTarget);
+	editOpen = false;
+	editTarget = null;
+	draft = null;
+};
+
 const getImageUrl = (image: BotcScriptCharacter['image']): string =>
 	Array.isArray(image) ? (image[0] ?? '') : (image ?? '');
 
@@ -183,7 +191,7 @@ const addCustom = () => {
 </div>
 
 
-<EditorDialog bind:open={editOpen} title="upravit postavu" onconfirm={confirmEdit} oncancel={cancelEdit}>
+<EditorDialog bind:open={editOpen} title="upravit postavu" onconfirm={confirmEdit} oncancel={cancelEdit} ondelete={deleteChar}>
 	{#if draft}
 	{@const char = draft as BotcScriptCharacter}
 					<InputGroup label="id" isVertical>

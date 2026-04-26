@@ -10,6 +10,7 @@
 		confirmDisabled?: boolean;
 		onconfirm: () => void;
 		oncancel: () => void;
+		ondelete?: () => void;
 		children: Snippet;
 	};
 
@@ -20,6 +21,7 @@
 		confirmDisabled = false,
 		onconfirm,
 		oncancel,
+		ondelete,
 		children,
 	}: Props = $props();
 </script>
@@ -44,6 +46,13 @@
 			</div>
 
 			<footer class="modal-footer">
+				{#if ondelete}
+					<Button.Root data-button-variant="danger" onclick={ondelete}>
+						<Icon icon="material-symbols:delete-outline" />
+						<span>smazat</span>
+					</Button.Root>
+					<div class="footer-spacer"></div>
+				{/if}
 				<Button.Root data-button-variant="ghost" onclick={oncancel}>zrušit</Button.Root>
 				<Button.Root
 					data-button-variant="accent"
@@ -96,5 +105,9 @@
 	padding: 0.9rem 1.2rem;
 	border-top: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
 	flex-shrink: 0;
+}
+
+.footer-spacer {
+	flex: 1;
 }
 </style>

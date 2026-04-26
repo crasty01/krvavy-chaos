@@ -175,6 +175,23 @@
 		editPlayer = null;
 	};
 
+	let deletingPlayer = $state(false);
+
+	const deletePlayer = async () => {
+		if (!editPlayer) return;
+		deletingPlayer = true;
+		try {
+			const res = await fetch(`/api/players/${editPlayer.id}`, { method: 'DELETE' });
+			if (!res.ok) return;
+			allPlayers = allPlayers.filter((p) => p.id !== editPlayer!.id);
+			game.gamePlayers = game.gamePlayers.filter((gp) => gp.playerId !== editPlayer!.id);
+			editOpen = false;
+			editPlayer = null;
+		} finally {
+			deletingPlayer = false;
+		}
+	};
+
 	const addLink = async () => {
 		if (!newLinkPlatformId || !newLinkHandle.trim()) return;
 		if (isNewPlayer) {
@@ -359,6 +376,7 @@
 	onconfirm={confirmEdit}
 	oncancel={cancelEdit}
 	confirmDisabled={savingPlayer}
+	ondelete={isNewPlayer ? undefined : deletePlayer}
 >
 	{#if isNewPlayer || editPlayer}
 		<InputGroup label="jméno">
