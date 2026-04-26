@@ -28,12 +28,19 @@ loadIcons([
 	import * as Editor from '$lib/components/editor';
 	import { createAsyncAction } from '$lib/functions/async.svelte';
 	import type { PageData } from './$types';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 
 	let game = $state(untrack(() => data.game));
 	let allPlayers = $state(untrack(() => data.allPlayers));
 	const platforms = untrack(() => data.platforms);
+
+	// When data is refreshed from server (e.g. after a failed save), sync local state
+	$effect(() => {
+		game = data.game;
+		allPlayers = data.allPlayers;
+	});
 
 	let tabs = $state([
 		{
@@ -104,7 +111,10 @@ loadIcons([
 				})),
 			}),
 		});
-		if (!res.ok) throw new Error();
+		if (!res.ok) {
+			await invalidateAll();
+			throw new Error();
+		}
 	});
 
 	const activate = () => activateAction.trigger(async () => {
@@ -123,6 +133,9 @@ loadIcons([
 			<h1>editor hry</h1>
 		</div>
 		<div class="tail">
+			{#if saveAction.status === 'error'}
+				<span class="save-error">uložení selhalo, data byla obnovena</span>
+			{/if}
 			<Button.Root data-button-variant="outline" onclick={save}>
 				<Icon icon={saveIcon} data-spin={String(saveAction.status === 'loading')} />
 				<span>uložit</span>
@@ -176,7 +189,14 @@ header {
 	& .lead, & .tail {
 		display: flex;
 		gap: 0.2rem;
+		align-items: center;
 	}
+}
+
+.save-error {
+	font-size: 0.8125rem;
+	color: light-dark(var(--color-error-600), var(--color-error-400));
+	padding-inline: 0.5rem;
 }
 
 :global(.editor) {
