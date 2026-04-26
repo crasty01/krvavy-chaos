@@ -1,5 +1,11 @@
 import type { BotcScript, BotcAlignment } from '../validate/script';
 
+export type Breadcrumb = {
+	label: string;
+	href: string;
+	icon?: string;
+};
+
 export type ExtensionUser = {
 	id: string;
 	name: string;

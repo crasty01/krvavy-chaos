@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import {  user } from '$lib/server/db/schema';
+import { user } from '$lib/server/db/schema';
 import type { Breadcrumb } from '@krvavy-chaos/shared/types/web';
 import type { PageServerLoad } from './$types';
 

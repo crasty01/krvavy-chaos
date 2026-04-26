@@ -7,7 +7,7 @@ export type TwitchExtensionPubSubMessageGameUpdate = {
 	type: 'game-update';
 	data: {
 		ownerId: string;
-		gameId: string;
+		gameId: string | null;
 	};
 };
 

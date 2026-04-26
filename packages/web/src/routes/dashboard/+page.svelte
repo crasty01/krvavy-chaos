@@ -6,9 +6,22 @@ import Game from '$lib/components/layout/Game.svelte';
 import type { PageData } from './$types';
 import InfoBox from '$lib/components/utils/InfoBox.svelte';
 import Icon from '@iconify/svelte';
+import { invalidateAll } from '$app/navigation';
 
 let session = fromStore(authClient.useSession());
 let { data }: { data: PageData } = $props();
+
+let deactivating = $state(false);
+
+const deactivateGame = async (gameId: string) => {
+	deactivating = true;
+	try {
+		await fetch(`/api/games/${gameId}/deactivate`, { method: 'POST' });
+		await invalidateAll();
+	} finally {
+		deactivating = false;
+	}
+};
 </script>
 
 <div class="page">
@@ -29,6 +42,10 @@ let { data }: { data: PageData } = $props();
 				playersLength={data.game.gamePlayers.length}
 				isActive={true}
 			/>
+			<Button.Root data-button-variant="danger" disabled={deactivating} onclick={() => deactivateGame(data.game!.id)}>
+				<Icon icon="material-symbols:stop-circle-outline" width={20} height={20} />
+				<span>{deactivating ? 'deaktivuji…' : 'deaktivovat hru'}</span>
+			</Button.Root>
 		{:else}
 			<InfoBox>
 				nenalezena žádná aktivní hra
