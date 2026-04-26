@@ -31,6 +31,10 @@ let gameData = $derived(game.data);
 
 {#if gameData}
 	<div class="panel-anchor">
+		<header class="panel-header">
+			<span class="panel-header-game">{gameData.name}</span>
+			<span class="panel-header-host">{gameData.creator.name}</span>
+		</header>
 		<Tabs.Root value={selectedTabkey} orientation="vertical">
 			<Tabs.List>
 				{#each tabs as tab (tab.key)}
@@ -61,14 +65,41 @@ let gameData = $derived(game.data);
 	width: 100%;
 	height: 100%;
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	background-color: light-dark(var(--color-neutral-50), var(--color-neutral-900));
+	border-top-right-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
+	overflow: hidden;
+}
 
+.panel-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	padding: 0.625rem 0.75rem 0.5rem;
+	border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+	flex-shrink: 0;
+}
+
+.panel-header-game {
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.panel-header-host {
+	font-size: 0.75rem;
+	opacity: 0.6;
+	line-height: 1.2;
+}
+
+.panel-anchor {
 	& :global([data-tabs-root]) {
 		display: flex;
 		flex-direction: row;
 		width: 100%;
-		height: 100%;
+		flex: 1;
+		min-height: 0;
 	}
 
 	& :global([data-tabs-list]) {

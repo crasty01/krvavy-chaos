@@ -1,5 +1,6 @@
 <script lang="ts">
 import * as Anchor from '../../components/anchor';
+import * as Overlay from '../../components/overlay';
 import { game } from '../../functions/game.svelte';
 import { TwitchExtensionStore, twitchStore } from '../../services/twitch.svelte';
 
@@ -29,6 +30,9 @@ $effect(() => {
 </script>
 
 {#if anchor === 'video_overlay'}
+	<Overlay.DrawerPanel>
+		<Anchor.Component />
+	</Overlay.DrawerPanel>
 	<Anchor.Overlay></Anchor.Overlay>
 {:else if anchor === 'panel'}
 	<Anchor.Panel></Anchor.Panel>

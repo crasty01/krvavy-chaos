@@ -16,5 +16,3 @@ let mode = $derived(twitchStore.urlParams.mode);
 		<ViewerMode />
 	{/if}
 {/if}
-
-<ComponentAnchor></ComponentAnchor>
