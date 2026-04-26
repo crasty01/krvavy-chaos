@@ -1,6 +1,7 @@
 import { game } from '../functions/game.svelte';
 
 const STORAGE_KEY_PREFIX = 'krvavy-viewer-preference';
+const OVERLAY_HIDDEN_KEY = 'krvavy-overlay-hidden';
 
 type ViewerPreference = 'undecided' | 'reveal' | 'predict';
 
@@ -38,3 +39,14 @@ class ViewerPreferenceStore {
 }
 
 export const viewerPreference = new ViewerPreferenceStore();
+
+class OverlayVisibilityStore {
+	hidden = $state<boolean>(localStorage.getItem(OVERLAY_HIDDEN_KEY) === 'true');
+
+	toggle = () => {
+		this.hidden = !this.hidden;
+		localStorage.setItem(OVERLAY_HIDDEN_KEY, String(this.hidden));
+	};
+}
+
+export const overlayVisibility = new OverlayVisibilityStore();

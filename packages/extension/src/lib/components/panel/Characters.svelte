@@ -23,7 +23,7 @@ let characters = $derived(new Map(customCharacters.map(character => [character.i
 				<h3 class="team-heading" style:--team-color={TEAM_COLORS[team]}>
 					{TEAM_LABELS[team]}
 				</h3>
-				<Accordion.Root type="single">
+				<Accordion.Root type="multiple">
 					{#each byTeam.get(team)! as character (character.id)}
 						<Accordion.Item value={character.id}>
 							<Accordion.Header>
