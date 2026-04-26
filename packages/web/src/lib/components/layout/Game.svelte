@@ -52,12 +52,13 @@
 	border-left: solid .4rem;
 	border-left-color: light-dark(var(--color-neutral-100), var(--color-neutral-800));
 
-	&.game--active {
-	border-left-color: light-dark(var(--color-accent-100), var(--color-accent-800));
+	&:where(:hover, :focus) {
+		background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+		border-left-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
 	}
 
-	&:hover, &:focus {
-		background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+	&.game--active {
+		border-left-color: light-dark(var(--color-accent-100), var(--color-accent-800));
 	}
 
 	& .name {
