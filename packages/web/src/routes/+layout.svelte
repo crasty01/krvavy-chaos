@@ -3,7 +3,6 @@ import '@krvavy-chaos/shared/css/reset.css';
 import '@krvavy-chaos/shared/css/tokens.css';
 import '@krvavy-chaos/shared/css/components.css';
 import './base.css';
-import favicon from '$lib/assets/favicon.svg';
 import ThemeToggle from '$lib/components/utils/ThemeToggle.svelte';
 import Breadcrumbs from '$lib/components/utils/Breadcrumbs.svelte';
 import Icon, { loadIcons } from "@iconify/svelte";
@@ -13,13 +12,11 @@ import { fromStore } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
 import { createAsyncAction } from '$lib/functions/async.svelte';
-	import type { PageData } from './$types';
-	import type { Snippet } from 'svelte';
+import type { PageData } from './$types';
+import type { Snippet } from 'svelte';
+import { iconList } from '$lib/icon-list';
 
-loadIcons([
-	'material-symbols:check',
-	'material-symbols:content-copy-outline',
-]);
+loadIcons(iconList);
 
 let { children, data }: {
 	children: Snippet;

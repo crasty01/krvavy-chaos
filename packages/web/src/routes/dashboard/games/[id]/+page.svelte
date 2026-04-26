@@ -1,24 +1,4 @@
 <script module lang="ts">
-import { loadIcons } from '@iconify/svelte';
-
-loadIcons([
-	"material-symbols:settings",
-	"material-symbols:manage-accounts",
-	"material-symbols:person",
-	"material-symbols:groups",
-	"material-symbols:save",
-	"material-symbols:cast",
-	"material-symbols:progress-activity",
-	"material-symbols:check-circle",
-	"material-symbols:cancel",
-	"material-symbols:close",
-	"material-symbols:add",
-	"material-symbols:edit",
-	"material-symbols:drag-indicator",
-	"material-symbols:keyboard-arrow-down",
-	"material-symbols:moon-stars",
-	"material-symbols:file-export-rounded",
-]);
 </script>
 
 <script lang="ts">

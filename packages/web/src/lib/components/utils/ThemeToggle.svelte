@@ -1,6 +1,4 @@
 <script lang="ts" module>
-import { loadIcons } from "@iconify/svelte";
-
 const STORAGE_KEY = 'theme-preference';
 
 type Theme = 'auto' | 'light' | 'dark';
@@ -22,8 +20,6 @@ const cycle: Record<Theme, Theme> = {
 	dark: 'light',
 	auto: 'light', // does not work
 };
-
-loadIcons(Object.values(icons)); // preload icons so there i no layout shifting
 </script>
 
 <script lang="ts">
