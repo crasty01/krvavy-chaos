@@ -68,7 +68,6 @@
 		return copy;
 	};
 
-	// Add select — reset to undefined after adding so the Select shows placeholder again
 	let addFirst = $state<string | undefined>(undefined);
 	let addOther = $state<string | undefined>(undefined);
 

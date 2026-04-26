@@ -58,6 +58,13 @@ let gameData = $derived(game.data);
 			{/each}
 		</Tabs.Root>
 	</div>
+{:else}
+	<div class="panel-anchor">
+		<div class="empty-state">
+			<Icon icon="material-symbols:water-drop" width={32} height={32} />
+			<span>Žádná aktivní hra</span>
+		</div>
+	</div>
 {/if}
 
 <style>
@@ -128,7 +135,7 @@ let gameData = $derived(game.data);
 		right: 0;
 		transition: translate 250ms ease-in-out;
 		border-top-left-radius: 0;
-		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
 		background-color: light-dark(var(--color-neutral-200), var(--color-neutral-800));
 
 		& > :global(svg) {
@@ -152,5 +159,16 @@ let gameData = $derived(game.data);
 		overflow-y: auto;
 		padding: 0.75rem;
 	}
+}
+
+.empty-state {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	color: light-dark(var(--color-neutral-500), var(--color-neutral-400));
+	font-size: 0.875rem;
 }
 </style>
