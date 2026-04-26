@@ -48,14 +48,14 @@ $inspect(page);
 </script>
 
 <svelte:head>
-	<title>Krvavý chaos</title>
+	<title>Krvavá hodina odbila</title>
 </svelte:head>
 
 <header>
 	<div class="lead">
 		<Button.Root href="/dashboard">
 			<Icon icon="material-symbols:water-drop" />
-			<span class="logo">Krvavý chaos</span>
+			<span class="logo">Krvavá hodina odbila</span>
 		</Button.Root>
 	</div>
 	<div class="tail">

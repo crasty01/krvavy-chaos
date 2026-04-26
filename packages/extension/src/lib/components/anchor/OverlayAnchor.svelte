@@ -5,6 +5,8 @@ import { Avatar, Tooltip } from 'bits-ui';
 import Icon from '@iconify/svelte';
 import { TEAM_LABELS } from '@krvavy-chaos/shared/validate/script';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
+import SpoilerGate from '../SpoilerGate.svelte';
+import { viewerPreference } from '../../stores/preference.svelte';
 
 let gameData = $derived(game.data);
 
@@ -14,6 +16,9 @@ const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 
 <div class="overlay-anchor">
 	{#if gamePlayers}
+		{#if viewerPreference.value === 'undecided'}
+			<SpoilerGate variant="overlay" />
+		{:else if viewerPreference.value === 'reveal'}
 		<Tooltip.Provider>
 			<Overlay.Root>
 				{#each gamePlayers as gamePlayer, i}
@@ -59,6 +64,7 @@ const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 				{/snippet}
 			</Tooltip.Root>
 		</Tooltip.Provider>
+		{/if}
 	{/if}
 </div>
 

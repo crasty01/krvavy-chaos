@@ -4,6 +4,7 @@ import { isScriptCharacter, type BotcScriptCharacter } from '@krvavy-chaos/share
 import { Avatar } from 'bits-ui';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import type { ExtensionGame } from '@krvavy-chaos/shared/types/web';
+    import { viewerPreference } from '../../stores/preference.svelte';
 
 let { data }: {
 	data: ExtensionGame;
@@ -32,7 +33,7 @@ const buildUrl = (urlTemplate: string | null, handle: string): string | null => 
 			<li class="player-row">
 				<span class="seat-index">{gp.seatOrder + 1}</span>
 				<Avatar.Root>
-					{#if character}
+					{#if character && viewerPreference.value === 'reveal'}
 						<Avatar.Image
 							src={getAlignedCharacterImage(character, gp) ?? getImageUrl(character.image)}
 							alt={character.name}
@@ -44,7 +45,7 @@ const buildUrl = (urlTemplate: string | null, handle: string): string | null => 
 				</Avatar.Root>
 				<div class="player-info">
 					<span class="player-name">{gp.player.name}</span>
-					{#if character}
+					{#if character && viewerPreference.value === 'reveal'}
 						<span class="player-character">
 							{character.name}
 							{#if gp.alignment}

@@ -30,7 +30,7 @@ const deactivate = (gameId?: string) => deactivateAction.trigger(async () => {
 </script>
 
 <svelte:head>
-	<title>Krvavý chaos | přehled</title>
+	<title>Krvavá hodina odbila | přehled</title>
 </svelte:head>
 
 <div class="page">

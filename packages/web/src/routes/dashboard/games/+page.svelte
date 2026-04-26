@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Krvavý chaos | seznam her</title>
+	<title>Krvavá hodina odbila | seznam her</title>
 </svelte:head>
 
 <div class="page">

@@ -3,6 +3,10 @@ import * as Panel from '../panel';
 import Icon from '@iconify/svelte';
 import { Button, Tabs } from 'bits-ui';
 import { game } from '../../functions/game.svelte';
+import SpoilerGate from '../SpoilerGate.svelte';
+import { viewerPreference } from '../../stores/preference.svelte';
+import { twitchStore } from '../../services/twitch.svelte';
+import { createAsyncAction } from '../../functions/async.svelte';
 
 let tabs = $state([
 	{
@@ -27,36 +31,63 @@ let tabs = $state([
 
 let selectedTabkey = $state(tabs[0].key);
 let gameData = $derived(game.data);
+let anchor = $derived(twitchStore.urlParams.anchor);
+
+let revealAction = createAsyncAction({ minLoading: 5000, minSuccess: 0, minError: 0 });
+const revealCharacters = () => {
+	if (revealAction.status !== 'loading') {
+		revealAction.trigger(async () => {});
+	} else {
+		viewerPreference.choose('reveal');
+	}
+};
 </script>
 
 {#if gameData}
 	<div class="panel-anchor">
 		<header class="panel-header">
-			<span class="panel-header-game">{gameData.name}</span>
-			<span class="panel-header-host">{gameData.creator.name}</span>
+			<div class="lead">
+				<span class="panel-header-game">{gameData.name}</span>
+				<span class="panel-header-host">{gameData.creator.name}</span>
+			</div>
+			<div class="tail">
+				{#if viewerPreference.value === 'predict'}
+					<Button.Root data-button-variant="ghost" onclick={revealCharacters}>
+					{#if revealAction.status !== 'loading'}
+							<span>odhalit postavy</span>
+						{:else}
+							<span>opravdu?</span>
+						{/if}
+					</Button.Root>
+				{/if}
+			</div>
 		</header>
-		<Tabs.Root value={selectedTabkey} orientation="vertical">
-			<Tabs.List>
-				{#each tabs as tab (tab.key)}
-					<Tabs.Trigger value={tab.key}>
-						{#snippet child({ props })}
-							<div class="tab-trigger">
-								<Button.Root data-button-variant={props["data-state"] === "active" ? "accent" : "ghost"} {...props}>
-									<span>{tab.label}</span>
-									<Icon icon={tab.icon} />
-								</Button.Root>
-							</div>
-						{/snippet}
-					</Tabs.Trigger>
-				{/each}
-			</Tabs.List>
+		{#if viewerPreference.value === 'undecided' && anchor !== 'video_overlay'}
+			<SpoilerGate variant="panel" />
+		{:else}
+			<Tabs.Root value={selectedTabkey} orientation="vertical">
+				<Tabs.List>
+					{#each tabs as tab (tab.key)}
+						<Tabs.Trigger value={tab.key}>
+							{#snippet child({ props })}
+								<div class="tab-trigger">
+									<Button.Root data-button-variant={props["data-state"] === "active" ? "accent" : "ghost"} {...props}>
+										<span>{tab.label}</span>
+										<Icon icon={tab.icon} />
+									</Button.Root>
+								</div>
+							{/snippet}
+						</Tabs.Trigger>
+					{/each}
+				</Tabs.List>
 
-			{#each tabs as tab (tab.key)}
-				<Tabs.Content value={tab.key}>
-					<tab.component data={gameData} />
-				</Tabs.Content>
-			{/each}
-		</Tabs.Root>
+				{#each tabs as tab (tab.key)}
+					<Tabs.Content value={tab.key}>
+						<tab.component data={gameData} />
+					</Tabs.Content>
+				{/each}
+			</Tabs.Root>
+		{/if}
 	</div>
 {:else}
 	<div class="panel-anchor">
@@ -81,11 +112,29 @@ let gameData = $derived(game.data);
 
 .panel-header {
 	display: flex;
-	flex-direction: column;
-	gap: 0.125rem;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
 	padding: 0.625rem 0.75rem 0.5rem;
 	border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
 	flex-shrink: 0;
+
+	& .lead {
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
+	}
+
+	& .tail {
+		display: flex;
+		flex-direction: row;
+		gap: 0.125rem;
+
+		& :global([data-button-root]) {
+			font-size: var(--size-2xs);
+		}
+	}
 }
 
 .panel-header-game {

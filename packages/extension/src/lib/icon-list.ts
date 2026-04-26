@@ -1,6 +1,8 @@
 export const iconList = [
 	'material-symbols:water-drop',
 	'material-symbols:person',
+	'material-symbols:visibility',
+	'material-symbols:visibility-off',
 	'material-symbols:expand-more',
 	'material-symbols:moon-stars',
 	'material-symbols:groups',

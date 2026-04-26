@@ -104,7 +104,7 @@
 </script>
 
 <svelte:head>
-	<title>Krvavý chaos | {game.name}</title>
+	<title>Krvavá hodina odbila | {game.name}</title>
 </svelte:head>
 
 <section class="page editor">

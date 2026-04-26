@@ -1,4 +1,4 @@
-# Krvavý Chaos
+# Krvavá hodina odbila
 
 A Twitch **Video Overlay** extension for the Czech Blood on the Clocktower (BotC) community stream *"Krvavá hodina odbila"*.
 
