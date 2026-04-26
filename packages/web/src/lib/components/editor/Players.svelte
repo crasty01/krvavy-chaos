@@ -77,7 +77,7 @@
 		id ? (scriptChars.find((c) => c.id === id)?.name ?? id) : 'bez postavy';
 
 	const alignmentLabel = (a: BotcAlignment | null) =>
-		a ? (ALIGNMENT_LABELS[a] ?? a) : '—';
+		a ? (ALIGNMENT_LABELS[a] ?? a) : '-';
 
 	type PlayerFull = Player & { socialLinks: Array<PlayerSocialLink> };
 
@@ -334,7 +334,7 @@
 							<Select.Portal>
 								<Select.Content sideOffset={4}>
 									<Select.Viewport>
-										<Select.Item value="" label="—">—</Select.Item>
+										<Select.Item value="" label="-">-</Select.Item>
 										{#each ALIGNMENTS as a (a)}
 											<Select.Item value={a} label={ALIGNMENT_LABELS[a]}>
 												{ALIGNMENT_LABELS[a]}

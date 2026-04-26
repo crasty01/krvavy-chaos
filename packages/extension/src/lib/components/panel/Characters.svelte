@@ -91,13 +91,11 @@ let characters = $derived(new Map(customCharacters.map(character => [character.i
 	margin-bottom: 0.2rem;
 }
 
-/* Accordion.Root — character list */
 .characters :global([data-accordion-root]) {
 	display: flex;
 	flex-direction: column;
 }
 
-/* Accordion.Trigger — character row */
 .characters :global([data-accordion-trigger]) {
 	display: grid;
 	align-items: center;
@@ -145,7 +143,6 @@ let characters = $derived(new Map(customCharacters.map(character => [character.i
 	font-size: 0.9rem;
 }
 
-/* Accordion.Content — ability details */
 .characters :global([data-accordion-content][data-state='open']) {
 	padding: 0.4rem 0.4rem 0.6rem calc(0.4rem + 2rem + 0.6rem);
 	display: flex;
