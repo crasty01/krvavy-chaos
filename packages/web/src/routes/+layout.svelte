@@ -50,7 +50,10 @@ const copyUserIdIcon = $derived(STATUS_ICONS[copyUserIdState.status])
 $inspect(page);
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>
+	<link rel="icon" href={favicon} />
+	<title>{page.data.breadcrumbs?.at(-1)?.label ? `${page.data.breadcrumbs.at(-1)!.label} — Krvavý chaos` : 'Krvavý chaos'}</title>
+</svelte:head>
 
 <header>
 	<div class="lead">
