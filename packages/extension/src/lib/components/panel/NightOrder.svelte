@@ -8,7 +8,12 @@ let { data }: {
 	data: ExtensionGame;
 } = $props();
 
-const SENTINEL_LABELS: Record<string, string> = { dusk: 'soumrak', dawn: 'úsvit' };
+const SENTINEL_LABELS: Record<string, string> = {
+	dusk: 'soumrak',
+	dawn: 'úsvit',
+	minioninfo: 'informace pro přisluhovače',
+	demoninfo: 'informace pro démona',
+};
 
 const getImageUrl = (image: BotcScriptCharacter['image']): string =>
 	Array.isArray(image) ? (image[0] ?? '') : (image ?? '');
