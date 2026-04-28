@@ -115,4 +115,10 @@ export type TwitchExtensionExtension = {
 
 export type TwitchExtensionConfigContent = {
 	gameOwner?: string;
+	overlay: {
+		offsetX: number;
+		offsetY: number;
+		radius: number;
+		tokenSize: number;
+	}
 };

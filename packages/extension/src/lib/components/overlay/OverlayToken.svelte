@@ -47,7 +47,7 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 <style>
 .overlay__character {
 	position: absolute;
-	top: calc(var(--token-size) / 2);
+	top: 0;
 	left: 50%;
 	bottom: 50%;
 	transform-origin: bottom center;

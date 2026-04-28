@@ -24,13 +24,16 @@ twitchStore.listen('global', async (target, contentType, message) => {
 });
 
 let anchor = $derived(twitchStore.urlParams.anchor);
+let platform = $derived(twitchStore.urlParams.platform);
 
 $effect(() => {
 	game.handleGameUpdate();
 });
 </script>
 
-{#if anchor === 'video_overlay'}
+{#if platform === 'mobile'}
+	<Anchor.Component />
+{:else if anchor === 'video_overlay'}
 	<Overlay.DrawerPanel>
 		<Anchor.Component />
 	</Overlay.DrawerPanel>

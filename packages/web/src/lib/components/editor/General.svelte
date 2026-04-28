@@ -35,7 +35,7 @@ $effect(() => { game.name = scriptMeta.name; });
 	
 	<InputGroup label="logo">
 		{#snippet child(id)}
-			<input type="text" {id} bind:value={scriptMeta.logo}>
+			<input type="text" {id} bind:value={() => scriptMeta.logo ?? '', (value) => { scriptMeta.logo = value.trim() === '' ? undefined : value }}>
 		{/snippet}
 		{#snippet tail()}
 			{#if valibot.is(urlSchema, scriptMeta.logo)}
@@ -46,7 +46,7 @@ $effect(() => { game.name = scriptMeta.name; });
 
 	<InputGroup label="pozadí">
 		{#snippet child(id)}
-			<input type="text" {id} bind:value={scriptMeta.background}>
+			<input type="text" {id} bind:value={() => scriptMeta.background ?? '', (value) => { scriptMeta.background = value.trim() === '' ? undefined : value }}>
 		{/snippet}
 		{#snippet tail()}
 			{#if valibot.is(urlSchema, scriptMeta.background)}

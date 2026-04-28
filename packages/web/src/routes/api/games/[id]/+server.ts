@@ -35,13 +35,17 @@ export const GET: RequestHandler = async ({ params }) => {
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const { exists, canEdit, isCreator } = await canEditGame(params.id, locals.user.id);
 	if (!exists) return json({ error: 'Hra nenalezena' }, { status: 404 });
-	if (!canEdit) return json({ error: 'Nemáš oprávnění' }, { status: 403 });
+	if (!canEdit && !isCreator) return json({ error: 'Nemáš oprávnění' }, { status: 403 });
 
 	// Only creator can change editors
 	const { data, error } = await parseBody(request, PatchGameSchema);
 	if (error) return error;
 
-	if (data.editors !== undefined && !isCreator) {
+	const originalGame = await getGameById(params.id);
+	const originalEditors = new Set(originalGame?.editors.map(editor => editor.userId) ?? []);
+	const editors = new Set(data.editors);
+
+	if (!isCreator && (editors.size !== originalEditors.size || !editors.isSubsetOf(originalEditors))) {
 		return json({ error: 'Pouze tvůrce může měnit editory' }, { status: 403 });
 	}
 

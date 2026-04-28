@@ -11,6 +11,7 @@ import type {
 	TwitchExtensionConfigContent,
 } from '@krvavy-chaos/shared/types/extension';
 import type { TwitchExtensionPubSubMessage } from '@krvavy-chaos/shared/types/pubsub';
+import { parseConfig } from '../functions/config';
 
 // -- Reactive Twitch store --
 
@@ -20,8 +21,6 @@ export class TwitchExtensionStore {
 	context = $state<TwitchExtensionContext | null>(null);
 
 	broadcasterConfig = $state<TwitchExtensionConfigContent | null>(null);
-	developerConfig = $state<TwitchExtensionConfigContent | null>(null);
-	globalConfig = $state<TwitchExtensionConfigContent | null>(null);
 
 	isVisible = $state(true);
 	isHighlighted = $state(false);
@@ -38,8 +37,6 @@ export class TwitchExtensionStore {
 		auth: this.auth,
 		context: this.context,
 		broadcasterConfig: this.broadcasterConfig,
-		developerConfig: this.developerConfig,
-		globalConfig: this.globalConfig,
 		isVisible: this.isVisible,
 		isHighlighted: this.isHighlighted,
 		position: this.position,
@@ -107,19 +104,18 @@ export class TwitchExtensionStore {
 
 		this.extension.configuration.onChanged(() => {
 			const cfg = this.extension.configuration;
-			console.log('[TwitchExtensionStore] Configuration changed', { broadcaster: cfg.broadcaster, developer: cfg.developer, global: cfg.global });
-			this.broadcasterConfig = cfg.broadcaster ? JSON.parse(cfg.broadcaster.content) : null;
-			this.developerConfig = cfg.developer ? JSON.parse(cfg.developer.content) : null;
-			this.globalConfig = cfg.global ? JSON.parse(cfg.global.content) : null;
+			this.broadcasterConfig = parseConfig(cfg.broadcaster ? JSON.parse(cfg.broadcaster.content) : null);
+			console.log('[TwitchExtensionStore] Configuration changed',  this.broadcasterConfig);
 		});
 
 		this.listen('broadcast', (target, contentType, message) => {
+			console.log('[TwitchExtensionStore] Received PubSub message', { target, contentType, message });
 			if (target === 'broadcast' && contentType === 'application/json') {
 				try {
-					const parsed = JSON.parse(message);
-					this.broadcasterConfig = parsed;
+					this.broadcasterConfig = parseConfig(JSON.parse(message) ?? null)
 				} catch (e) {
 					console.error('Failed to parse broadcaster config message', e);
+					this.broadcasterConfig = parseConfig(undefined);
 				}
 			}
 		});
@@ -129,7 +125,7 @@ export class TwitchExtensionStore {
 
 	async updateConfig(segment: TwitchExtensionSegmentName, version: string, content: TwitchExtensionConfigContent) {
 		this.extension.configuration.set(segment, version, JSON.stringify(content));
-		// this.extension.send('broadcast', 'application/json', content); // can use 'global' or "wisper-<userId>", but for purpuse of this extension, broadcasting to all viewers is fine
+		this.extension.send('broadcast', 'application/json', JSON.stringify(content)); // can use 'global' or "wisper-<userId>", but for purpuse of this extension, broadcasting to all viewers is fine
 	};
 
 	/** Listen for raw PubSub messages on a target. */
