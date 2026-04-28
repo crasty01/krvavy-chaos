@@ -5,6 +5,9 @@ import { getGameById, syncGameFull, deleteGame, canEditGame, getTwitchAccountId 
 import { parseBody } from '$lib/server/validate';
 import { ScriptSchema } from '@krvavy-chaos/shared/validate/script';
 import { sendTwitchExtensionPubSubMessage } from '$lib/server/twitch';
+import { db } from '$lib/server/db';
+import { account, user } from '$lib/server/db/auth.schema';
+import { eq } from 'drizzle-orm';
 
 const GamePlayerInputSchema = v.object({
 	playerId: v.string(),
@@ -58,7 +61,12 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		})),
 	});
 
-	const ownerTwitchId = await getTwitchAccountId(locals.user.id);
+	const ownerUser = await db.query.user.findFirst({
+		where: eq(user.id, locals.user.id),
+		with: { accounts: true }
+	});
+	if (!ownerUser) return json({ error: 'Nepodařilo se najít Twitch účet' }, { status: 500 });
+	const ownerTwitchId = ownerUser.accounts.find(acc => acc.providerId === 'twitch')?.accountId;
 	if (!ownerTwitchId) return json({ error: 'Nepodařilo se najít Twitch účet' }, { status: 500 });
 
 	await sendTwitchExtensionPubSubMessage({
