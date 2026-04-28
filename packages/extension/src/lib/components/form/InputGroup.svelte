@@ -2,7 +2,7 @@
 	import { Label, useId } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 
-	let { lead, tail, child, children, label, isTextarea = false, isVertical = false, isHiddenLabel = false }: {
+	let { lead, tail, child, children, label, isTextarea = false, isVertical = false, isHiddenLabel = false, subgrid = false }: {
 		lead?: Snippet;
 		tail?: Snippet;
 		child?: Snippet<[string]>;
@@ -11,12 +11,13 @@
 		isTextarea?: boolean;
 		isVertical?: boolean;
 		isHiddenLabel?: boolean;
+		subgrid?: boolean;
 	} = $props();
 
 	let id = useId();
 </script>
 
-<div class="input-group-wrapper" class:input-group-wrapper--vertical={isVertical}>
+<div class="input-group-wrapper" class:input-group-wrapper--subgrid={subgrid} class:input-group-wrapper--vertical={isVertical}>
 	{#if !isHiddenLabel}
 		<Label.Root for={id}>
 			<span>{label}:</span>
@@ -55,6 +56,11 @@
 		flex-direction: column;
 		align-items: stretch;
 		gap: 0.6rem;
+	}
+
+	&.input-group-wrapper--subgrid {
+		display: grid;
+		grid-template-columns: subgrid;
 	}
 }
 

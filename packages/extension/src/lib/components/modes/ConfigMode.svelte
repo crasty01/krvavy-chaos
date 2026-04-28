@@ -21,64 +21,66 @@ const save = () => saveAction.trigger(async () => twitchStore.updateConfig('broa
 
 <div class="config">
 	<h2>Nastavení overlay</h2>
-	<InputGroup label="Twitch Id vlastníka hry">
-		{#snippet child(id)}
-			<input
-				{id}
-				type="text"
-				bind:value={config.gameOwner}
-			/>
-		{/snippet}
-	</InputGroup>
-	<InputGroup label="offset x">
-		{#snippet child(id)}
-			<input
-				{id}
-				type="text"
-				bind:value={config.overlay.offsetX}
-			/>
-		{/snippet}
-		{#snippet tail()}
-			<span>vmin</span>
-		{/snippet}
-	</InputGroup>
-	<InputGroup label="offset y">
-		{#snippet child(id)}
-			<input
-				{id}
-				type="text"
-				bind:value={config.overlay.offsetY}
-			/>
-		{/snippet}
-		{#snippet tail()}
-			<span>vmin</span>
-		{/snippet}
-	</InputGroup>
-	<InputGroup label="vzdálenost tokenů od středu">
-		{#snippet child(id)}
-			<input
-				{id}
-				type="text"
-				bind:value={config.overlay.radius}
-			/>
-		{/snippet}
-		{#snippet tail()}
-			<span>vmin</span>
-		{/snippet}
-	</InputGroup>
-	<InputGroup label="velikost tokenů">
-		{#snippet child(id)}
-			<input
-				{id}
-				type="text"
-				bind:value={config.overlay.tokenSize}
-			/>
-		{/snippet}
-		{#snippet tail()}
-			<span>vmin</span>
-		{/snippet}
-	</InputGroup>
-	<Button.Root data-button-variant="outline" onclick={save}>
+	<div class="config-form">
+		<InputGroup label="Twitch Id vlastníka hry" subgrid>
+			{#snippet child(id)}
+				<input
+					{id}
+					type="text"
+					bind:value={config.gameOwner}
+				/>
+			{/snippet}
+		</InputGroup>
+		<InputGroup label="offset x" subgrid>
+			{#snippet child(id)}
+				<input
+					{id}
+					type="text"
+					bind:value={config.overlay.offsetX}
+				/>
+			{/snippet}
+			{#snippet tail()}
+				<span class="tail">vmin</span>
+			{/snippet}
+		</InputGroup>
+		<InputGroup label="offset y" subgrid>
+			{#snippet child(id)}
+				<input
+					{id}
+					type="text"
+					bind:value={config.overlay.offsetY}
+				/>
+			{/snippet}
+			{#snippet tail()}
+				<span class="tail">vmin</span>
+			{/snippet}
+		</InputGroup>
+		<InputGroup label="vzdálenost tokenů od středu" subgrid>
+			{#snippet child(id)}
+				<input
+					{id}
+					type="text"
+					bind:value={config.overlay.radius}
+				/>
+			{/snippet}
+			{#snippet tail()}
+				<span class="tail">vmin</span>
+			{/snippet}
+		</InputGroup>
+		<InputGroup label="velikost tokenů" subgrid>
+			{#snippet child(id)}
+				<input
+					{id}
+					type="text"
+					bind:value={config.overlay.tokenSize}
+				/>
+			{/snippet}
+			{#snippet tail()}
+				<span class="tail">vmin</span>
+			{/snippet}
+		</InputGroup>
+	</div>
+	<Button.Root data-button-variant="accent" onclick={save}>
 		<Icon icon={saveIcon} data-spin={String(saveAction.status === 'loading')} />
 		<span>uložit</span>
 	</Button.Root>
@@ -92,10 +94,28 @@ const save = () => saveAction.trigger(async () => twitchStore.updateConfig('broa
 	padding: 1.5rem;
 	font-family: var(--font-primary, system-ui, sans-serif);
 	color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
-}
+	display: flex;
+	flex-direction: column;
+	gap: 0.6em;
+	align-items: flex-start;
 
-h2 {
-	font-size: var(--size-lg);
-	margin-block-end: 1rem;
+	& h2 {
+		font-size: var(--size-lg);
+		margin-block-end: 1rem;
+	}
+
+	& .config-form {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.2rem;
+
+		& > :global(.input-group-wrapper) {
+			grid-column: span 2;
+		}
+
+		& .tail {
+			padding-inline: 0.6rem;
+		}
+	}
 }
 </style>
