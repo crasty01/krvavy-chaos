@@ -480,14 +480,15 @@ header {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: auto auto 1fr auto auto;
 	gap: 0.125rem;
 }
 
 .player-row {
-	display: flex;
-	align-items: center;
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: span 5;
 	gap: 0.5rem;
 	padding: 0.25rem 0.5rem;
 	border-radius: 0.375rem;
@@ -535,9 +536,9 @@ header {
 }
 
 .player-selects {
-	display: flex;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 	gap: 0.5rem;
-	flex-shrink: 0;
 }
 
 .row-actions {
