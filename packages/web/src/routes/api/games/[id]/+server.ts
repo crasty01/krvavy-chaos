@@ -45,6 +45,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	if (error) return error;
 
 	const originalGame = await getGameById(params.id);
+	if (!originalGame) return json({ error: 'Hra nenalezena' }, { status: 404 });
+
 	const originalEditors = new Set(originalGame?.editors.map(editor => editor.userId) ?? []);
 	const editors = new Set(data.editors);
 
@@ -52,7 +54,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: 'Pouze tvůrce může měnit editory' }, { status: 403 });
 	}
 
-	await syncGameFull(params.id, locals.user.id, {
+	await syncGameFull(params.id, originalGame.creator.id, {
 		...data,
 		players: data.players?.map((p) => ({
 			...p,
@@ -61,12 +63,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		})),
 	});
 
-	const ownerUser = await db.query.user.findFirst({
-		where: eq(user.id, locals.user.id),
-		with: { accounts: true }
-	});
-	if (!ownerUser) return json({ error: 'Nepodařilo se najít Twitch účet' }, { status: 500 });
-	const ownerTwitchId = ownerUser.accounts.find(acc => acc.providerId === 'twitch')?.accountId;
+	const ownerTwitchId = await getTwitchAccountId(originalGame.creator.id);
 	if (!ownerTwitchId) return json({ error: 'Nepodařilo se najít Twitch účet' }, { status: 500 });
 
 	await sendTwitchExtensionPubSubMessage({
