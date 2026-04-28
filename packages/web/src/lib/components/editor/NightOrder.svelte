@@ -1,97 +1,103 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import { Button, Select } from 'bits-ui';
-	import Icon from '@iconify/svelte';
-	import type { GameFull } from '$lib/server/db';
-	import {
-		getScriptMeta,
-		isScriptCharacter,
-		isOfficialCharacterId,
-	} from '@krvavy-chaos/shared/validate/script';
+import { untrack } from 'svelte';
+import { Button, Select } from 'bits-ui';
+import Icon from '@iconify/svelte';
+import type { GameFull } from '$lib/server/db';
+import {
+	getScriptMeta,
+	isScriptCharacter,
+	isOfficialCharacterId,
+} from '@krvavy-chaos/shared/validate/script';
 
-	let { game }: { game: GameFull } = $props();
+let { game }: { game: GameFull } = $props();
 
-	const SENTINELS = ['dusk', 'dawn'];
-	const SENTINEL_LABELS: Record<string, string> = { dusk: 'soumrak', dawn: 'úsvit' };
-	const isSentinel = (id: string) => SENTINELS.includes(id);
+const SENTINELS = ['dusk', 'dawn', 'minioninfo', 'demoninfo'];
+const SENTINEL_LABELS: Record<string, string> = {
+	dusk: 'soumrak',
+	dawn: 'úsvit',
+	minioninfo: 'informace pro přisluhovače',
+	demoninfo: 'informace pro démona',
+};
 
-	const scriptMeta = $derived(getScriptMeta(game.script)!);
+const isSentinel = (id: string) => SENTINELS.includes(id);
 
-	const firstNight = $derived(scriptMeta.firstNight ?? []);
-	const otherNight = $derived(scriptMeta.otherNight ?? []);
+const scriptMeta = $derived(getScriptMeta(game.script)!);
 
-	const nameMap = $derived((() => {
-		const map = new Map<string, string>();
-		for (const entry of game.script) {
-			if (isScriptCharacter(entry)) map.set(entry.id, entry.name);
-		}
-		return map;
-	})());
+const firstNight = $derived(scriptMeta.firstNight ?? []);
+const otherNight = $derived(scriptMeta.otherNight ?? []);
 
-	const allIds = $derived([
-		...SENTINELS,
-		...game.script.filter(isScriptCharacter).map((c) => c.id),
-		...game.script.filter(isOfficialCharacterId),
-	]);
+const nameMap = $derived((() => {
+	const map = new Map<string, string>();
+	for (const entry of game.script) {
+		if (isScriptCharacter(entry)) map.set(entry.id, entry.name);
+	}
+	return map;
+})());
 
-	const availableFirst = $derived(
-		allIds
-			.filter((id) => !firstNight.includes(id))
-			.sort((a, b) => {
-				const aSentinel = isSentinel(a), bSentinel = isSentinel(b);
-				if (aSentinel !== bSentinel) return aSentinel ? -1 : 1;
-				return displayName(a).toLowerCase().localeCompare(displayName(b).toLowerCase());
-			})
-	);
-	const availableOther = $derived(
-		allIds
-			.filter((id) => !otherNight.includes(id))
-			.sort((a, b) => {
-				const aSentinel = isSentinel(a), bSentinel = isSentinel(b);
-				if (aSentinel !== bSentinel) return aSentinel ? -1 : 1;
-				return displayName(a).toLowerCase().localeCompare(displayName(b).toLowerCase());
-			})
-	);
+const allIds = $derived([
+	...SENTINELS,
+	...game.script.filter(isScriptCharacter).map((c) => c.id),
+	...game.script.filter(isOfficialCharacterId),
+]);
 
-	const displayName = (id: string) => SENTINEL_LABELS[id] ?? nameMap.get(id) ?? id;
+const availableFirst = $derived(
+	allIds
+		.filter((id) => !firstNight.includes(id))
+		.sort((a, b) => {
+			const aSentinel = isSentinel(a), bSentinel = isSentinel(b);
+			if (aSentinel !== bSentinel) return aSentinel ? -1 : 1;
+			return displayName(a).toLowerCase().localeCompare(displayName(b).toLowerCase());
+		})
+);
+const availableOther = $derived(
+	allIds
+		.filter((id) => !otherNight.includes(id))
+		.sort((a, b) => {
+			const aSentinel = isSentinel(a), bSentinel = isSentinel(b);
+			if (aSentinel !== bSentinel) return aSentinel ? -1 : 1;
+			return displayName(a).toLowerCase().localeCompare(displayName(b).toLowerCase());
+		})
+);
 
-	const setFirst = (arr: Array<string>) => { scriptMeta.firstNight = arr; };
-	const setOther = (arr: Array<string>) => { scriptMeta.otherNight = arr; };
+const displayName = (id: string) => SENTINEL_LABELS[id] ?? nameMap.get(id) ?? id;
 
-	const removeFrom = (arr: Array<string>, index: number) => arr.filter((_, i) => i !== index);
+const setFirst = (arr: Array<string>) => { scriptMeta.firstNight = arr; };
+const setOther = (arr: Array<string>) => { scriptMeta.otherNight = arr; };
 
-	const reorder = (arr: Array<string>, from: number, to: number): Array<string> => {
-		if (from === to) return arr;
-		const copy = [...arr];
-		const [item] = copy.splice(from, 1);
-		copy.splice(to, 0, item);
-		return copy;
-	};
+const removeFrom = (arr: Array<string>, index: number) => arr.filter((_, i) => i !== index);
 
-	let addFirst = $state<string | undefined>(undefined);
-	let addOther = $state<string | undefined>(undefined);
+const reorder = (arr: Array<string>, from: number, to: number): Array<string> => {
+	if (from === to) return arr;
+	const copy = [...arr];
+	const [item] = copy.splice(from, 1);
+	copy.splice(to, 0, item);
+	return copy;
+};
 
-	$effect(() => {
-		const val = addFirst;
-		if (val) {
-			untrack(() => { scriptMeta.firstNight = [...(scriptMeta.firstNight ?? []), val]; });
-			addFirst = undefined;
-		}
-	});
+let addFirst = $state<string | undefined>(undefined);
+let addOther = $state<string | undefined>(undefined);
 
-	$effect(() => {
-		const val = addOther;
-		if (val) {
-			untrack(() => { scriptMeta.otherNight = [...(scriptMeta.otherNight ?? []), val]; });
-			addOther = undefined;
-		}
-	});
+$effect(() => {
+	const val = addFirst;
+	if (val) {
+		untrack(() => { scriptMeta.firstNight = [...(scriptMeta.firstNight ?? []), val]; });
+		addFirst = undefined;
+	}
+});
 
-	// Drag-and-drop
-	let dragFirstFrom = $state<number | null>(null);
-	let dragFirstOver = $state<number | null>(null);
-	let dragOtherFrom = $state<number | null>(null);
-	let dragOtherOver = $state<number | null>(null);
+$effect(() => {
+	const val = addOther;
+	if (val) {
+		untrack(() => { scriptMeta.otherNight = [...(scriptMeta.otherNight ?? []), val]; });
+		addOther = undefined;
+	}
+});
+
+// Drag-and-drop
+let dragFirstFrom = $state<number | null>(null);
+let dragFirstOver = $state<number | null>(null);
+let dragOtherFrom = $state<number | null>(null);
+let dragOtherOver = $state<number | null>(null);
 </script>
 
 <h2>pořadí postav v noci</h2>
