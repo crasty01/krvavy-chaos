@@ -105,7 +105,8 @@ $inspect(page);
 
 <footer>
 	<div class="lead">
-	<span class="copyright">&copy; 2026 Daniel Vondra</span>
+		<span class="copyright">&copy; 2026 Daniel Vondra</span>
+		<a href="/privacy" class="privacy-link">Zásady ochrany osobních údajů</a>
 	</div>
 	<div class="tail">
 		<ThemeToggle />

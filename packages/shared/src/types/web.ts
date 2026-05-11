@@ -22,12 +22,6 @@ export type ExtensionPlayer = {
 	createdBy: string;
 	createdAt: Date;
 	updatedAt: Date;
-	socialLinks: Array<{
-		handle: string;
-		id: string;
-		platformId: string;
-		playerId: string;
-	}>;
 };
 
 export type ExtensionGamePlayer = {
@@ -37,6 +31,7 @@ export type ExtensionGamePlayer = {
 	seatOrder: number;
 	characterId: string | null;
 	alignment: BotcAlignment | null;
+	profileUrl: string | null;
 	player: ExtensionPlayer;
 };
 
@@ -63,5 +58,4 @@ export type ExtensionGame = {
 	gamePlayers: Array<ExtensionGamePlayer>;
 	editors: Array<ExtensionGameEditor>;
 	creator: ExtensionUser;
-	platforms: Array<ExtensionPlatform>;
 };

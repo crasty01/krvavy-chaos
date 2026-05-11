@@ -25,6 +25,10 @@
 		<span>Přihlásit se přes Twitch</span>
 		<Icon icon="material-symbols:arrow-outward" width=20 height=20 />
 	</Button.Root>
+	<p class="privacy-notice">
+		Přihlášením souhlasíte se zpracováním osobních údajů dle našich
+		<a href="/privacy">Zásad ochrany osobních údajů</a>.
+	</p>
 </section>
 
 <style>
@@ -48,6 +52,17 @@ section {
 	& p {
 		margin-bottom: 1rem;
 		font-family: var(--font-mono);
+	}
+}
+
+.privacy-notice {
+	font-size: 0.75rem;
+	opacity: 0.5;
+	margin-top: 0.5rem !important;
+	margin-bottom: 0 !important;
+
+	& a {
+		color: inherit;
 	}
 }
 </style>

@@ -200,6 +200,13 @@ export const createPlayer = async (userId: string, name: string) => {
 
 export const getPlayerById = async (id: string) =>
 	db.query.player.findFirst({ where: eq(player.id, id), with: { socialLinks: true } });
+
+export const getPlayerPublic = async (id: string) => db.query.player.findFirst({
+	where: eq(player.id, id),
+	columns: { id: true, name: true },
+	with: { socialLinks: { with: { platform: true } } },
+});
+
 export const updatePlayer = async (id: string, data: { name?: string }) => {
 	const [updated] = await db.update(player).set(data).where(eq(player.id, id)).returning();
 	return updated ?? null;

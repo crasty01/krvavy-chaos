@@ -47,7 +47,9 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
 
 	const isPublic =
 		pathname === '/' ||
+		pathname === '/privacy' ||
 		pathname.startsWith('/api/auth') ||
+		pathname.startsWith('/playerlink') ||
 		pathname.startsWith('/api/extension');
 
 	if (!event.locals.user && !isPublic) {

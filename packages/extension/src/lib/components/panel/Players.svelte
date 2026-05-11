@@ -4,7 +4,7 @@ import { isScriptCharacter, type BotcScriptCharacter } from '@krvavy-chaos/share
 import { Avatar } from 'bits-ui';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import type { ExtensionGame } from '@krvavy-chaos/shared/types/web';
-    import { viewerPreference } from '../../stores/preference.svelte';
+import { viewerPreference } from '../../stores/preference.svelte';
 
 let { data }: {
 	data: ExtensionGame;
@@ -18,24 +18,18 @@ const getImageUrl = (image: BotcScriptCharacter['image']): string =>
 let characterMap = $derived(
 	new Map(data.script.filter(isScriptCharacter).map(c => [c.id, c]))
 );
-let platformMap = $derived(new Map(data.platforms.map(p => [p.id, p])));
-
-const buildUrl = (urlTemplate: string | null, handle: string): string | null => {
-	if (!urlTemplate) return null;
-	return urlTemplate.replace('{handle}', handle);
-};
 </script>
 
 <div class="players">
 	<ol class="player-list">
-		{#each data.gamePlayers as gp (gp.id)}
-			{@const character = gp.characterId ? characterMap.get(gp.characterId) : null}
+		{#each data.gamePlayers as gamePlayer (gamePlayer.id)}
+			{@const character = gamePlayer.characterId ? characterMap.get(gamePlayer.characterId) : null}
 			<li class="player-row">
-				<span class="seat-index">{gp.seatOrder + 1}</span>
+				<span class="seat-index">{gamePlayer.seatOrder + 1}</span>
 				<Avatar.Root>
 					{#if character && viewerPreference.value === 'reveal'}
 						<Avatar.Image
-							src={getAlignedCharacterImage(character, gp) ?? getImageUrl(character.image)}
+							src={getAlignedCharacterImage(character, gamePlayer) ?? getImageUrl(character.image)}
 							alt={character.name}
 						/>
 					{/if}
@@ -44,40 +38,28 @@ const buildUrl = (urlTemplate: string | null, handle: string): string | null => 
 					</Avatar.Fallback>
 				</Avatar.Root>
 				<div class="player-info">
-					<span class="player-name">{gp.player.name}</span>
+					<span class="player-name">{gamePlayer.player.name}</span>
 					{#if character && viewerPreference.value === 'reveal'}
 						<span class="player-character">
 							{character.name}
-							{#if gp.alignment}
-								<span class="player-alignment" data-alignment={gp.alignment}>
-									({ALIGNMENT_LABELS[gp.alignment] ?? gp.alignment})
+							{#if gamePlayer.alignment}
+								<span class="player-alignment" data-alignment={gamePlayer.alignment}>
+									({ALIGNMENT_LABELS[gamePlayer.alignment] ?? gamePlayer.alignment})
 								</span>
 							{/if}
 						</span>
 					{/if}
 				</div>
-				{#if gp.player.socialLinks.length}
-					<div class="player-links">
-						{#each [...gp.player.socialLinks].sort((a, b) => a.platformId.localeCompare(b.platformId)) as link (link.id)}
-							{@const platform = platformMap.get(link.platformId)}
-							{@const url = buildUrl(platform?.urlTemplate ?? null, link.handle)}
-							{#if url}
-								<a
-									href={url}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="social-link"
-									title="{platform?.name ?? link.platformId}: {link.handle}"
-								>
-									{#if platform?.icon}
-										<Icon icon={platform.icon} width={16} height={16} />
-									{:else}
-										<Icon icon="material-symbols:link" width={16} height={16} />
-									{/if}
-								</a>
-							{/if}
-						{/each}
-					</div>
+				{#if gamePlayer.profileUrl}
+					<a
+						href={gamePlayer.profileUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="profile-link"
+						title="Profil hráče"
+					>
+						<Icon icon="material-symbols:open-in-new" width={16} height={16} />
+					</a>
 				{/if}
 			</li>
 		{/each}
@@ -157,18 +139,13 @@ const buildUrl = (urlTemplate: string | null, handle: string): string | null => 
 	&[data-alignment='neutral'] { color: var(--color-neutral, #a3a3a3); }
 }
 
-.player-links {
-	display: flex;
-	gap: 0.2rem;
-	flex-shrink: 0;
-}
-
-.social-link {
+.profile-link {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 1.5rem;
 	height: 1.5rem;
+	flex-shrink: 0;
 	border-radius: var(--border-radius);
 	opacity: 0.55;
 	color: inherit;
