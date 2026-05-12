@@ -8,7 +8,7 @@ import { viewerPreference, overlayVisibility } from '../../stores/preference.sve
 import { twitchStore } from '../../services/twitch.svelte';
 import { createAsyncAction } from '../../functions/async.svelte';
 
-let tabs = $state([
+const tabs = [
 	{
 		key: "characters",
 		label: "postavy",
@@ -27,7 +27,19 @@ let tabs = $state([
 		icon: "material-symbols:groups",
 		component: Panel.Players,
 	},
-]);
+	{
+		key: "settings",
+		label: "nastavení",
+		icon: "material-symbols:tune",
+		component: Panel.Settings,
+	},
+	{
+		key: "about",
+		label: "o aplikaci",
+		icon: "material-symbols:info",
+		component: Panel.About,
+	},
+];
 
 let selectedTabkey = $state(tabs[0].key);
 let gameData = $derived(game.data);
@@ -43,8 +55,8 @@ const revealCharacters = () => {
 };
 </script>
 
-{#if gameData}
-	<div class="panel-anchor">
+<div class="panel-anchor">
+	{#if gameData}
 		<header class="panel-header">
 			<div class="lead">
 				<span class="panel-header-game">{gameData.name}</span>
@@ -61,7 +73,7 @@ const revealCharacters = () => {
 						{/if}
 					</Button.Root>
 				{/if}
-				{#if anchor === 'video_overlay'}
+				{#if anchor === 'video_overlay' && viewerPreference.value === 'reveal'}
 					<Button.Root data-button-variant="ghost" onclick={overlayVisibility.toggle} aria-label={overlayVisibility.hidden ? 'Zobrazit overlay' : 'Skrýt overlay'}>
 						<Icon icon={overlayVisibility.hidden ? 'material-symbols:visibility-off' : 'material-symbols:visibility'} width={16} height={16} />
 					</Button.Root>
@@ -94,15 +106,13 @@ const revealCharacters = () => {
 				{/each}
 			</Tabs.Root>
 		{/if}
-	</div>
-{:else}
-	<div class="panel-anchor">
+	{:else}
 		<div class="empty-state">
 			<Icon icon="material-symbols:water-drop" width={32} height={32} />
 			<span>Žádná aktivní hra</span>
 		</div>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style>
 .panel-anchor {
@@ -185,7 +195,7 @@ const revealCharacters = () => {
 		gap: 1rem;
 		padding-inline: 1rem;
 		height: 100%;
-		width: 9rem;
+		width: 10rem;
 		position: absolute;
 		right: 0;
 		transition: translate 250ms ease-in-out;

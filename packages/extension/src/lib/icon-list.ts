@@ -12,4 +12,7 @@ export const iconList = [
 	'material-symbols:save',
 	'material-symbols:chevron-right',
 	'material-symbols:link',
+	'material-symbols:tune',
+	'material-symbols:settings-backup-restore',
+	'material-symbols:info',
 ]

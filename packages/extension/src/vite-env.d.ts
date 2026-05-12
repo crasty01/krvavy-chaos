@@ -4,6 +4,7 @@ declare global {
 	interface Window {
 		Twitch?: { ext?: TwitchExtension };
 	};
+	const __APP_VERSION__: string;
 };
 
 export {};

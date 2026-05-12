@@ -6,11 +6,18 @@ import Icon from '@iconify/svelte';
 import { TEAM_LABELS } from '@krvavy-chaos/shared/validate/script';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import SpoilerGate from '../SpoilerGate.svelte';
-import { viewerPreference } from '../../stores/preference.svelte';
+import { viewerPreference, viewerOverlay } from '../../stores/preference.svelte';
 import { twitchStore } from '../../services/twitch.svelte';
+import { parseConfig } from '../../functions/config';
 
 let gameData = $derived(game.data);
-let config = $derived(twitchStore.broadcasterConfig);
+let broadcasterConfig = $derived(twitchStore.broadcasterConfig);
+let broadcasterOverlay = $derived(broadcasterConfig?.overlay ?? parseConfig(null).overlay);
+let config = $derived(
+	broadcasterConfig
+		? { ...broadcasterConfig, overlay: viewerOverlay.effective(broadcasterOverlay) }
+		: null,
+);
 
 const gamePlayers = $derived(gameData?.gamePlayers);
 const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();

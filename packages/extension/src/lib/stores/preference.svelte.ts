@@ -50,3 +50,36 @@ class OverlayVisibilityStore {
 }
 
 export const overlayVisibility = new OverlayVisibilityStore();
+
+const VIEWER_OVERLAY_KEY = 'krvavy-viewer-overlay';
+
+export type ViewerOverlaySettings = {
+	offsetX: number;
+	offsetY: number;
+	radius: number;
+	tokenSize: number;
+};
+
+class ViewerOverlayStore {
+	#override = $state<ViewerOverlaySettings | null>(
+		JSON.parse(localStorage.getItem(VIEWER_OVERLAY_KEY) ?? 'null'),
+	);
+
+	get hasOverride() { return this.#override !== null; }
+	get current() { return this.#override; }
+
+	effective = (base: ViewerOverlaySettings): ViewerOverlaySettings =>
+		this.#override ?? base;
+
+	update = (values: ViewerOverlaySettings) => {
+		this.#override = { ...values };
+		localStorage.setItem(VIEWER_OVERLAY_KEY, JSON.stringify(this.#override));
+	};
+
+	reset = () => {
+		this.#override = null;
+		localStorage.removeItem(VIEWER_OVERLAY_KEY);
+	};
+}
+
+export const viewerOverlay = new ViewerOverlayStore();
