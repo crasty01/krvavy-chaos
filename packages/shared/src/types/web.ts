@@ -48,6 +48,13 @@ export type ExtensionPlatform = {
 	icon: string | null;
 };
 
+export type ExtensionOverlaySettings = {
+	offsetX: number;
+	offsetY: number;
+	radius: number;
+	tokenSize: number;
+};
+
 export type ExtensionGame = {
 	id: string;
 	name: string;
@@ -58,4 +65,5 @@ export type ExtensionGame = {
 	gamePlayers: Array<ExtensionGamePlayer>;
 	editors: Array<ExtensionGameEditor>;
 	creator: ExtensionUser;
+	broadcasterOverlay: ExtensionOverlaySettings;
 };

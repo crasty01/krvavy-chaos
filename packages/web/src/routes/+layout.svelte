@@ -59,7 +59,7 @@ $inspect(page);
 		</Button.Root>
 	</div>
 	<div class="tail">
-		{#if data.user?.twitchAccount.id}
+		{#if session.current.data && data.user?.twitchAccount.id}
 			<Tooltip.Provider>
 				<Tooltip.Root delayDuration={200}>
 					<Tooltip.Trigger>

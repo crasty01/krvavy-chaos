@@ -10,9 +10,15 @@ const PatchGamePlayerSchema = v.pipe(
 		seatOrder: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0))),
 		characterId: v.optional(v.nullable(v.pipe(v.string(), v.minLength(1)))),
 		alignment: v.optional(v.nullable(AlignmentSchema)),
+		overlayOffsetX: v.optional(v.nullable(v.number())),
+		overlayOffsetY: v.optional(v.nullable(v.number())),
+		overlayRadius: v.optional(v.nullable(v.number())),
+		overlayTokenSize: v.optional(v.nullable(v.number())),
 	}),
 	v.check(
-		(val) => val.seatOrder !== undefined || val.characterId !== undefined || val.alignment !== undefined,
+		(val) => val.seatOrder !== undefined || val.characterId !== undefined || val.alignment !== undefined
+			|| val.overlayOffsetX !== undefined || val.overlayOffsetY !== undefined
+			|| val.overlayRadius !== undefined || val.overlayTokenSize !== undefined,
 		'Žádná data',
 	),
 );

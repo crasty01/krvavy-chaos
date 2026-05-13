@@ -72,3 +72,17 @@ export const verifyTwitchExtensionJWT = (token: string): TwitchExtensionAuthToke
 		return null;
 	}
 };
+
+/** Returns the Twitch login (username) for a given Twitch user ID, or null on failure. */
+export const getTwitchLoginById = async (twitchId: string): Promise<string | null> => {
+	const appToken = await getTwitchToken();
+	const res = await fetch(`https://api.twitch.tv/helix/users?id=${encodeURIComponent(twitchId)}`, {
+		headers: {
+			'Client-ID': TWITCH_CLIENT_ID,
+			'Authorization': `Bearer ${appToken.access_token}`,
+		},
+	});
+	if (!res.ok) return null;
+	const data = await res.json() as { data: Array<{ id: string; login: string }> };
+	return data.data[0]?.login ?? null;
+};

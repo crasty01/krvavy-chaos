@@ -22,9 +22,14 @@ const PatchGameSchema = v.pipe(
 		script: v.optional(ScriptSchema),
 		editors: v.optional(v.array(v.string())),
 		players: v.optional(v.array(GamePlayerInputSchema)),
+		overlayOffsetX: v.optional(v.nullable(v.number())),
+		overlayOffsetY: v.optional(v.nullable(v.number())),
+		overlayRadius: v.optional(v.nullable(v.number())),
+		overlayTokenSize: v.optional(v.nullable(v.number())),
 	}),
 	v.check(
-		(val) => val.name !== undefined || val.script !== undefined || val.editors !== undefined || val.players !== undefined,
+		(val) => val.name !== undefined || val.script !== undefined || val.editors !== undefined || val.players !== undefined
+			|| val.overlayOffsetX !== undefined || val.overlayOffsetY !== undefined || val.overlayRadius !== undefined || val.overlayTokenSize !== undefined,
 		'Žádná data',
 	),
 );

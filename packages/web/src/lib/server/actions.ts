@@ -30,7 +30,7 @@ export const getGameById = async (id: string) => await db.query.game.findFirst({
 		gamePlayers: {
 			with: {
 				player: {
-					with: { socialLinks: true }
+					with: { socialLinks: { with: { platform: true } } }
 				}
 			},
 			orderBy: (gp, { asc }) => [asc(gp.seatOrder)],
@@ -51,7 +51,7 @@ export const createGame = async (userId: string, userName: string) => {
 	return newGame;
 };
 
-export const updateGame = async (id: string, data: { name?: string; script?: BotcScript }) => {
+export const updateGame = async (id: string, data: { name?: string; script?: BotcScript; overlayOffsetX?: number | null; overlayOffsetY?: number | null; overlayRadius?: number | null; overlayTokenSize?: number | null }) => {
 	const [updated] = await db.update(game).set(data).where(eq(game.id, id)).returning();
 	return updated ?? null;
 };
@@ -64,13 +64,24 @@ export const syncGameFull = async (
 		script?: BotcScript;
 		editors?: Array<string>;
 		players?: Array<Pick<GamePlayer, 'playerId' | 'seatOrder' | 'characterId' | 'alignment'>>;
+		overlayOffsetX?: number | null;
+		overlayOffsetY?: number | null;
+		overlayRadius?: number | null;
+		overlayTokenSize?: number | null;
 	},
 ) => {
 	await db.transaction(async (tx) => {
-		// 1. Update name + script
-		if (data.name !== undefined || data.script !== undefined) {
+		// 1. Update name + script + game-level overlay
+		if (data.name !== undefined || data.script !== undefined || data.overlayOffsetX !== undefined || data.overlayOffsetY !== undefined || data.overlayRadius !== undefined || data.overlayTokenSize !== undefined) {
 			await tx.update(game)
-				.set({ ...(data.name !== undefined && { name: data.name }), ...(data.script !== undefined && { script: data.script }) })
+				.set({
+					...(data.name !== undefined && { name: data.name }),
+					...(data.script !== undefined && { script: data.script }),
+					...(data.overlayOffsetX !== undefined && { overlayOffsetX: data.overlayOffsetX }),
+					...(data.overlayOffsetY !== undefined && { overlayOffsetY: data.overlayOffsetY }),
+					...(data.overlayRadius !== undefined && { overlayRadius: data.overlayRadius }),
+					...(data.overlayTokenSize !== undefined && { overlayTokenSize: data.overlayTokenSize }),
+				})
 				.where(eq(game.id, gameId));
 		}
 		// 2. Sync editors
@@ -170,7 +181,7 @@ export const getGamePlayerByPlayerAndGame = async (gameId: string, playerId: str
 
 export const updateGamePlayer = async (
 	id: string,
-	data: { seatOrder?: number; characterId?: string | null; alignment?: 'good' | 'neutral' | 'evil' | null },
+	data: { seatOrder?: number; characterId?: string | null; alignment?: 'good' | 'neutral' | 'evil' | null; overlayOffsetX?: number | null; overlayOffsetY?: number | null; overlayRadius?: number | null; overlayTokenSize?: number | null },
 ) => {
 	const [updated] = await db.update(gamePlayer).set(data).where(eq(gamePlayer.id, id)).returning();
 	return updated ?? null;

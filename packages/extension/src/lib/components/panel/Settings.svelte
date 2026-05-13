@@ -1,34 +1,31 @@
 <script lang="ts">
 import Icon from '@iconify/svelte';
 import { Button } from 'bits-ui';
-import type { ExtensionGame } from '@krvavy-chaos/shared/types/web';
-import { twitchStore } from '../../services/twitch.svelte';
+import type { ExtensionGame, ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
+import { game } from '../../functions/game.svelte';
 import { viewerOverlay } from '../../stores/preference.svelte';
-import { parseConfig } from '../../functions/config';
 
 // Unused — present so Settings shares the same tab component interface
 let { data: _data }: { data?: ExtensionGame } = $props();
 
-let broadcasterOverlay = $derived(
-	twitchStore.broadcasterConfig?.overlay ?? parseConfig(null).overlay,
-);
+let broadcasterOverlay = $derived(game.data?.broadcasterOverlay);
 
-// Initialize from user's stored override, or defaults (synced with broadcaster on mount via $effect)
-let local = $state(viewerOverlay.current ?? parseConfig(null).overlay);
+// Initialize from stored viewer override; synced to broadcasterOverlay by $effect when game data loads
+let local = $state<ExtensionOverlaySettings | null>(viewerOverlay.current ?? null);
 
 $effect(() => {
-	if (!viewerOverlay.hasOverride) {
+	if (broadcasterOverlay && !viewerOverlay.hasOverride) {
 		local = { ...broadcasterOverlay };
 	}
 });
 
 const onChange = () => {
-	viewerOverlay.update({ ...local });
+	if (local) viewerOverlay.update({ ...local });
 };
 
 const reset = () => {
 	viewerOverlay.reset();
-	local = { ...broadcasterOverlay };
+	if (broadcasterOverlay) local = { ...broadcasterOverlay };
 };
 </script>
 
@@ -42,6 +39,7 @@ const reset = () => {
 	</section>
 
 	<section class="settings-content">
+		{#if local}
 		<div class="setting-row">
 			<label for="setting-offset-x">Posun po ose X</label>
 			<input
@@ -97,6 +95,7 @@ const reset = () => {
 			/>
 			<span class="setting-value">{local.tokenSize} vmin</span>
 		</div>
+		{/if}
 	</section>
 
 	{#if viewerOverlay.hasOverride}

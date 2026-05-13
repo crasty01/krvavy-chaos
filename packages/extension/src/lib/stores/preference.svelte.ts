@@ -1,4 +1,5 @@
 import { game } from '../functions/game.svelte';
+import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
 const STORAGE_KEY_PREFIX = 'krvavy-viewer-preference';
 const OVERLAY_HIDDEN_KEY = 'krvavy-overlay-hidden';
@@ -53,25 +54,18 @@ export const overlayVisibility = new OverlayVisibilityStore();
 
 const VIEWER_OVERLAY_KEY = 'krvavy-viewer-overlay';
 
-export type ViewerOverlaySettings = {
-	offsetX: number;
-	offsetY: number;
-	radius: number;
-	tokenSize: number;
-};
-
 class ViewerOverlayStore {
-	#override = $state<ViewerOverlaySettings | null>(
+	#override = $state<ExtensionOverlaySettings | null>(
 		JSON.parse(localStorage.getItem(VIEWER_OVERLAY_KEY) ?? 'null'),
 	);
 
 	get hasOverride() { return this.#override !== null; }
 	get current() { return this.#override; }
 
-	effective = (base: ViewerOverlaySettings): ViewerOverlaySettings =>
+	effective = (base: ExtensionOverlaySettings): ExtensionOverlaySettings =>
 		this.#override ?? base;
 
-	update = (values: ViewerOverlaySettings) => {
+	update = (values: ExtensionOverlaySettings) => {
 		this.#override = { ...values };
 		localStorage.setItem(VIEWER_OVERLAY_KEY, JSON.stringify(this.#override));
 	};

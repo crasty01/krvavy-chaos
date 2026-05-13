@@ -1,7 +1,7 @@
 export * from './auth.schema';
 
 import { relations, sql } from "drizzle-orm";
-import { sqliteTable, text, integer, index, primaryKey, foreignKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, index, primaryKey, foreignKey } from "drizzle-orm/sqlite-core";
 import { user, session, account } from "./auth.schema";
 import type { BotcScript } from '@krvavy-chaos/shared/validate/script';
 
@@ -61,6 +61,10 @@ export const game = sqliteTable("game", {
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .$onUpdate(() => new Date())
     .notNull(),
+  overlayOffsetX: real("overlay_offset_x"),
+  overlayOffsetY: real("overlay_offset_y"),
+  overlayRadius: real("overlay_radius"),
+  overlayTokenSize: real("overlay_token_size"),
 }, (table) => [
   index("game_createdBy_idx").on(table.createdBy),
 ]);
@@ -78,6 +82,10 @@ export const gamePlayer = sqliteTable(
     seatOrder: integer("seat_order").notNull(),
     characterId: text("character_id"),
     alignment: text("alignment", { enum: ["good", "neutral", "evil"] }),
+    overlayOffsetX: real("overlay_offset_x"),
+    overlayOffsetY: real("overlay_offset_y"),
+    overlayRadius: real("overlay_radius"),
+    overlayTokenSize: real("overlay_token_size"),
   },
   (table) => [
     index("gamePlayer_gameId_idx").on(table.gameId),

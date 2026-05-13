@@ -241,6 +241,22 @@
 	};
 
 	const activeLinks = $derived(isNewPlayer ? pendingLinks : (editPlayer?.socialLinks ?? []));
+
+	const OVERLAY_DEFAULTS = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
+	let expandedOverlayId = $state<string | null>(null);
+
+	const saveOverlay = async (gp: typeof game.gamePlayers[number]) => {
+		await fetch(`/api/games/${game.id}/players/${gp.playerId}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				overlayOffsetX: gp.overlayOffsetX,
+				overlayOffsetY: gp.overlayOffsetY,
+				overlayRadius: gp.overlayRadius,
+				overlayTokenSize: gp.overlayTokenSize,
+			}),
+		});
+	};
 </script>
 
 <header>
@@ -350,6 +366,15 @@
 						<Button.Root
 							data-button-variant="ghost"
 							data-button-round
+							aria-label="Nastavení overlay"
+							aria-pressed={expandedOverlayId === gp.id}
+							onclick={() => { expandedOverlayId = expandedOverlayId === gp.id ? null : gp.id; }}
+						>
+							<Icon icon="material-symbols:tune" />
+						</Button.Root>
+						<Button.Root
+							data-button-variant="ghost"
+							data-button-round
 							onclick={() => openEditDialog(gp.player)}
 							aria-label="Upravit hráče"
 						>
@@ -365,6 +390,42 @@
 						</Button.Root>
 					</div>
 				</li>
+				{#if expandedOverlayId === gp.id}
+					<li class="overlay-row">
+						<div class="overlay-settings">
+							<span class="overlay-hint">Nastavení overlay pro streamera hrajícího na tomto místě. 1&nbsp;vmin = 1&nbsp;% kratší strany videa.</span>
+							<div class="overlay-grid">
+								<label>Posun X</label>
+								<input type="range" min="-50" max="50" step="0.1"
+									bind:value={() => gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { gp.overlayOffsetX = v; }}
+									onchange={() => saveOverlay(gp)}
+								/>
+								<span class="overlay-value">{(gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX).toFixed(1)}&nbsp;vmin</span>
+
+								<label>Posun Y</label>
+								<input type="range" min="-50" max="50" step="0.1"
+									bind:value={() => gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { gp.overlayOffsetY = v; }}
+									onchange={() => saveOverlay(gp)}
+								/>
+								<span class="overlay-value">{(gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY).toFixed(1)}&nbsp;vmin</span>
+
+								<label>Vzdálenost od středu</label>
+								<input type="range" min="10" max="60" step="0.1"
+									bind:value={() => gp.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { gp.overlayRadius = v; }}
+									onchange={() => saveOverlay(gp)}
+								/>
+								<span class="overlay-value">{(gp.overlayRadius ?? OVERLAY_DEFAULTS.radius).toFixed(1)}&nbsp;vmin</span>
+
+								<label>Velikost tokenů</label>
+								<input type="range" min="3" max="20" step="0.1"
+									bind:value={() => gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { gp.overlayTokenSize = v; }}
+									onchange={() => saveOverlay(gp)}
+								/>
+								<span class="overlay-value">{(gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize).toFixed(1)}&nbsp;vmin</span>
+							</div>
+						</div>
+					</li>
+				{/if}
 			{/each}
 		</ul>
 	{/if}
@@ -545,6 +606,50 @@ header {
 	display: flex;
 	gap: 0.125rem;
 	flex-shrink: 0;
+}
+
+.overlay-row {
+	grid-column: span 5;
+	padding: 0.5rem 0.5rem 0.75rem 2.5rem;
+	border-bottom: 1px solid light-dark(hsl(from var(--color-neutral-950) h s l / 8%), hsl(from var(--color-neutral-50) h s l / 10%));
+}
+
+.overlay-settings {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.overlay-hint {
+	font-size: 0.75rem;
+	opacity: 0.55;
+}
+
+.overlay-grid {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	gap: 0.2rem 0.5rem;
+	align-items: center;
+
+	& label {
+		font-size: 0.75rem;
+		opacity: 0.8;
+		white-space: nowrap;
+	}
+
+	& input[type='range'] {
+		accent-color: var(--color-accent-500);
+		width: 100%;
+	}
+}
+
+.overlay-value {
+	font-size: 0.75rem;
+	font-family: var(--font-mono);
+	opacity: 0.65;
+	white-space: nowrap;
+	min-width: 5rem;
+	text-align: right;
 }
 
 

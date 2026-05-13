@@ -89,6 +89,10 @@
 					characterId: gp.characterId ?? null,
 					alignment: gp.alignment ?? null,
 				})),
+				overlayOffsetX: game.overlayOffsetX ?? null,
+				overlayOffsetY: game.overlayOffsetY ?? null,
+				overlayRadius: game.overlayRadius ?? null,
+				overlayTokenSize: game.overlayTokenSize ?? null,
 			}),
 		});
 		if (!res.ok) {

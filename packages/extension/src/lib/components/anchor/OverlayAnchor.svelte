@@ -7,16 +7,10 @@ import { TEAM_LABELS } from '@krvavy-chaos/shared/validate/script';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import SpoilerGate from '../SpoilerGate.svelte';
 import { viewerPreference, viewerOverlay } from '../../stores/preference.svelte';
-import { twitchStore } from '../../services/twitch.svelte';
-import { parseConfig } from '../../functions/config';
 
 let gameData = $derived(game.data);
-let broadcasterConfig = $derived(twitchStore.broadcasterConfig);
-let broadcasterOverlay = $derived(broadcasterConfig?.overlay ?? parseConfig(null).overlay);
-let config = $derived(
-	broadcasterConfig
-		? { ...broadcasterConfig, overlay: viewerOverlay.effective(broadcasterOverlay) }
-		: null,
+let effectiveOverlay = $derived(
+	gameData ? viewerOverlay.effective(gameData.broadcasterOverlay) : null,
 );
 
 const gamePlayers = $derived(gameData?.gamePlayers);
@@ -24,12 +18,12 @@ const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 </script>
 
 <div class="overlay-anchor">
-	{#if gamePlayers && config}
+	{#if gamePlayers && effectiveOverlay}
 		{#if viewerPreference.value === 'undecided'}
 			<SpoilerGate variant="overlay" />
 		{:else if viewerPreference.value === 'reveal'}
 		<Tooltip.Provider>
-			<Overlay.Root {config}>
+			<Overlay.Root config={effectiveOverlay}>
 				{#each gamePlayers as gamePlayer, i}
 					<Overlay.Token
 						seatIndex={i}

@@ -1,20 +1,20 @@
 <script lang="ts">
-    import type { TwitchExtensionConfigContent } from '@krvavy-chaos/shared/types/extension';
+import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 import type { Snippet } from 'svelte';
 
 let { children, config }: {
 	children?: Snippet;
-	config: TwitchExtensionConfigContent;
+	config: ExtensionOverlaySettings;
 } = $props();
 </script>
 
 <section
 	id="overlay"
 	class="overlay"
-	style:--token-size="{config.overlay.tokenSize}vmin"
-	style:--overlay-radius="{config.overlay.radius}vmin"
-  style:--offset-x="{config.overlay.offsetX}vmin"
-  style:--offset-y="{config.overlay.offsetY}vmin"
+	style:--token-size="{config.tokenSize}vmin"
+	style:--overlay-radius="{config.radius}vmin"
+  style:--offset-x="{config.offsetX}vmin"
+  style:--offset-y="{config.offsetY}vmin"
 >
 	<div class="overlay__wrapper">
 		<div class="overlay__content">

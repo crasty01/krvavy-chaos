@@ -15,6 +15,13 @@
       "when": 1776890850104,
       "tag": "0001_chief_phantom_reporter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1778691518320,
+      "tag": "0002_outstanding_mimic",
+      "breakpoints": true
     }
   ]
 }
