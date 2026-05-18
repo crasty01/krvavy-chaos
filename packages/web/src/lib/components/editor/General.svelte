@@ -2,6 +2,7 @@
 import * as valibot from 'valibot';
 import InputGroup from '$lib/components/form/InputGroup.svelte';
 import ImagePreview from '$lib/components/form/ImagePreview.svelte';
+import OverlaySlider from '$lib/components/form/OverlaySlider.svelte';
 import { Switch } from 'bits-ui';
 import type { GameFull } from '$lib/server/db';
 import type { BotcScriptMeta } from '@krvavy-chaos/shared/validate/script';
@@ -69,34 +70,18 @@ const OVERLAY_DEFAULTS = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
 <h2>nastavení overlay pro game mastera</h2>
 <p class="dm-overlay-hint">Nastavení overlay pro game mastera a zároveň defaultních hodnot pro hráče. 1&nbsp;vmin = 1&nbsp;% kratší strany videa.</p>
 <div class="dm-overlay">
-	<div class="overlay-row">
-		<label for="dm-offset-x">Posun X</label>
-		<input id="dm-offset-x" type="range" min="-50" max="50" step="0.1"
-			bind:value={() => game.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { game.overlayOffsetX = v; }}
-		/>
-		<span class="overlay-value">{(game.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX).toFixed(1)}&nbsp;vmin</span>
-	</div>
-	<div class="overlay-row">
-		<label for="dm-offset-y">Posun Y</label>
-		<input id="dm-offset-y" type="range" min="-50" max="50" step="0.1"
-			bind:value={() => game.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { game.overlayOffsetY = v; }}
-		/>
-		<span class="overlay-value">{(game.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY).toFixed(1)}&nbsp;vmin</span>
-	</div>
-	<div class="overlay-row">
-		<label for="dm-radius">Vzdálenost od středu</label>
-		<input id="dm-radius" type="range" min="10" max="60" step="0.1"
-			bind:value={() => game.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { game.overlayRadius = v; }}
-		/>
-		<span class="overlay-value">{(game.overlayRadius ?? OVERLAY_DEFAULTS.radius).toFixed(1)}&nbsp;vmin</span>
-	</div>
-	<div class="overlay-row">
-		<label for="dm-token-size">Velikost tokenů</label>
-		<input id="dm-token-size" type="range" min="3" max="20" step="0.1"
-			bind:value={() => game.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { game.overlayTokenSize = v; }}
-		/>
-		<span class="overlay-value">{(game.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize).toFixed(1)}&nbsp;vmin</span>
-	</div>
+	<OverlaySlider label="Posun X" min={-50} max={50} step={0.1}
+		bind:value={() => game.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { game.overlayOffsetX = v; }}
+	/>
+	<OverlaySlider label="Posun Y" min={-50} max={50} step={0.1}
+		bind:value={() => game.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { game.overlayOffsetY = v; }}
+	/>
+	<OverlaySlider label="Vzdálenost od středu" min={10} max={60} step={0.1}
+		bind:value={() => game.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { game.overlayRadius = v; }}
+	/>
+	<OverlaySlider label="Velikost tokenů" min={3} max={20} step={0.1}
+		bind:value={() => game.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { game.overlayTokenSize = v; }}
+	/>
 </div>
 
 <style>
@@ -121,33 +106,6 @@ const OVERLAY_DEFAULTS = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
 .dm-overlay {
 	display: flex;
 	flex-direction: column;
-	gap: 0.3rem;
-}
-
-.overlay-row {
-	display: grid;
-	grid-template-columns: auto 1fr auto;
-	gap: 0.2rem 0.5rem;
-	align-items: center;
-
-	& label {
-		font-size: 0.75rem;
-		opacity: 0.8;
-		white-space: nowrap;
-	}
-
-	& input[type='range'] {
-		accent-color: var(--color-accent-500);
-		width: 100%;
-	}
-}
-
-.overlay-value {
-	font-size: 0.75rem;
-	font-family: var(--font-mono);
-	opacity: 0.65;
-	white-space: nowrap;
-	min-width: 5rem;
-	text-align: right;
+	gap: 0.5rem;
 }
 </style>

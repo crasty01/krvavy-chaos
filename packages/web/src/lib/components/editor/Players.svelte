@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { Button, Select } from 'bits-ui';
+	import { Button, Select, Dialog } from 'bits-ui';
 	import {
 		getScriptCharacters,
 		isOfficialCharacterId,
@@ -9,6 +9,7 @@
 	import InputGroup from '$lib/components/form/InputGroup.svelte';
 	import EditorDialog from '$lib/components/form/EditorDialog.svelte';
 	import Pill from '$lib/components/form/Pill.svelte';
+	import OverlaySlider from '$lib/components/form/OverlaySlider.svelte';
 	import type { GameFull, Player, PlayerSocialLink, Platform } from '$lib/server/db';
 	import type { BotcAlignment } from '@krvavy-chaos/shared/validate/script';
 
@@ -29,27 +30,28 @@
 
 	let addPlayerId = $state<string | undefined>(undefined);
 
-	$effect(() => {
-		const id = addPlayerId;
+	const addExistingPlayer = (id: string | undefined) => {
 		if (!id) return;
-		untrack(() => {
-			const found = allPlayers.find((p) => p.id === id);
-			if (!found) return;
-			game.gamePlayers = [
-				...game.gamePlayers,
-				{
-					id: crypto.randomUUID(),
-					gameId: game.id,
-					playerId: id,
-					seatOrder: game.gamePlayers.length,
-					characterId: null,
-					alignment: null,
-					player: found,
-				},
-			];
-			addPlayerId = undefined;
-		});
-	});
+		const found = allPlayers.find((p) => p.id === id);
+		if (!found) return;
+		game.gamePlayers = [
+			...game.gamePlayers,
+			{
+				id: crypto.randomUUID(),
+				gameId: game.id,
+				playerId: id,
+				seatOrder: game.gamePlayers.length,
+				characterId: null,
+				alignment: null,
+				overlayOffsetX: null,
+				overlayOffsetY: null,
+				overlayRadius: null,
+				overlayTokenSize: null,
+				player: found,
+			},
+		];
+		addPlayerId = undefined;
+	};
 
 	const removePlayer = (index: number) => {
 		const updated = game.gamePlayers.filter((_, i) => i !== index);
@@ -144,6 +146,10 @@
 						seatOrder: game.gamePlayers.length,
 						characterId: null,
 						alignment: null,
+						overlayOffsetX: null,
+						overlayOffsetY: null,
+						overlayRadius: null,
+						overlayTokenSize: null,
 						player: created,
 					},
 				];
@@ -243,7 +249,7 @@
 	const activeLinks = $derived(isNewPlayer ? pendingLinks : (editPlayer?.socialLinks ?? []));
 
 	const OVERLAY_DEFAULTS = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
-	let expandedOverlayId = $state<string | null>(null);
+	let overlayDialogGp = $state<typeof game.gamePlayers[number] | null>(null);
 
 	const saveOverlay = async (gp: typeof game.gamePlayers[number]) => {
 		await fetch(`/api/games/${game.id}/players/${gp.playerId}`, {
@@ -276,7 +282,7 @@
 		
 	{#if availablePlayers.length > 0}
 		<div class="add-existing">
-			<Select.Root type="single" bind:value={addPlayerId}>
+			<Select.Root type="single" bind:value={addPlayerId} onValueChange={addExistingPlayer}>
 				<Select.Trigger>
 					<span>přidat hráče ze seznamu</span>
 					<Icon icon="material-symbols:keyboard-arrow-down" />
@@ -367,8 +373,7 @@
 							data-button-variant="ghost"
 							data-button-round
 							aria-label="Nastavení overlay"
-							aria-pressed={expandedOverlayId === gp.id}
-							onclick={() => { expandedOverlayId = expandedOverlayId === gp.id ? null : gp.id; }}
+							onclick={() => { overlayDialogGp = gp; }}
 						>
 							<Icon icon="material-symbols:tune" />
 						</Button.Root>
@@ -390,46 +395,42 @@
 						</Button.Root>
 					</div>
 				</li>
-				{#if expandedOverlayId === gp.id}
-					<li class="overlay-row">
-						<div class="overlay-settings">
-							<span class="overlay-hint">Nastavení overlay pro streamera hrajícího na tomto místě. 1&nbsp;vmin = 1&nbsp;% kratší strany videa.</span>
-							<div class="overlay-grid">
-								<label>Posun X</label>
-								<input type="range" min="-50" max="50" step="0.1"
-									bind:value={() => gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { gp.overlayOffsetX = v; }}
-									onchange={() => saveOverlay(gp)}
-								/>
-								<span class="overlay-value">{(gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX).toFixed(1)}&nbsp;vmin</span>
-
-								<label>Posun Y</label>
-								<input type="range" min="-50" max="50" step="0.1"
-									bind:value={() => gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { gp.overlayOffsetY = v; }}
-									onchange={() => saveOverlay(gp)}
-								/>
-								<span class="overlay-value">{(gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY).toFixed(1)}&nbsp;vmin</span>
-
-								<label>Vzdálenost od středu</label>
-								<input type="range" min="10" max="60" step="0.1"
-									bind:value={() => gp.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { gp.overlayRadius = v; }}
-									onchange={() => saveOverlay(gp)}
-								/>
-								<span class="overlay-value">{(gp.overlayRadius ?? OVERLAY_DEFAULTS.radius).toFixed(1)}&nbsp;vmin</span>
-
-								<label>Velikost tokenů</label>
-								<input type="range" min="3" max="20" step="0.1"
-									bind:value={() => gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { gp.overlayTokenSize = v; }}
-									onchange={() => saveOverlay(gp)}
-								/>
-								<span class="overlay-value">{(gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize).toFixed(1)}&nbsp;vmin</span>
-							</div>
-						</div>
-					</li>
-				{/if}
 			{/each}
 		</ul>
 	{/if}
 </div>
+
+<Dialog.Root open={overlayDialogGp !== null} onOpenChange={(open) => { if (!open) overlayDialogGp = null; }}>
+	<Dialog.Portal>
+		<Dialog.Overlay />
+		<Dialog.Content>
+			<Dialog.Title>Nastavení overlay — {overlayDialogGp?.player.name}</Dialog.Title>
+			<Dialog.Description>Nastavení overlay pro streamera hrajícího na tomto místě. 1&nbsp;vmin = 1&nbsp;% kratší strany videa.</Dialog.Description>
+			{#if overlayDialogGp}
+				{@const gp = overlayDialogGp}
+				<div class="overlay-dialog-sliders">
+					<OverlaySlider label="Posun X" min={-50} max={50} step={0.1}
+						bind:value={() => gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { gp.overlayOffsetX = v; }}
+						onchange={() => saveOverlay(gp)}
+					/>
+					<OverlaySlider label="Posun Y" min={-50} max={50} step={0.1}
+						bind:value={() => gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { gp.overlayOffsetY = v; }}
+						onchange={() => saveOverlay(gp)}
+					/>
+					<OverlaySlider label="Vzdálenost od středu" min={10} max={60} step={0.1}
+						bind:value={() => gp.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { gp.overlayRadius = v; }}
+						onchange={() => saveOverlay(gp)}
+					/>
+					<OverlaySlider label="Velikost tokenů" min={3} max={20} step={0.1}
+						bind:value={() => gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { gp.overlayTokenSize = v; }}
+						onchange={() => saveOverlay(gp)}
+					/>
+				</div>
+			{/if}
+			<Dialog.Close data-button-variant="outline">Zavřít</Dialog.Close>
+		</Dialog.Content>
+	</Dialog.Portal>
+</Dialog.Root>
 
 <EditorDialog
 	bind:open={editOpen}
@@ -608,50 +609,12 @@ header {
 	flex-shrink: 0;
 }
 
-.overlay-row {
-	grid-column: span 5;
-	padding: 0.5rem 0.5rem 0.75rem 2.5rem;
-	border-bottom: 1px solid light-dark(hsl(from var(--color-neutral-950) h s l / 8%), hsl(from var(--color-neutral-50) h s l / 10%));
-}
-
-.overlay-settings {
+.overlay-dialog-sliders {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.6rem;
+	padding-block: 0.5rem;
 }
-
-.overlay-hint {
-	font-size: 0.75rem;
-	opacity: 0.55;
-}
-
-.overlay-grid {
-	display: grid;
-	grid-template-columns: auto 1fr auto;
-	gap: 0.2rem 0.5rem;
-	align-items: center;
-
-	& label {
-		font-size: 0.75rem;
-		opacity: 0.8;
-		white-space: nowrap;
-	}
-
-	& input[type='range'] {
-		accent-color: var(--color-accent-500);
-		width: 100%;
-	}
-}
-
-.overlay-value {
-	font-size: 0.75rem;
-	font-family: var(--font-mono);
-	opacity: 0.65;
-	white-space: nowrap;
-	min-width: 5rem;
-	text-align: right;
-}
-
 
 .link-list {
 	list-style: none;
