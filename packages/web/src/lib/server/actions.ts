@@ -1,5 +1,5 @@
 import { db } from './db';
-import type { GamePlayer } from './db';
+import type { GamePlayer, User } from './db';
 import { and, eq, like, or, sql, inArray, notInArray } from 'drizzle-orm';
 import { game, user, player, gamePlayer, gameEditor, account, platform, playerSocialLink } from './db/schema';
 import type { BotcScript, BotcScriptMeta } from '@krvavy-chaos/shared/validate/script';
@@ -241,7 +241,7 @@ export const removePlayerSocialLink = async (id: string, playerId: string) => {
 	);
 };
 
-export const getUserByTwitchId = async (twitchId: string) => {
+export const getUserByTwitchId = async (twitchId: string): Promise<User | null> => {
 	const acct = await db.query.account.findFirst({
 		where: and(eq(account.providerId, 'twitch'), eq(account.accountId, twitchId)),
 		with: { user: true },
