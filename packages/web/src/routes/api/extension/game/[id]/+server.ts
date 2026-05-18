@@ -28,7 +28,17 @@ export const GET: RequestHandler = async ({ request, params }) => {
 				socialLink.platformId === 'twitch' &&
 				socialLink.handle.toLowerCase() === channelOwner.login.toLowerCase(),
 		),
-	)
+	);
+
+	console.log({
+		isGameMaster,
+		gameOwnerTwitchId: params.id,
+		channelOwnerTwitchId: decodedToken.channel_id,
+		channelOwner,
+		gameOwner,
+		activeGame,
+		channelGamePlayer,
+	});
 
 	let broadcasterOverlay: ExtensionOverlaySettings = isGameMaster ? {
 		offsetX: activeGame.overlayOffsetX ?? DEFAULT_OVERLAY.offsetX,

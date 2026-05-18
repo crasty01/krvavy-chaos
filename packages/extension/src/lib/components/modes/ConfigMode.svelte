@@ -31,61 +31,11 @@ const save = () => saveAction.trigger(async () => twitchStore.updateConfig('broa
 				/>
 			{/snippet}
 		</InputGroup>
-		<InputGroup label="offset x" subgrid>
-			{#snippet child(id)}
-				<input
-					{id}
-					type="text"
-					bind:value={config.overlay.offsetX}
-				/>
-			{/snippet}
-			{#snippet tail()}
-				<span class="tail">vmin</span>
-			{/snippet}
-		</InputGroup>
-		<InputGroup label="offset y" subgrid>
-			{#snippet child(id)}
-				<input
-					{id}
-					type="text"
-					bind:value={config.overlay.offsetY}
-				/>
-			{/snippet}
-			{#snippet tail()}
-				<span class="tail">vmin</span>
-			{/snippet}
-		</InputGroup>
-		<InputGroup label="vzdálenost tokenů od středu" subgrid>
-			{#snippet child(id)}
-				<input
-					{id}
-					type="text"
-					bind:value={config.overlay.radius}
-				/>
-			{/snippet}
-			{#snippet tail()}
-				<span class="tail">vmin</span>
-			{/snippet}
-		</InputGroup>
-		<InputGroup label="velikost tokenů" subgrid>
-			{#snippet child(id)}
-				<input
-					{id}
-					type="text"
-					bind:value={config.overlay.tokenSize}
-				/>
-			{/snippet}
-			{#snippet tail()}
-				<span class="tail">vmin</span>
-			{/snippet}
-		</InputGroup>
 	</div>
 	<Button.Root data-button-variant="accent" onclick={save}>
 		<Icon icon={saveIcon} data-spin={String(saveAction.status === 'loading')} />
 		<span>uložit</span>
 	</Button.Root>
-
-	<p><i>* 1vmin je 1% výšky/šířky (ta menší z nich) videa</i></p>
 </div>
 
 <style>
@@ -111,10 +61,6 @@ const save = () => saveAction.trigger(async () => twitchStore.updateConfig('broa
 
 		& > :global(.input-group-wrapper) {
 			grid-column: span 2;
-		}
-
-		& .tail {
-			padding-inline: 0.6rem;
 		}
 	}
 }
