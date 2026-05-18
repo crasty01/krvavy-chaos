@@ -1,6 +1,6 @@
 import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_EXTENSION_SECRET, TWITCH_USER_ID } from '$env/static/private';
 import jwt from 'jsonwebtoken';
-import type { TwitchAuthToken } from '@krvavy-chaos/shared/types/twitch';
+import type { TwitchAuthToken, TwitchUser } from '@krvavy-chaos/shared/types/twitch';
 import type { TwitchExtensionAuthToken } from '@krvavy-chaos/shared/types/extension';
 import type { TwitchExtensionPubSubMessage, TwitchExtensionPubSubMessageOptions } from '@krvavy-chaos/shared/types/pubsub';
 
@@ -74,7 +74,7 @@ export const verifyTwitchExtensionJWT = (token: string): TwitchExtensionAuthToke
 };
 
 /** Returns the Twitch login (username) for a given Twitch user ID, or null on failure. */
-export const getTwitchLoginById = async (twitchId: string): Promise<string | null> => {
+export const getTwitchChannelById = async (twitchId: string) => {
 	const appToken = await getTwitchToken();
 	const res = await fetch(`https://api.twitch.tv/helix/users?id=${encodeURIComponent(twitchId)}`, {
 		headers: {
@@ -83,6 +83,6 @@ export const getTwitchLoginById = async (twitchId: string): Promise<string | nul
 		},
 	});
 	if (!res.ok) return null;
-	const data = await res.json() as { data: Array<{ id: string; login: string }> };
-	return data.data[0]?.login ?? null;
+	const data = await res.json() as { data: Array<TwitchUser> };
+	return data.data[0] ?? null;
 };

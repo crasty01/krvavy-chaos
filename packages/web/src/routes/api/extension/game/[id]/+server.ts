@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { verifyTwitchExtensionJWT, getTwitchLoginById } from '$lib/server/twitch';
+import { verifyTwitchExtensionJWT, getTwitchChannelById } from '$lib/server/twitch';
 import { getUserByTwitchId, getGameById } from '$lib/server/actions';
 import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
@@ -32,14 +32,14 @@ export const GET: RequestHandler = async ({ request }) => {
 			tokenSize: activeGame.overlayTokenSize ?? DEFAULT_OVERLAY.tokenSize,
 		};
 	} else {
-		const channelLogin = await getTwitchLoginById(decodedToken.channel_id);
+		const channel = await getTwitchChannelById(decodedToken.channel_id);
 
-		const channelGamePlayer = channelLogin
+		const channelGamePlayer = channel?.login
 			? activeGame.gamePlayers.find((gp) =>
 					gp.player.socialLinks.some(
 						(sl) =>
 							sl.platformId === 'twitch' &&
-							sl.handle.toLowerCase() === channelLogin.toLowerCase(),
+							sl.handle.toLowerCase() === channel.login.toLowerCase(),
 					),
 			  )
 			: undefined;
