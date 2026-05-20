@@ -34,7 +34,7 @@ const reset = () => {
 	<h3>Nastavení overlay</h3>
 
 	<section class="settings-header">
-		<span class="settings-hint">Každý streamer může mít jinak upravený vizuál hry, ale nemusí mít čas to nastavit v rozšíření, takže to občas zbyde na divákovi, aby si to upravil sám.</span>
+		<!-- <span class="settings-hint">Každý streamer může mít jinak upravený vizuál hry, ale nemusí mít čas to nastavit v rozšíření, takže to občas zbyde na divákovi, aby si to upravil sám.</span> -->
 		<span class="settings-hint">Nastavení platí pouze pro vás.</span>
 		<span class="settings-hint">1 vmin = 1 % kratší strany videa.</span>
 	</section>
@@ -48,14 +48,14 @@ const reset = () => {
 		{/if}
 	</section>
 
-	{#if viewerOverlay.hasOverride}
+	<!-- {#if viewerOverlay.hasOverride} -->
 		<section class="settings-reset">
-			<Button.Root data-button-variant="outline" class="reset-btn" onclick={reset}>
+			<Button.Root disabled={viewerOverlay.hasOverride} data-button-variant="outline" class="reset-btn" onclick={reset}>
 				<Icon icon="material-symbols:settings-backup-restore" width={16} height={16} />
 				<span>Obnovit nastavení streamera</span>
 			</Button.Root>
 		</section>
-	{/if}
+	<!-- {/if} -->
 </div>
 
 <style>

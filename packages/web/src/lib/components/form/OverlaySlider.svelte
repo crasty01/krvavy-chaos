@@ -29,7 +29,6 @@ let { label, value = $bindable(), min, max, step, unit = 'vmin', onchange }: {
 .label {
 	grid-column: 1 / 4;
 	grid-row: 1;
-	font-size: 0.75rem;
 	opacity: 0.8;
 }
 

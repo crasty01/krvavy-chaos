@@ -4,6 +4,10 @@ import { twitchStore } from '../services/twitch.svelte';
 
 export class Game {
 	data = $state<ExtensionGame | null>(null);
+	loading = $state(true);
+	#loadingTimeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+		this.loading = false;
+	}, 10_000);
 
 	constructor() {}
 
@@ -24,6 +28,14 @@ export class Game {
 			headers: { Authorization: `Bearer ${twitchStore.auth?._token}` },
 		});
 		this.data = await response.json();
+
+		if (this.loading) {
+			this.loading = false;
+			if (this.#loadingTimeout !== null) {
+				clearTimeout(this.#loadingTimeout);
+				this.#loadingTimeout = null;
+			}
+		}
 	}
 }
 

@@ -168,6 +168,7 @@ let activeTab = $state<'first' | 'other'>('first');
 }
 
 .order-index {
+	line-height: 0.875rem;
 	font-size: 0.7rem;
 	font-weight: 600;
 	opacity: 0.4;
@@ -176,6 +177,7 @@ let activeTab = $state<'first' | 'other'>('first');
 }
 
 .sentinel-name {
+	line-height: 0.875rem;
 	font-size: 0.8rem;
 	font-style: italic;
 	opacity: 0.7;
@@ -189,6 +191,7 @@ let activeTab = $state<'first' | 'other'>('first');
 }
 
 .order-name {
+	line-height: 0.875rem;
 	font-size: 0.875rem;
 	font-weight: 500;
 	white-space: nowrap;

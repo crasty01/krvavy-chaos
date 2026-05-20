@@ -108,8 +108,13 @@ const revealCharacters = () => {
 		{/if}
 	{:else}
 		<div class="empty-state">
-			<Icon icon="material-symbols:water-drop" width={32} height={32} />
-			<span>Žádná aktivní hra</span>
+			{#if game.loading}
+				<Icon icon="material-symbols:progress-activity" data-spin="true" width={32} height={32} />
+				<span>Načítání...</span>
+			{:else}
+				<Icon icon="material-symbols:water-drop" width={32} height={32} />
+				<span>Žádná aktivní hra</span>
+			{/if}
 		</div>
 	{/if}
 </div>

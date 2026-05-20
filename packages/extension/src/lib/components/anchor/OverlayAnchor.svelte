@@ -18,7 +18,11 @@ const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 </script>
 
 <div class="overlay-anchor">
-	{#if gamePlayers && effectiveOverlay}
+	{#if !gamePlayers && game.loading}
+		<div class="overlay-loading">
+			<Icon icon="material-symbols:progress-activity" data-spin="true" width={40} height={40} />
+		</div>
+	{:else if gamePlayers && effectiveOverlay}
 		{#if viewerPreference.value === 'undecided'}
 			<SpoilerGate variant="overlay" />
 		{:else if viewerPreference.value === 'reveal'}
@@ -72,6 +76,16 @@ const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 </div>
 
 <style>
+.overlay-loading {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	color: rgba(255, 255, 255, 0.6);
+}
+
 .character-tooltip {
 	max-width: 28rem;
 	display: flex;
