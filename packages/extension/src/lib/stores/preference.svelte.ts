@@ -1,4 +1,5 @@
 import { game } from '../functions/game.svelte';
+import { twitchStore } from '../services/twitch.svelte';
 import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
 const STORAGE_KEY_PREFIX = 'krvavy-viewer-preference';
@@ -41,26 +42,45 @@ class ViewerPreferenceStore {
 export const viewerPreference = new ViewerPreferenceStore();
 
 const VIEWER_OVERLAY_KEY = 'krvavy-viewer-overlay';
+const overlayKey = (channelId: string) => `${VIEWER_OVERLAY_KEY}:${channelId}`;
+const readStoredOverlay = (channelId: string): ExtensionOverlaySettings | null =>
+	JSON.parse(localStorage.getItem(overlayKey(channelId)) ?? 'null');
 
 class ViewerOverlayStore {
-	#override = $state<ExtensionOverlaySettings | null>(
-		JSON.parse(localStorage.getItem(VIEWER_OVERLAY_KEY) ?? 'null'),
-	);
+	// channelId → settings | null (null = explicitly reset) — populated lazily on first mutation per channel
+	#data = $state<Record<string, ExtensionOverlaySettings | null>>({});
 
-	get hasOverride() { return this.#override !== null; }
-	get current() { return this.#override; }
+	get hasOverride(): boolean {
+		const id = twitchStore.channelId;
+		if (!id) return false;
+		// Reading #data[id] makes this getter reactive to update/reset calls
+		const cached = this.#data[id];
+		return cached !== undefined ? cached !== null : readStoredOverlay(id) !== null;
+	}
+
+	get current(): ExtensionOverlaySettings | null {
+		const id = twitchStore.channelId;
+		if (!id) return null;
+		// Reading #data[id] makes this getter reactive to update/reset calls
+		const cached = this.#data[id];
+		return cached !== undefined ? cached : readStoredOverlay(id);
+	}
 
 	effective = (base: ExtensionOverlaySettings): ExtensionOverlaySettings =>
-		this.#override ?? base;
+		this.current ?? base;
 
 	update = (values: ExtensionOverlaySettings) => {
-		this.#override = { ...values };
-		localStorage.setItem(VIEWER_OVERLAY_KEY, JSON.stringify(this.#override));
+		const id = twitchStore.channelId;
+		if (!id) return;
+		this.#data[id] = { ...values };
+		localStorage.setItem(overlayKey(id), JSON.stringify(values));
 	};
 
 	reset = () => {
-		this.#override = null;
-		localStorage.removeItem(VIEWER_OVERLAY_KEY);
+		const id = twitchStore.channelId;
+		if (!id) return;
+		this.#data[id] = null;
+		localStorage.removeItem(overlayKey(id));
 	};
 }
 
@@ -128,17 +148,28 @@ export const playerGuesses = new PlayerGuessesStore();
 const TOKEN_STYLE_KEY = 'krvavy-viewer-token-style';
 export type TokenStyle = 'icon' | 'color' | 'none';
 
-const readTokenStyle = (): TokenStyle => {
-	const stored = localStorage.getItem(TOKEN_STYLE_KEY);
+const tokenStyleKey = (channelId: string) => `${TOKEN_STYLE_KEY}:${channelId}`;
+const readTokenStyle = (channelId: string): TokenStyle => {
+	const stored = localStorage.getItem(tokenStyleKey(channelId));
 	return stored === 'icon' || stored === 'color' || stored === 'none' ? stored : 'icon';
 };
 
 class TokenStyleStore {
-	value = $state<TokenStyle>(readTokenStyle());
+	// channelId → style — populated lazily on first mutation per channel
+	#data = $state<Record<string, TokenStyle>>({});
+
+	get value(): TokenStyle {
+		const id = twitchStore.channelId;
+		if (!id) return 'icon';
+		// Reading #data[id] makes this getter reactive to set calls
+		return this.#data[id] ?? readTokenStyle(id);
+	}
 
 	set = (style: TokenStyle) => {
-		this.value = style;
-		localStorage.setItem(TOKEN_STYLE_KEY, style);
+		const id = twitchStore.channelId;
+		if (!id) return;
+		this.#data[id] = style;
+		localStorage.setItem(tokenStyleKey(id), style);
 	};
 }
 

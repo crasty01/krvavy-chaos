@@ -1,6 +1,6 @@
 <script lang="ts">
 import Icon from '@iconify/svelte';
-import { Button, ToggleGroup } from 'bits-ui';
+import { ToggleGroup } from 'bits-ui';
 import type { ExtensionGame, ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 import { game } from '../../functions/game.svelte';
 import { viewerOverlay, tokenStyle, type TokenStyle } from '../../stores/preference.svelte';
@@ -24,15 +24,20 @@ const onChange = () => {
 	if (local) viewerOverlay.update({ ...local });
 };
 
-const reset = () => {
-	viewerOverlay.reset();
-	if (broadcasterOverlay) local = { ...broadcasterOverlay };
+const resetPosition = () => {
+	if (!local || !broadcasterOverlay) return;
+	local = { ...local, offsetX: broadcasterOverlay.offsetX, offsetY: broadcasterOverlay.offsetY };
+	viewerOverlay.update({ ...local });
+};
+
+const resetDimensions = () => {
+	if (!local || !broadcasterOverlay) return;
+	local = { ...local, radius: broadcasterOverlay.radius, tokenSize: broadcasterOverlay.tokenSize };
+	viewerOverlay.update({ ...local });
 };
 </script>
 
 <div class="settings">
-	<h3>Nastavení overlay</h3>
-
 	<div class="settings-group">
 		<div class="settings-group-header">
 			<Icon icon="material-symbols:palette" width={14} height={14} />
@@ -52,6 +57,9 @@ const reset = () => {
 		<div class="settings-group-header">
 			<Icon icon="material-symbols:open-with" width={14} height={14} />
 			<span>Pozice</span>
+			<button class="reset-icon-btn" onclick={resetPosition} disabled={!broadcasterOverlay} title="Obnovit nastavení streamera">
+				<Icon icon="material-symbols:settings-backup-restore" width={13} height={13} />
+			</button>
 		</div>
 		{#if local}
 			<OverlaySlider label="Posun po ose X" min={-50} max={50} step={0.1} bind:value={local.offsetX} onchange={onChange} />
@@ -63,6 +71,9 @@ const reset = () => {
 		<div class="settings-group-header">
 			<Icon icon="material-symbols:straighten" width={14} height={14} />
 			<span>Rozměry</span>
+			<button class="reset-icon-btn" onclick={resetDimensions} disabled={!broadcasterOverlay} title="Obnovit nastavení streamera">
+				<Icon icon="material-symbols:settings-backup-restore" width={13} height={13} />
+			</button>
 		</div>
 		{#if local}
 			<OverlaySlider label="Vzdálenost tokenů od středu" min={10} max={60} step={0.1} bind:value={local.radius} onchange={onChange} />
@@ -70,15 +81,6 @@ const reset = () => {
 		{/if}
 	</div>
 
-	<Button.Root disabled={viewerOverlay.hasOverride} data-button-variant="outline" class="reset-btn" onclick={reset}>
-		<Icon icon="material-symbols:settings-backup-restore" width={16} height={16} />
-		<span>Obnovit nastavení streamera</span>
-	</Button.Root>
-
-	<div class="settings-hints">
-		<p class="settings-hint">Nastavení platí pouze pro vás.</p>
-		<p class="settings-hint">1 vmin = 1 % kratší strany videa.</p>
-	</div>
 </div>
 
 <style>
@@ -113,6 +115,27 @@ const reset = () => {
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
 	opacity: 0.5;
+
+	.reset-icon-btn {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+		padding: 0;
+		background: none;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.6;
+
+		&:hover {
+			opacity: 1;
+		}
+
+		&:disabled {
+			opacity: 0.25;
+			cursor: default;
+		}
+	}
 }
 
 .settings-hints {
@@ -155,14 +178,12 @@ const reset = () => {
 	}
 
 	&[data-state='on'] {
-		background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+		background-color: var(--color-accent-500);
+		color: white;
 		opacity: 1;
 		font-weight: 600;
 	}
 }
 
-:global(.reset-btn) {
-	font-size: var(--size-2xs);
-	align-self: flex-start;
-}
+
 </style>

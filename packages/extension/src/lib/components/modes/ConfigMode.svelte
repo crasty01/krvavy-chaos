@@ -20,7 +20,7 @@ const save = () => saveAction.trigger(async () => twitchStore.updateConfig('broa
 </script>
 
 <div class="config">
-	<h2>Nastavení overlay</h2>
+	<h2>Nastavení</h2>
 	<div class="config-form">
 		<InputGroup label="Twitch Id vlastníka hry" subgrid>
 			{#snippet child(id)}

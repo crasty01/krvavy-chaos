@@ -125,6 +125,7 @@ const revealCharacters = () => {
 	border-top-right-radius: var(--border-radius);
 	border-bottom-right-radius: var(--border-radius);
 	overflow: hidden;
+	overscroll-behavior: none;
 }
 
 .panel-header {

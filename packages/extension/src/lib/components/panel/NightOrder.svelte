@@ -35,6 +35,7 @@ let activeTab = $state<'first' | 'other'>('first');
 <div class="night-order">
 	<div class="tab-bar" role="tablist">
 		<Button.Root
+			style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
 			role="tab"
 			class="tab-btn"
 			data-button-variant={activeTab === "first" ? 'accent' : 'outline'}
@@ -44,6 +45,7 @@ let activeTab = $state<'first' | 'other'>('first');
 			první noc
 		</Button.Root>
 		<Button.Root
+			style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
 			role="tab"
 			class="tab-btn"
 			data-button-variant={activeTab === "other" ? 'accent' : 'outline'}
@@ -123,13 +125,14 @@ let activeTab = $state<'first' | 'other'>('first');
 
 .tab-bar {
 	display: flex;
-	gap: 1rem;
+	gap: 0;
 	padding-inline: 0.4rem;
 }
 
 .night-order :global(.tab-btn) {
 	width: 100%;
 	justify-content: center;
+	font-size: var(--size-xs);
 }
 
 .order-list {
