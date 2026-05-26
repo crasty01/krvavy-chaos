@@ -404,30 +404,73 @@
 	<Dialog.Portal>
 		<Dialog.Overlay />
 		<Dialog.Content>
-			<Dialog.Title>Nastavení overlay — {overlayDialogGp?.player.name}</Dialog.Title>
-			<Dialog.Description>Nastavení overlay pro streamera hrajícího na tomto místě. 1&nbsp;vmin = 1&nbsp;% kratší strany videa.</Dialog.Description>
+			<header class="overlay-dialog-header">
+				<div>
+					<Dialog.Title>Overlay — {overlayDialogGp?.player.name}</Dialog.Title>
+					<Dialog.Description>Nastavení pozice a velikosti tokenu pro tuto pozici. 1&nbsp;vmin&nbsp;=&nbsp;1&nbsp;% kratší strany videa.</Dialog.Description>
+				</div>
+				<Dialog.Close>
+					{#snippet child({ props })}
+						<Button.Root {...props} data-button-variant="ghost" data-button-round>
+							<Icon icon="material-symbols:close" />
+						</Button.Root>
+					{/snippet}
+				</Dialog.Close>
+			</header>
 			{#if overlayDialogGp}
 				{@const gp = overlayDialogGp}
-				<div class="overlay-dialog-sliders">
-					<OverlaySlider label="Posun X" min={-50} max={50} step={0.1}
-						bind:value={() => gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { gp.overlayOffsetX = v; }}
-						onchange={() => saveOverlay(gp)}
-					/>
-					<OverlaySlider label="Posun Y" min={-50} max={50} step={0.1}
-						bind:value={() => gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { gp.overlayOffsetY = v; }}
-						onchange={() => saveOverlay(gp)}
-					/>
-					<OverlaySlider label="Vzdálenost od středu" min={10} max={60} step={0.1}
-						bind:value={() => gp.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { gp.overlayRadius = v; }}
-						onchange={() => saveOverlay(gp)}
-					/>
-					<OverlaySlider label="Velikost tokenů" min={3} max={20} step={0.1}
-						bind:value={() => gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { gp.overlayTokenSize = v; }}
-						onchange={() => saveOverlay(gp)}
-					/>
+				<div class="overlay-dialog-body">
+					<div class="overlay-group">
+						<div class="overlay-group-header">
+							<Icon icon="material-symbols:open-with" width={13} height={13} />
+							<span>Pozice</span>
+						</div>
+						<OverlaySlider label="Posun X" min={-50} max={50} step={0.1}
+							bind:value={() => gp.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { gp.overlayOffsetX = v; }}
+							onchange={() => saveOverlay(gp)}
+						/>
+						<OverlaySlider label="Posun Y" min={-50} max={50} step={0.1}
+							bind:value={() => gp.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { gp.overlayOffsetY = v; }}
+							onchange={() => saveOverlay(gp)}
+						/>
+					</div>
+					<div class="overlay-group">
+						<div class="overlay-group-header">
+							<Icon icon="material-symbols:straighten" width={13} height={13} />
+							<span>Rozměry</span>
+						</div>
+						<OverlaySlider label="Vzdálenost od středu" min={10} max={60} step={0.1}
+							bind:value={() => gp.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { gp.overlayRadius = v; }}
+							onchange={() => saveOverlay(gp)}
+						/>
+						<OverlaySlider label="Velikost tokenu" min={3} max={20} step={0.1}
+							bind:value={() => gp.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { gp.overlayTokenSize = v; }}
+							onchange={() => saveOverlay(gp)}
+						/>
+					</div>
 				</div>
+				<footer class="overlay-dialog-footer">
+					<Button.Root
+						data-button-variant="ghost"
+						disabled={gp.overlayOffsetX === null && gp.overlayOffsetY === null && gp.overlayRadius === null && gp.overlayTokenSize === null}
+						onclick={async () => {
+							gp.overlayOffsetX = null;
+							gp.overlayOffsetY = null;
+							gp.overlayRadius = null;
+							gp.overlayTokenSize = null;
+							await saveOverlay(gp);
+						}}
+					>
+						<Icon icon="material-symbols:settings-backup-restore" width={14} height={14} />
+						<span>Resetovat</span>
+					</Button.Root>
+					<Dialog.Close>
+						{#snippet child({ props })}
+							<Button.Root {...props} data-button-variant="outline">Zavřít</Button.Root>
+						{/snippet}
+					</Dialog.Close>
+				</footer>
 			{/if}
-			<Dialog.Close data-button-variant="outline">Zavřít</Dialog.Close>
 		</Dialog.Content>
 	</Dialog.Portal>
 </Dialog.Root>
@@ -609,11 +652,62 @@ header {
 	flex-shrink: 0;
 }
 
-.overlay-dialog-sliders {
+.overlay-dialog-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.9rem 1.2rem;
+	border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
+
+	:global([data-dialog-title]) {
+		font-size: var(--size-sm);
+		font-weight: 700;
+	}
+
+	:global([data-dialog-description]) {
+		font-size: var(--size-xs);
+		opacity: 0.55;
+		margin-top: 0.15rem;
+	}
+}
+
+.overlay-dialog-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 1.2rem;
+}
+
+.overlay-group {
 	display: flex;
 	flex-direction: column;
 	gap: 0.6rem;
-	padding-block: 0.5rem;
+	padding: 0.75rem;
+	border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+	border-radius: 0.5rem;
+	background: light-dark(hsl(from var(--color-neutral-950) h s l / 2%), hsl(from var(--color-neutral-50) h s l / 3%));
+}
+
+.overlay-group-header {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	opacity: 0.5;
+	margin-bottom: 0.1rem;
+}
+
+.overlay-dialog-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.9rem 1.2rem;
+	border-top: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-700));
 }
 
 .link-list {

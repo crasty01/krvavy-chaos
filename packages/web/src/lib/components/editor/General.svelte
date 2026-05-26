@@ -1,5 +1,6 @@
 <script lang="ts">
 import * as valibot from 'valibot';
+import Icon from '@iconify/svelte';
 import InputGroup from '$lib/components/form/InputGroup.svelte';
 import ImagePreview from '$lib/components/form/ImagePreview.svelte';
 import OverlaySlider from '$lib/components/form/OverlaySlider.svelte';
@@ -70,18 +71,30 @@ const OVERLAY_DEFAULTS = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
 <h2>nastavení overlay pro game mastera</h2>
 <p class="dm-overlay-hint">Nastavení overlay pro game mastera a zároveň defaultních hodnot pro hráče. 1&nbsp;vmin = 1&nbsp;% kratší strany videa.</p>
 <div class="dm-overlay">
-	<OverlaySlider label="Posun X" min={-50} max={50} step={0.1}
-		bind:value={() => game.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { game.overlayOffsetX = v; }}
-	/>
-	<OverlaySlider label="Posun Y" min={-50} max={50} step={0.1}
-		bind:value={() => game.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { game.overlayOffsetY = v; }}
-	/>
-	<OverlaySlider label="Vzdálenost od středu" min={10} max={60} step={0.1}
-		bind:value={() => game.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { game.overlayRadius = v; }}
-	/>
-	<OverlaySlider label="Velikost tokenů" min={3} max={20} step={0.1}
-		bind:value={() => game.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { game.overlayTokenSize = v; }}
-	/>
+	<div class="overlay-group">
+		<div class="overlay-group-header">
+			<Icon icon="material-symbols:open-with" width={14} height={14} />
+			<span>Pozice</span>
+		</div>
+		<OverlaySlider label="Posun X" min={-50} max={50} step={0.1}
+			bind:value={() => game.overlayOffsetX ?? OVERLAY_DEFAULTS.offsetX, (v) => { game.overlayOffsetX = v; }}
+		/>
+		<OverlaySlider label="Posun Y" min={-50} max={50} step={0.1}
+			bind:value={() => game.overlayOffsetY ?? OVERLAY_DEFAULTS.offsetY, (v) => { game.overlayOffsetY = v; }}
+		/>
+	</div>
+	<div class="overlay-group">
+		<div class="overlay-group-header">
+			<Icon icon="material-symbols:straighten" width={14} height={14} />
+			<span>Rozměry</span>
+		</div>
+		<OverlaySlider label="Vzdálenost od středu" min={10} max={60} step={0.1}
+			bind:value={() => game.overlayRadius ?? OVERLAY_DEFAULTS.radius, (v) => { game.overlayRadius = v; }}
+		/>
+		<OverlaySlider label="Velikost tokenů" min={3} max={20} step={0.1}
+			bind:value={() => game.overlayTokenSize ?? OVERLAY_DEFAULTS.tokenSize, (v) => { game.overlayTokenSize = v; }}
+		/>
+	</div>
 </div>
 
 <style>
@@ -106,6 +119,28 @@ const OVERLAY_DEFAULTS = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
 .dm-overlay {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.75rem;
+}
+
+.overlay-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+	padding: 0.75rem;
+	border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+	border-radius: 0.5rem;
+	background: light-dark(hsl(from var(--color-neutral-950) h s l / 2%), hsl(from var(--color-neutral-50) h s l / 3%));
+}
+
+.overlay-group-header {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	opacity: 0.5;
+	margin-bottom: 0.1rem;
 }
 </style>
