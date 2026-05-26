@@ -4,7 +4,8 @@ import { isScriptCharacter, type BotcScriptCharacter } from '@krvavy-chaos/share
 import { Avatar } from 'bits-ui';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import type { ExtensionGame } from '@krvavy-chaos/shared/types/web';
-import { viewerPreference } from '../../stores/preference.svelte';
+import { viewerPreference, playerGuesses } from '../../stores/preference.svelte';
+import CharacterPicker from '../form/CharacterPicker.svelte';
 
 let { data }: {
 	data: ExtensionGame;
@@ -15,8 +16,9 @@ const ALIGNMENT_LABELS: Record<string, string> = { good: 'dobro', evil: 'zlo', n
 const getImageUrl = (image: BotcScriptCharacter['image']): string =>
 	Array.isArray(image) ? (image[0] ?? '') : (image ?? '');
 
+let allCharacters = $derived(data.script.filter(isScriptCharacter) as Array<BotcScriptCharacter>);
 let characterMap = $derived(
-	new Map(data.script.filter(isScriptCharacter).map(c => [c.id, c]))
+	new Map(allCharacters.map(c => [c.id, c]))
 );
 </script>
 
@@ -26,30 +28,69 @@ let characterMap = $derived(
 			{@const character = gamePlayer.characterId ? characterMap.get(gamePlayer.characterId) : null}
 			<li class="player-row">
 				<span class="seat-index">{gamePlayer.seatOrder + 1}</span>
-				<Avatar.Root>
-					{#if character && viewerPreference.value === 'reveal'}
-						<Avatar.Image
-							src={getAlignedCharacterImage(character, gamePlayer) ?? getImageUrl(character.image)}
-							alt={character.name}
-						/>
-					{/if}
-					<Avatar.Fallback>
-						<Icon icon="material-symbols:person" width={20} height={20} />
-					</Avatar.Fallback>
-				</Avatar.Root>
-				<div class="player-info">
-					<span class="player-name">{gamePlayer.player.name}</span>
-					{#if character && viewerPreference.value === 'reveal'}
-						<span class="player-character">
-							{character.name}
-							{#if gamePlayer.alignment}
-								<span class="player-alignment" data-alignment={gamePlayer.alignment}>
-									({ALIGNMENT_LABELS[gamePlayer.alignment] ?? gamePlayer.alignment})
+				{#if viewerPreference.value === 'predict'}
+					{@const guessId = playerGuesses.getGuess(gamePlayer.playerId)}
+					{@const guessChar = guessId ? characterMap.get(guessId) : null}
+					<CharacterPicker
+						characters={allCharacters}
+						selectedId={guessId}
+						onselect={(id) => {
+							if (id) playerGuesses.setGuess(gamePlayer.playerId, id);
+							else playerGuesses.clearGuess(gamePlayer.playerId);
+						}}
+					>
+						{#snippet children(props)}
+							<span class="guess-avatar-trigger" {...props}>
+								<Avatar.Root>
+									{#if guessChar}
+										<Avatar.Image src={getImageUrl(guessChar.image)} alt={guessChar.name} />
+									{/if}
+									<Avatar.Fallback>
+										<Icon icon="material-symbols:person" width={20} height={20} />
+									</Avatar.Fallback>
+								</Avatar.Root>
+								<span class="guess-edit-hint" aria-hidden="true">
+									<Icon icon="material-symbols:edit" width={10} height={10} />
 								</span>
+							</span>
+						{/snippet}
+					</CharacterPicker>
+					<div class="player-info">
+						<span class="player-name">{gamePlayer.player.name}</span>
+						<span class="player-guess">
+							{#if guessChar}
+								<em>{guessChar.name}</em>
+							{:else}
+								&nbsp;
 							{/if}
 						</span>
-					{/if}
-				</div>
+					</div>
+				{:else}
+					<Avatar.Root>
+						{#if character && viewerPreference.value === 'reveal'}
+							<Avatar.Image
+								src={getAlignedCharacterImage(character, gamePlayer) ?? getImageUrl(character.image)}
+								alt={character.name}
+							/>
+						{/if}
+						<Avatar.Fallback>
+							<Icon icon="material-symbols:person" width={20} height={20} />
+						</Avatar.Fallback>
+					</Avatar.Root>
+					<div class="player-info">
+						<span class="player-name">{gamePlayer.player.name}</span>
+						{#if character && viewerPreference.value === 'reveal'}
+							<span class="player-character">
+								{character.name}
+								{#if gamePlayer.alignment}
+									<span class="player-alignment" data-alignment={gamePlayer.alignment}>
+										({ALIGNMENT_LABELS[gamePlayer.alignment] ?? gamePlayer.alignment})
+									</span>
+								{/if}
+							</span>
+						{/if}
+					</div>
+				{/if}
 				{#if gamePlayer.profileUrl}
 					<a
 						href={gamePlayer.profileUrl}
@@ -137,6 +178,55 @@ let characterMap = $derived(
 	&[data-alignment='good'] { color: var(--color-good, #4ade80); }
 	&[data-alignment='evil'] { color: var(--color-evil, #f87171); }
 	&[data-alignment='neutral'] { color: var(--color-neutral, #a3a3a3); }
+}
+
+.player-guess {
+	font-size: 0.72rem;
+	opacity: 0.6;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	em {
+		font-style: italic;
+	}
+}
+
+.picker-trigger {
+	display: contents;
+}
+
+.guess-avatar-trigger {
+	position: relative;
+	display: inline-flex;
+	cursor: pointer;
+	border-radius: var(--border-radius);
+
+	& :global([data-avatar-root]) {
+		width: 2rem;
+		height: 2rem;
+	}
+
+	&:hover .guess-edit-hint,
+	&:focus-visible .guess-edit-hint {
+		opacity: 1;
+	}
+}
+
+.guess-edit-hint {
+	position: absolute;
+	bottom: -0.2rem;
+	right: -0.2rem;
+	width: 0.9rem;
+	height: 0.9rem;
+	background-color: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+	border: 1px solid light-dark(var(--color-neutral-300), var(--color-neutral-600));
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	opacity: 0.55;
+	transition: opacity 0.15s;
+	pointer-events: none;
 }
 
 .profile-link {

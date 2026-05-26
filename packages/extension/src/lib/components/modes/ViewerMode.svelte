@@ -3,7 +3,6 @@ import * as Anchor from '../../components/anchor';
 import * as Overlay from '../../components/overlay';
 import { game } from '../../functions/game.svelte';
 import { TwitchExtensionStore, twitchStore } from '../../services/twitch.svelte';
-import { overlayVisibility } from '../../stores/preference.svelte';
 
 twitchStore.listen('global', async (target, contentType, message) => {
 	const parsedMessage = TwitchExtensionStore.parseMessageSafe(message);
@@ -37,9 +36,7 @@ $effect(() => {
 	<Overlay.DrawerPanel>
 		<Anchor.Component />
 	</Overlay.DrawerPanel>
-	{#if !overlayVisibility.hidden}
-		<Anchor.Overlay />
-	{/if}
+	<Anchor.Overlay />
 {:else if anchor === 'panel'}
 	<Anchor.Panel></Anchor.Panel>
 {:else if anchor === 'component'}

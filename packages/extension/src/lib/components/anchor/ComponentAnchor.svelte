@@ -4,7 +4,7 @@ import Icon from '@iconify/svelte';
 import { Button, Tabs } from 'bits-ui';
 import { game } from '../../functions/game.svelte';
 import SpoilerGate from '../SpoilerGate.svelte';
-import { viewerPreference, overlayVisibility } from '../../stores/preference.svelte';
+import { viewerPreference } from '../../stores/preference.svelte';
 import { twitchStore } from '../../services/twitch.svelte';
 import { createAsyncAction } from '../../functions/async.svelte';
 
@@ -73,11 +73,7 @@ const revealCharacters = () => {
 						{/if}
 					</Button.Root>
 				{/if}
-				{#if anchor === 'video_overlay' && viewerPreference.value === 'reveal'}
-					<Button.Root data-button-variant="ghost" onclick={overlayVisibility.toggle} aria-label={overlayVisibility.hidden ? 'Zobrazit overlay' : 'Skrýt overlay'}>
-						<Icon icon={overlayVisibility.hidden ? 'material-symbols:visibility-off' : 'material-symbols:visibility'} width={16} height={16} />
-					</Button.Root>
-				{/if}
+
 			</div>
 		</header>
 		{#if viewerPreference.value === 'undecided' && anchor !== 'video_overlay'}

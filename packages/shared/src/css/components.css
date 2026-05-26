@@ -96,7 +96,7 @@
 	justify-content: center;
 	overflow: hidden;
 
-	&[data-status='loaded'] {
+	&[data-status='loaded']:not([data-no-border]) {
 		border-color: light-dark(var(--color-neutral-900), var(--color-neutral-50));
 	}
 
@@ -105,7 +105,9 @@
 	}
 
 	& [data-avatar-fallback] {
-		border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+		&:not([data-no-border]) {
+			border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+		}
 		line-height: 1;
 	}
 }

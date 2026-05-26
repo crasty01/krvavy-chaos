@@ -6,7 +6,7 @@ import Icon from '@iconify/svelte';
 import { TEAM_LABELS } from '@krvavy-chaos/shared/validate/script';
 import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import SpoilerGate from '../SpoilerGate.svelte';
-import { viewerPreference, viewerOverlay } from '../../stores/preference.svelte';
+import { viewerPreference, viewerOverlay, playerGuesses } from '../../stores/preference.svelte';
 
 let gameData = $derived(game.data);
 let effectiveOverlay = $derived(
@@ -15,6 +15,7 @@ let effectiveOverlay = $derived(
 
 const gamePlayers = $derived(gameData?.gamePlayers);
 const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
+const guessTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 </script>
 
 <div class="overlay-anchor">
@@ -41,6 +42,57 @@ const characterTether = Tooltip.createTether<Overlay.CharacterTooltipPayload>();
 			<Tooltip.Root
 				delayDuration={50}
 				tether={characterTether}
+			>
+				{#snippet children({ payload })}
+					<Tooltip.Portal>
+						<Tooltip.Content>
+							<Tooltip.Arrow />
+								<section class="character-tooltip" data-alignment={payload?.gamePlayer.alignment ?? 'unknown'}>
+									{#if payload}
+										<header>
+											<Avatar.Root>
+												<Avatar.Image
+													src={getAlignedCharacterImage(payload.character, payload.gamePlayer)}
+													alt={payload.character.name}
+												/>
+												<Avatar.Fallback>
+													<Icon icon="material-symbols:person" width={20} height={20} />
+												</Avatar.Fallback>
+											</Avatar.Root>
+											<span class="name">{payload.character.name}</span>
+											<span class="team">{TEAM_LABELS[payload.character.team]}</span>
+										</header>
+										<p>{payload.character.ability}</p>
+									{:else}
+										<p class="unknown">Informace o postavě nebyly nalezeny.</p>
+									{/if}
+								</section>
+						</Tooltip.Content>
+					</Tooltip.Portal>
+				{/snippet}
+			</Tooltip.Root>
+		</Tooltip.Provider>
+		{:else if viewerPreference.value === 'predict'}
+		<Tooltip.Provider>
+			<Overlay.Root config={effectiveOverlay}>
+				{#each gamePlayers as gamePlayer, i}
+					<Overlay.GuessToken
+						seatIndex={i}
+						numberOfSeats={gamePlayers.length}
+						gamePlayer={gamePlayer}
+						guessId={playerGuesses.getGuess(gamePlayer.playerId)}
+						characterTether={guessTether}
+						onguess={(id) => {
+							if (id) playerGuesses.setGuess(gamePlayer.playerId, id);
+							else playerGuesses.clearGuess(gamePlayer.playerId);
+						}}
+					/>
+				{/each}
+			</Overlay.Root>
+
+			<Tooltip.Root
+				delayDuration={50}
+				tether={guessTether}
 			>
 				{#snippet children({ payload })}
 					<Tooltip.Portal>

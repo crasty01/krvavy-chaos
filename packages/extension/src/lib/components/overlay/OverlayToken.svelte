@@ -11,9 +11,14 @@ let characters = $derived(new Map(gameData?.script.filter(characterFilter).map(c
 </script>
 
 <script lang="ts">
-import { Tooltip, type TooltipTether } from 'bits-ui';
+import { Tooltip, Avatar, type TooltipTether } from 'bits-ui';
+import Icon from '@iconify/svelte';
 import type { ExtensionGamePlayer } from '@krvavy-chaos/shared/types/web';
 import type { CharacterTooltipPayload } from '.';
+import { tokenStyle } from '../../stores/preference.svelte';
+
+const getImageUrl = (image: BotcScriptCharacter['image']): string =>
+	Array.isArray(image) ? (image[0] ?? '') : (image ?? '');
 
 let { gamePlayer, numberOfSeats, seatIndex, characterTether }: {
 	gamePlayer: ExtensionGamePlayer;
@@ -25,7 +30,7 @@ let { gamePlayer, numberOfSeats, seatIndex, characterTether }: {
 let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.characterId) : undefined);
 </script>
 
-{#if character}
+{#if character && tokenStyle.value !== 'none'}
 	<div
 		class="overlay__character"
 		data-character-alignment={gamePlayer.alignment}
@@ -37,7 +42,15 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 					{...props}
 					class="overlay__character-token"
 				>
-					<span class="sr-only">character token</span>
+					{#if tokenStyle.value === 'icon'}
+						<Avatar.Root class="overlay__character-avatar">
+							<Avatar.Image src={getImageUrl(character.image)} alt={character.name} />
+							<Avatar.Fallback>
+								<Icon icon="material-symbols:person" width="55%" height="55%" />
+							</Avatar.Fallback>
+						</Avatar.Root>
+					{/if}
+					<span class="sr-only">{character.name}</span>
 				</div>
 			{/snippet}
 		</Tooltip.Trigger>
@@ -74,13 +87,19 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 	position: absolute;
 	left: 0;
 	right: 0;
-	transform: translate(-50%, -50%);
-	/* border: 2px solid var(--color-neutral-900); */
+	transform: translate(-50%,-50%) rotate(calc(var(--rotation) * -1));
 	background-color: hsla(from var(--color) h s l / 0.2);
+	overflow: hidden;
 
 	&:hover, &:focus-visible {
 		background-color: hsla(from var(--color) h s l / 0.4);
 		box-shadow: 0 0 0.6rem 0 hsla(from var(--color) h s l / 0.4);
 	}
+}
+
+:global(.overlay__character-avatar) {
+	width: 100%;
+	height: 100%;
+	border-radius: inherit;
 }
 </style>
