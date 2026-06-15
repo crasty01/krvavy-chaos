@@ -6,6 +6,7 @@ import { getAlignedCharacterImage } from '@krvavy-chaos/shared/utils/script';
 import type { ExtensionGame } from '@krvavy-chaos/shared/types/web';
 import { viewerPreference, playerGuesses } from '../../stores/preference.svelte';
 import CharacterPicker from '../form/CharacterPicker.svelte';
+import { liveStatus, getTwitchHandle } from '../../stores/liveStatus.svelte';
 
 let { data }: {
 	data: ExtensionGame;
@@ -92,15 +93,21 @@ let characterMap = $derived(
 					</div>
 				{/if}
 				{#if gamePlayer.profileUrl}
-					<a
-						href={gamePlayer.profileUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="profile-link"
-						title="Profil hráče"
-					>
-						<Icon icon="material-symbols:open-in-new" width={16} height={16} />
-					</a>
+					{@const handle = getTwitchHandle(gamePlayer.profileUrl)}
+					<div class="profile-actions">
+						{#if handle && liveStatus.isLive(handle)}
+							<span class="live-pill" aria-label="Právě živě">LIVE</span>
+						{/if}
+						<a
+							href={gamePlayer.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="profile-link"
+							title="Twitch profil"
+						>
+							<Icon icon="mdi:twitch" width={16} height={16} />
+						</a>
+					</div>
 				{/if}
 			</li>
 		{/each}
@@ -245,5 +252,24 @@ let characterMap = $derived(
 	&:hover {
 		opacity: 1;
 	}
+}
+
+.profile-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	flex-shrink: 0;
+}
+
+.live-pill {
+	font-size: 0.6rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	line-height: 1;
+	padding: 0.2rem 0.35rem;
+	border-radius: 0.25rem;
+	background-color: #e91916;
+	color: #fff;
+	user-select: none;
 }
 </style>

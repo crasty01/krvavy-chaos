@@ -52,16 +52,16 @@ export const GET: RequestHandler = async ({ request, params }) => {
 		tokenSize: channelGamePlayer?.overlayTokenSize ?? activeGame.overlayTokenSize ?? DEFAULT_OVERLAY.tokenSize,
 	};
 
-	const origin = new URL(request.url).origin;
 	const { gamePlayers, ...rest } = activeGame;
 
 	return json({
 		...rest,
 		gamePlayers: gamePlayers.map(({ player, overlayOffsetX: _ox, overlayOffsetY: _oy, overlayRadius: _or, overlayTokenSize: _ts, ...gp }) => {
 			const { socialLinks, ...playerRest } = player;
+			const twitchLink = socialLinks.find((sl) => sl.platformId === 'twitch');
 			return {
 				...gp,
-				profileUrl: socialLinks.length > 0 ? `${origin}/playerlink/${player.id}` : null,
+				profileUrl: twitchLink ? `https://twitch.tv/${twitchLink.handle}` : null,
 				player: playerRest,
 			};
 		}),

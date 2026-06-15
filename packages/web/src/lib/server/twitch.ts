@@ -73,6 +73,22 @@ export const verifyTwitchExtensionJWT = (token: string): TwitchExtensionAuthToke
 	}
 };
 
+/** Returns a Set of lowercased Twitch logins that are currently live. */
+export const getTwitchLiveStreams = async (logins: Array<string>): Promise<Set<string>> => {
+	if (logins.length === 0) return new Set();
+	const appToken = await getTwitchToken();
+	const params = logins.map(l => `user_login=${encodeURIComponent(l)}`).join('&');
+	const res = await fetch(`https://api.twitch.tv/helix/streams?${params}&first=100`, {
+		headers: {
+			'Client-ID': TWITCH_CLIENT_ID,
+			'Authorization': `Bearer ${appToken.access_token}`,
+		},
+	});
+	if (!res.ok) return new Set();
+	const data = await res.json() as { data: Array<{ user_login: string }> };
+	return new Set(data.data.map(s => s.user_login.toLowerCase()));
+};
+
 /** Returns the Twitch login (username) for a given Twitch user ID, or null on failure. */
 export const getTwitchChannelById = async (twitchId: string) => {
 	const appToken = await getTwitchToken();

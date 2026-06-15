@@ -7,6 +7,7 @@ import SpoilerGate from '../SpoilerGate.svelte';
 import { viewerPreference } from '../../stores/preference.svelte';
 import { twitchStore } from '../../services/twitch.svelte';
 import { createAsyncAction } from '../../functions/async.svelte';
+import { liveStatus, LIVE_STALE_MS, getTwitchHandle } from '../../stores/liveStatus.svelte';
 
 const tabs = [
 	{
@@ -44,6 +45,25 @@ const tabs = [
 let selectedTabkey = $state(tabs[0].key);
 let gameData = $derived(game.data);
 let anchor = $derived(twitchStore.urlParams.anchor);
+
+const getTwitchHandles = () =>
+	game.data?.gamePlayers
+		.map(gp => getTwitchHandle(gp.profileUrl))
+		.filter((h): h is string => h !== null) ?? [];
+
+$effect(() => {
+	if (selectedTabkey !== 'players') return;
+
+	if (liveStatus.isStale()) {
+		liveStatus.refresh(getTwitchHandles());
+	}
+
+	const intervalId = setInterval(() => {
+		liveStatus.refresh(getTwitchHandles());
+	}, LIVE_STALE_MS);
+
+	return () => clearInterval(intervalId);
+});
 
 let revealAction = createAsyncAction({ minLoading: 5000, minSuccess: 0, minError: 0 });
 const revealCharacters = () => {

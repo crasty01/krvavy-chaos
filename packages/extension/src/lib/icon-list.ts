@@ -15,4 +15,5 @@ export const iconList = [
 	'material-symbols:tune',
 	'material-symbols:settings-backup-restore',
 	'material-symbols:info',
+	'mdi:twitch',
 ]
