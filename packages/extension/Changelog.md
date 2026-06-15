@@ -1,4 +1,8 @@
-Changelog
+Changelog 1.2.0
+Changes
+Players tab Twitch links only: Player profile links now exclusively link to a player's Twitch channel (when available) and show a live indicator if the player is currently streaming. External links to other platforms (YouTube, Instagram, etc.) have been removed to comply with Twitch Extension policies (rule 4.6.1).
+
+Changelog 1.1.0
 New Features
 Predict mode — overlay: In predict mode, the video overlay now shows interactive guess tokens. Viewers can click any token to open a character picker and assign their guess for each player seat.
 Predict mode — players panel: The Players tab now shows a character picker per player row when in predict mode, with guesses persisted to localStorage per game session.

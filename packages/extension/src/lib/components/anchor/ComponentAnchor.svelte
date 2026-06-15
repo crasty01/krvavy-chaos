@@ -99,7 +99,7 @@ const revealCharacters = () => {
 		{#if viewerPreference.value === 'undecided' && anchor !== 'video_overlay'}
 			<SpoilerGate variant="panel" />
 		{:else}
-			<Tabs.Root value={selectedTabkey} orientation="vertical">
+			<Tabs.Root value={selectedTabkey} onValueChange={(v) => selectedTabkey = v} orientation="vertical">
 				<Tabs.List>
 					{#each tabs as tab (tab.key)}
 						<Tabs.Trigger value={tab.key}>
