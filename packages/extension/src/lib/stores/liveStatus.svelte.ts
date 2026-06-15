@@ -1,6 +1,6 @@
 import { twitchStore } from '../services/twitch.svelte';
 
-export const LIVE_STALE_MS = 54 * 60 * 1000;
+export const LIVE_STALE_MS = 5 * 60 * 1000;
 
 export const getTwitchHandle = (profileUrl: string | null): string | null =>
 	profileUrl?.startsWith('https://twitch.tv/') ? profileUrl.slice('https://twitch.tv/'.length) : null;
