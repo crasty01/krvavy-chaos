@@ -9,11 +9,7 @@ export type Breadcrumb = {
 export type ExtensionUser = {
 	id: string;
 	name: string;
-	email: string;
 	image: string | null;
-	activeGameId: string | null;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export type ExtensionPlayer = {
@@ -33,12 +29,6 @@ export type ExtensionGamePlayer = {
 	alignment: BotcAlignment | null;
 	profileUrl: string | null;
 	player: ExtensionPlayer;
-};
-
-export type ExtensionGameEditor = {
-	gameId: string;
-	userId: string;
-	user: ExtensionUser;
 };
 
 export type ExtensionPlatform = {
@@ -63,7 +53,6 @@ export type ExtensionGame = {
 	createdAt: Date;
 	updatedAt: Date;
 	gamePlayers: Array<ExtensionGamePlayer>;
-	editors: Array<ExtensionGameEditor>;
 	creator: ExtensionUser;
 	broadcasterOverlay: ExtensionOverlaySettings;
 };

@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const owner = await db.query.user.findFirst({
 		where: eq(user.id, locals.user.id),
-		with: { accounts: true },
+		columns: { id: true, activeGameId: true },
 	});
 
 	return {

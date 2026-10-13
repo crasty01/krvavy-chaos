@@ -10,6 +10,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		where: eq(user.id, locals.user.id),
 		with: {
 			accounts: {
+				columns: { id: true, accountId: true, providerId: true },
 				where: and(eq(account.providerId, 'twitch'), eq(account.userId, locals.user.id)),
 				limit: 1,
 			},

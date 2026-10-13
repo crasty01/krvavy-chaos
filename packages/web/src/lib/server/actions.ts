@@ -35,11 +35,12 @@ export const getGameById = async (id: string) => await db.query.game.findFirst({
 			},
 			orderBy: (gp, { asc }) => [asc(gp.seatOrder)],
 		},
+		// Only public user columns — this result is sent to the dashboard and the Twitch extension
 		editors: {
-			with: { user: true },
+			with: { user: { columns: { id: true, name: true, image: true } } },
 		},
 		creator: {
-			with: { accounts: true },
+			columns: { id: true, name: true, image: true },
 		},
 	},
 });

@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyTwitchExtensionJWT, getTwitchChannelById } from '$lib/server/twitch';
 import { getUserByTwitchId, getGameById } from '$lib/server/actions';
-import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
+import type { ExtensionGame, ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
 const DEFAULT_OVERLAY: ExtensionOverlaySettings = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
 
@@ -30,16 +30,6 @@ export const GET: RequestHandler = async ({ request, params }) => {
 		),
 	);
 
-	console.log({
-		isGameMaster,
-		gameOwnerTwitchId: params.id,
-		channelOwnerTwitchId: decodedToken.channel_id,
-		channelOwner,
-		gameOwner,
-		activeGame,
-		channelGamePlayer,
-	});
-
 	let broadcasterOverlay: ExtensionOverlaySettings = isGameMaster ? {
 		offsetX: activeGame.overlayOffsetX ?? DEFAULT_OVERLAY.offsetX,
 		offsetY: activeGame.overlayOffsetY ?? DEFAULT_OVERLAY.offsetY,
@@ -52,19 +42,38 @@ export const GET: RequestHandler = async ({ request, params }) => {
 		tokenSize: channelGamePlayer?.overlayTokenSize ?? activeGame.overlayTokenSize ?? DEFAULT_OVERLAY.tokenSize,
 	};
 
-	const { gamePlayers, ...rest } = activeGame;
-
+	// Explicit allow-list: this payload is readable by every Twitch viewer
 	return json({
-		...rest,
-		gamePlayers: gamePlayers.map(({ player, overlayOffsetX: _ox, overlayOffsetY: _oy, overlayRadius: _or, overlayTokenSize: _ts, ...gp }) => {
-			const { socialLinks, ...playerRest } = player;
-			const twitchLink = socialLinks.find((sl) => sl.platformId === 'twitch');
+		id: activeGame.id,
+		name: activeGame.name,
+		script: activeGame.script,
+		createdBy: activeGame.createdBy,
+		createdAt: activeGame.createdAt,
+		updatedAt: activeGame.updatedAt,
+		creator: {
+			id: activeGame.creator.id,
+			name: activeGame.creator.name,
+			image: activeGame.creator.image,
+		},
+		gamePlayers: activeGame.gamePlayers.map((gp) => {
+			const twitchLink = gp.player.socialLinks.find((sl) => sl.platformId === 'twitch');
 			return {
-				...gp,
+				id: gp.id,
+				gameId: gp.gameId,
+				playerId: gp.playerId,
+				seatOrder: gp.seatOrder,
+				characterId: gp.characterId,
+				alignment: gp.alignment,
 				profileUrl: twitchLink ? `https://twitch.tv/${twitchLink.handle}` : null,
-				player: playerRest,
+				player: {
+					id: gp.player.id,
+					name: gp.player.name,
+					createdBy: gp.player.createdBy,
+					createdAt: gp.player.createdAt,
+					updatedAt: gp.player.updatedAt,
+				},
 			};
 		}),
 		broadcasterOverlay,
-	});
+	} satisfies ExtensionGame);
 };

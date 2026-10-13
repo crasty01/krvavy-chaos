@@ -22,8 +22,10 @@ export type Game = typeof schema.game.$inferSelect;
 export type GamePlayer = typeof schema.gamePlayer.$inferSelect;
 export type GameEditor = typeof schema.gameEditor.$inferSelect;
 
+export type PublicUser = Pick<User, 'id' | 'name' | 'image'>;
+
 export type GameFull = Game & {
 	gamePlayers: Array<GamePlayer & { player: Player }>;
-	editors: Array<GameEditor & { user: User }>;
-	creator: User;
+	editors: Array<GameEditor & { user: PublicUser }>;
+	creator: PublicUser;
 };

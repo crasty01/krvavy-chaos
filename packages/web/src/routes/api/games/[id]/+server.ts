@@ -34,7 +34,11 @@ const PatchGameSchema = v.pipe(
 	),
 );
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, locals }) => {
+	const { exists, canEdit } = await canEditGame(params.id, locals.user.id);
+	if (!exists) return json({ error: 'Hra nenalezena' }, { status: 404 });
+	if (!canEdit) return json({ error: 'Nemáš oprávnění' }, { status: 403 });
+
 	const result = await getGameById(params.id);
 	if (!result) return json({ error: 'Hra nenalezena' }, { status: 404 });
 	return json(result);
