@@ -2,9 +2,34 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyTwitchExtensionJWT, getTwitchChannelById } from '$lib/server/twitch';
 import { getUserByTwitchId, getGameById } from '$lib/server/actions';
+import { getPartnerGame } from '$lib/server/partner';
+import type { PartnerGame, PublicUser } from '$lib/server/db';
 import type { ExtensionGame, ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
 const DEFAULT_OVERLAY: ExtensionOverlaySettings = { offsetX: 0, offsetY: 0, radius: 40, tokenSize: 9.3 };
+
+/** Builds the extension payload from the partner app's game; players are synthesized, not DB rows. */
+const toExtensionGame = (game: PartnerGame, owner: PublicUser, channelLogin: string): ExtensionGame => ({
+	id: game.id,
+	name: game.name,
+	script: game.script,
+	createdBy: owner.id,
+	createdAt: game.createdAt,
+	updatedAt: game.updatedAt,
+	creator: { id: owner.id, name: owner.name, image: owner.image },
+	gamePlayers: game.players.map((p, seatOrder) => ({
+		id: `${game.id}:${p.key}`,
+		gameId: game.id,
+		playerId: p.key,
+		seatOrder,
+		characterId: p.characterId,
+		alignment: p.alignment,
+		profileUrl: p.twitch ? `https://twitch.tv/${p.twitch}` : null,
+		player: { id: p.key, name: p.name, createdBy: owner.id, createdAt: game.createdAt, updatedAt: game.updatedAt },
+	})),
+	// Each streamer has their own layout; channels the app didn't send get the defaults
+	broadcasterOverlay: game.overlays[channelLogin.toLowerCase()] ?? DEFAULT_OVERLAY,
+});
 
 export const GET: RequestHandler = async ({ request, params }) => {
 	const authHeader = request.headers.get('Authorization');
@@ -16,8 +41,19 @@ export const GET: RequestHandler = async ({ request, params }) => {
 
 	const channelOwner = await getTwitchChannelById(decodedToken.channel_id);
 	const gameOwner = await getUserByTwitchId(params.id);
-	const activeGame = gameOwner?.activeGameId ? await getGameById(gameOwner.activeGameId) : null;
-	if (!gameOwner || !gameOwner.activeGameId || !channelOwner || !activeGame) {
+	if (!gameOwner || !channelOwner) {
+		return json(null, { status: 404 });
+	}
+
+	// With external control enabled, the partner app's game replaces the manually activated one
+	if (gameOwner.externalControl) {
+		const partner = await getPartnerGame(gameOwner.id);
+		if (!partner) return json(null, { status: 404 });
+		return json(toExtensionGame(partner, gameOwner, channelOwner.login));
+	}
+
+	const activeGame = gameOwner.activeGameId ? await getGameById(gameOwner.activeGameId) : null;
+	if (!activeGame) {
 		return json(null, { status: 404 });
 	}
 

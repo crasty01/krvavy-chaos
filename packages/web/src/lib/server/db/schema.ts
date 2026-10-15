@@ -3,7 +3,8 @@ export * from './auth.schema';
 import { relations, sql } from "drizzle-orm";
 import { sqliteTable, text, integer, real, index, primaryKey, foreignKey } from "drizzle-orm/sqlite-core";
 import { user, session, account } from "./auth.schema";
-import type { BotcScript } from '@krvavy-chaos/shared/validate/script';
+import type { BotcAlignment, BotcScript } from '@krvavy-chaos/shared/validate/script';
+import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
 
 export const player = sqliteTable("player", {
@@ -105,6 +106,39 @@ export const gameEditor = sqliteTable(
   },
   (table) => [primaryKey({ columns: [table.gameId, table.userId] }), index("gameEditor_userId_idx").on(table.userId)],
 );
+
+
+export type PartnerPlayer = {
+  /** Stable id derived from the Twitch login (or name) — keeps viewer guesses across updates */
+  key: string;
+  name: string;
+  twitch: string | null;
+  characterId: string | null;
+  alignment: BotcAlignment | null;
+};
+
+// Game state pushed by a partner app via /api/partner/game, stored exactly as sent — players are
+// not linked to the `player` table. Shown by the extension instead of the active game when user.externalControl is on.
+export const partnerGame = sqliteTable("partner_game", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  script: text("script", { mode: "json" }).$type<BotcScript>().notNull(),
+  /** In seat order */
+  players: text("players", { mode: "json" }).$type<Array<PartnerPlayer>>().notNull(),
+  /** Keyed by lowercase Twitch login of the channel the extension runs on */
+  overlays: text("overlays", { mode: "json" }).$type<Record<string, ExtensionOverlaySettings>>().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
 
 
 export const userActiveGameFk = foreignKey({

@@ -32,4 +32,5 @@ export const iconList = [
 	'material-symbols:brightness-auto',
 	'material-symbols:light-mode',
 	'material-symbols:dark-mode',
+	'material-symbols:key',
 ]

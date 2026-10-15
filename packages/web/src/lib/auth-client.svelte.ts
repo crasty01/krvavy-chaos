@@ -1,2 +1,3 @@
 import { createAuthClient } from "better-auth/svelte";
-export const authClient = createAuthClient();
+import { apiKeyClient } from "better-auth/client/plugins";
+export const authClient = createAuthClient({ plugins: [apiKeyClient()] });

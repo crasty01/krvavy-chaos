@@ -50,7 +50,8 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
 		pathname === '/privacy' ||
 		pathname.startsWith('/api/auth') ||
 		pathname.startsWith('/playerlink') ||
-		pathname.startsWith('/api/extension');
+		pathname.startsWith('/api/extension') ||
+		pathname === '/api/partner/game'; // authenticated by API key in the route itself
 
 	if (!event.locals.user && !isPublic) {
 		if (pathname.startsWith('/api/')) {

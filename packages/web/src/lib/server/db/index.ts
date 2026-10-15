@@ -21,6 +21,7 @@ export type PlayerSocialLink = typeof schema.playerSocialLink.$inferSelect;
 export type Game = typeof schema.game.$inferSelect;
 export type GamePlayer = typeof schema.gamePlayer.$inferSelect;
 export type GameEditor = typeof schema.gameEditor.$inferSelect;
+export type PartnerGame = typeof schema.partnerGame.$inferSelect;
 
 export type PublicUser = Pick<User, 'id' | 'name' | 'image'>;
 

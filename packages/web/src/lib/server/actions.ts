@@ -145,8 +145,17 @@ export const deleteGame = async (id: string) => {
 	await db.delete(game).where(eq(game.id, id));
 };
 
+// Activating/deactivating a game manually takes control back from the 3rd party app
 export const activateGame = async (userId: string, gameId: string | null) => {
-	await db.update(user).set({ activeGameId: gameId }).where(eq(user.id, userId));
+	await db.update(user).set({ activeGameId: gameId, externalControl: false }).where(eq(user.id, userId));
+};
+
+export const setExternalControl = async (userId: string, enabled: boolean) => {
+	const [updated] = await db.update(user)
+		.set({ externalControl: enabled })
+		.where(eq(user.id, userId))
+		.returning({ activeGameId: user.activeGameId });
+	return updated ?? null;
 };
 
 export const canEditGame = async (gameId: string, userId: string) => {

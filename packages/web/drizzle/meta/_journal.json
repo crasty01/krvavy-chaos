@@ -22,6 +22,13 @@
       "when": 1778691518320,
       "tag": "0002_outstanding_mimic",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791892801978,
+      "tag": "0003_partner_game_api_keys",
+      "breakpoints": true
     }
   ]
 }
