@@ -35,6 +35,8 @@ const hasUniqueValues = (values: Array<string>) => new Set(values).size === valu
 const PutGameSchema = v.pipe(
 	v.object({
 		name: v.optional(v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100))),
+		// The partner app's own game id; a different value starts a new game for viewers
+		gameId: v.optional(v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100))),
 		script: v.optional(BotcScriptSchema),
 		players: v.optional(v.pipe(
 			v.array(PartnerPlayerSchema),
@@ -52,7 +54,8 @@ const PutGameSchema = v.pipe(
 		))),
 	}),
 	v.check(
-		(val) => val.name !== undefined || val.script !== undefined || val.players !== undefined || val.overlay !== undefined,
+		(val) => val.gameId !== undefined || val.name !== undefined || val.script !== undefined
+			|| val.players !== undefined || val.overlay !== undefined,
 		'Žádná data',
 	),
 );
@@ -71,7 +74,7 @@ export const GET: RequestHandler = async ({ request }) => {
 	const game = await getPartnerGame(userId);
 	return json({
 		controlEnabled: owner.externalControl,
-		gameId: game?.id ?? null,
+		gameId: game?.externalGameId ?? null,
 		updatedAt: game?.updatedAt ?? null,
 	});
 };
@@ -86,7 +89,8 @@ export const PUT: RequestHandler = async ({ request }) => {
 	const owner = await getPartnerOwner(userId);
 	if (!owner) return json({ error: 'Uživatel nenalezen' }, { status: 404 });
 
-	const { game, changed } = await savePartnerGame(owner, {
+	const { game, changed, newGame } = await savePartnerGame(owner, {
+		externalGameId: data.gameId,
 		name: data.name,
 		script: data.script,
 		players: data.players?.map((p) => ({
@@ -108,9 +112,10 @@ export const PUT: RequestHandler = async ({ request }) => {
 	)];
 
 	return json({
-		gameId: game.id,
+		gameId: game.externalGameId,
 		controlEnabled: owner.externalControl,
 		changed,
+		newGame,
 		warnings: unknownCharacterIds.length > 0
 			? [`Postavy nejsou ve skriptu jako celé objekty a nezobrazí se: ${unknownCharacterIds.join(', ')}`]
 			: [],

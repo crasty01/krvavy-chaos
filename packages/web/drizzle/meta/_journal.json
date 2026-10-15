@@ -29,6 +29,13 @@
       "when": 1791892801978,
       "tag": "0003_partner_game_api_keys",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792087964788,
+      "tag": "0004_partner_game_external_id",
+      "breakpoints": true
     }
   ]
 }

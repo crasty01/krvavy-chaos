@@ -69,11 +69,14 @@ type PartnerGameState = {
 /**
  * Stores the partner app's game as sent. Fields left out keep their stored value,
  * except `name`: without it the script's `_meta` name is used (shown in the extension's panel header).
+ *
+ * A different `externalGameId` starts a new game: the row gets a new `id`. The extension keys the viewer's
+ * reveal/guess choice and guesses by game id, so viewers are asked again and start with no guesses.
  */
 export const savePartnerGame = async (
 	owner: { id: string; name: string },
-	input: Partial<PartnerGameState>,
-): Promise<{ game: PartnerGame; changed: boolean }> => {
+	input: Partial<PartnerGameState> & { externalGameId?: string },
+): Promise<{ game: PartnerGame; changed: boolean; newGame: boolean }> => {
 	const existing = await getPartnerGame(owner.id);
 	const defaultMeta: BotcScriptMeta = { id: '_meta', name: DEFAULT_NAME, author: owner.name };
 	const script = input.script ?? existing?.script ?? [defaultMeta];
@@ -85,6 +88,7 @@ export const savePartnerGame = async (
 	};
 
 	if (existing) {
+		const newGame = input.externalGameId !== undefined && input.externalGameId !== existing.externalGameId;
 		const current: PartnerGameState = {
 			name: existing.name,
 			script: existing.script,
@@ -92,12 +96,20 @@ export const savePartnerGame = async (
 			overlays: existing.overlays,
 		};
 		// Unchanged pushes must not trigger PubSub — every message makes all viewers re-fetch
-		if (JSON.stringify(current) === JSON.stringify(next)) return { game: existing, changed: false };
+		if (!newGame && JSON.stringify(current) === JSON.stringify(next)) return { game: existing, changed: false, newGame: false };
 
-		const [game] = await db.update(partnerGame).set(next).where(eq(partnerGame.userId, owner.id)).returning();
-		return { game, changed: true };
+		const [game] = await db.update(partnerGame)
+			.set({
+				...next,
+				...(newGame && { id: crypto.randomUUID(), externalGameId: input.externalGameId, createdAt: new Date() }),
+			})
+			.where(eq(partnerGame.userId, owner.id))
+			.returning();
+		return { game, changed: true, newGame };
 	}
 
-	const [game] = await db.insert(partnerGame).values({ id: crypto.randomUUID(), userId: owner.id, ...next }).returning();
-	return { game, changed: true };
+	const [game] = await db.insert(partnerGame)
+		.values({ id: crypto.randomUUID(), userId: owner.id, externalGameId: input.externalGameId ?? null, ...next })
+		.returning();
+	return { game, changed: true, newGame: true };
 };

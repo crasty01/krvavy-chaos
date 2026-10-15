@@ -125,6 +125,8 @@ export const partnerGame = sqliteTable("partner_game", {
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: "cascade" }),
+  /** The partner app's own game id — when it changes, `id` is regenerated so the extension treats it as a new game */
+  externalGameId: text("external_game_id"),
   name: text("name").notNull(),
   script: text("script", { mode: "json" }).$type<BotcScript>().notNull(),
   /** In seat order */

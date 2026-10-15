@@ -1,0 +1,1 @@
+ALTER TABLE `partner_game` ADD `external_game_id` text;
