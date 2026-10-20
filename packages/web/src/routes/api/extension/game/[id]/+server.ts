@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { verifyTwitchExtensionJWT, getTwitchChannelById } from '$lib/server/twitch';
 import { getUserByTwitchId, getGameById } from '$lib/server/actions';
 import { getPartnerGame } from '$lib/server/partner';
+import { isImageProxyEnabled, proxyScriptImages } from '$lib/server/image-proxy';
 import type { PartnerGame, PublicUser } from '$lib/server/db';
 import type { ExtensionGame, ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 
@@ -31,7 +32,11 @@ const toExtensionGame = (game: PartnerGame, owner: PublicUser, channelLogin: str
 	broadcasterOverlay: game.overlays[channelLogin.toLowerCase()] ?? DEFAULT_OVERLAY,
 });
 
-export const GET: RequestHandler = async ({ request, params }) => {
+export const GET: RequestHandler = async ({ request, params, url }) => {
+	// Script images go through our domain, the only one the extension needs allowlisted
+	const withProxiedImages = (game: ExtensionGame): ExtensionGame =>
+		isImageProxyEnabled() ? { ...game, script: proxyScriptImages(game.script, url.origin) } : game;
+
 	const authHeader = request.headers.get('Authorization');
 	const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 	const decodedToken = token ? verifyTwitchExtensionJWT(token) : null;
@@ -49,7 +54,7 @@ export const GET: RequestHandler = async ({ request, params }) => {
 	if (gameOwner.externalControl) {
 		const partner = await getPartnerGame(gameOwner.id);
 		if (!partner) return json(null, { status: 404 });
-		return json(toExtensionGame(partner, gameOwner, channelOwner.login));
+		return json(withProxiedImages(toExtensionGame(partner, gameOwner, channelOwner.login)));
 	}
 
 	const activeGame = gameOwner.activeGameId ? await getGameById(gameOwner.activeGameId) : null;
@@ -79,7 +84,7 @@ export const GET: RequestHandler = async ({ request, params }) => {
 	};
 
 	// Explicit allow-list: this payload is readable by every Twitch viewer
-	return json({
+	return json(withProxiedImages({
 		id: activeGame.id,
 		name: activeGame.name,
 		script: activeGame.script,
@@ -111,5 +116,5 @@ export const GET: RequestHandler = async ({ request, params }) => {
 			};
 		}),
 		broadcasterOverlay,
-	} satisfies ExtensionGame);
+	}));
 };
