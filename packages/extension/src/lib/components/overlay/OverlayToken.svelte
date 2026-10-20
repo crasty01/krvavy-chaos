@@ -88,14 +88,13 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 	left: 0;
 	right: 0;
 	transform: translate(-50%,-50%) rotate(calc(var(--rotation) * -1));
-	background-color: hsla(from var(--color) h s l / 0.2);
+	background-color: var(--color);
 	overflow: hidden;
 	opacity: var(--token-opacity, 1);
 	transition: opacity 0.15s;
 
 	&:hover, &:focus-visible {
 		opacity: 1;
-		background-color: hsla(from var(--color) h s l / 0.4);
 		box-shadow: 0 0 0.6rem 0 hsla(from var(--color) h s l / 0.4);
 	}
 }

@@ -90,15 +90,15 @@
 	place-items: center;
 	overflow: visible;
 	cursor: pointer;
-	background-color: hsla(from var(--color-neutral-700) h s l / 0.25);
-	border: 1.5px solid hsla(from var(--color-neutral-400) h s l / 0.45);
+	background-color: var(--color-neutral-700);
+	border: 1.5px solid var(--color-neutral-500);
 	opacity: var(--token-opacity, 1);
 	transition: background-color 0.15s, box-shadow 0.15s, opacity 0.15s;
 
 	&:hover,
 	&:focus-visible {
 		opacity: 1;
-		background-color: hsla(from var(--color-neutral-700) h s l / 0.45);
+		background-color: var(--color-neutral-600);
 		box-shadow: 0 0 0.5rem 0 hsla(from var(--color-neutral-500) h s l / 0.35);
 		outline: none;
 
@@ -110,8 +110,8 @@
 
 .overlay__guess[data-guessed='true'] .overlay__guess-token {
 	border-style: solid;
-	border-color: hsla(from var(--color-accent-400) h s l / 0.5);
-	background-color: hsla(from var(--color-accent-600) h s l / 0.15);
+	border-color: var(--color-accent-400);
+	background-color: var(--color-accent-600);
 }
 
 :global(.overlay__guess-avatar) {

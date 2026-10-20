@@ -54,7 +54,7 @@ const resetDimensions = () => {
 		{#if tokenStyle.value !== 'none'}
 			<OverlaySlider
 				label="Průhlednost tokenů"
-				min={10}
+				min={0}
 				max={100}
 				step={1}
 				unit="%"

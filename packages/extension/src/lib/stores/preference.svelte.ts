@@ -176,35 +176,42 @@ class TokenStyleStore {
 export const tokenStyle = new TokenStyleStore();
 
 const TOKEN_OPACITY_KEY = 'krvavy-viewer-token-opacity';
-const TOKEN_OPACITY_MIN = 10;
+const TOKEN_OPACITY_MIN = 0;
 const TOKEN_OPACITY_MAX = 100;
+const TOKEN_OPACITY_DEFAULTS: Record<TokenStyle, number> = { icon: 100, color: 20, none: 0 };
 
-const tokenOpacityKey = (channelId: string) => `${TOKEN_OPACITY_KEY}:${channelId}`;
+// Opacity is stored per token style, so each style keeps its own value
+const tokenOpacityId = (channelId: string, style: TokenStyle) => `${channelId}:${style}`;
+const tokenOpacityKey = (channelId: string, style: TokenStyle) =>
+	`${TOKEN_OPACITY_KEY}:${tokenOpacityId(channelId, style)}`;
 const clampTokenOpacity = (opacity: number) =>
 	Math.min(TOKEN_OPACITY_MAX, Math.max(TOKEN_OPACITY_MIN, opacity));
-const readTokenOpacity = (channelId: string): number => {
-	const stored = parseFloat(localStorage.getItem(tokenOpacityKey(channelId)) ?? '');
-	return Number.isFinite(stored) ? clampTokenOpacity(stored) : TOKEN_OPACITY_MAX;
+const readTokenOpacity = (channelId: string, style: TokenStyle): number => {
+	const stored = parseFloat(localStorage.getItem(tokenOpacityKey(channelId, style)) ?? '');
+	return Number.isFinite(stored) ? clampTokenOpacity(stored) : TOKEN_OPACITY_DEFAULTS[style];
 };
 
 class TokenOpacityStore {
-	// channelId → opacity in percent — populated lazily on first mutation per channel
+	// channelId:style → opacity in percent — populated lazily on first mutation per channel and style
 	#data = $state<Record<string, number>>({});
 
 	get value(): number {
 		const id = twitchStore.channelId;
-		if (!id) return TOKEN_OPACITY_MAX;
-		// Reading #data[id] makes this getter reactive to set calls
-		return this.#data[id] ?? readTokenOpacity(id);
+		// Reading tokenStyle.value makes this getter reactive to style changes
+		const style = tokenStyle.value;
+		if (!id) return TOKEN_OPACITY_DEFAULTS[style];
+		// Reading #data[...] makes this getter reactive to set calls
+		return this.#data[tokenOpacityId(id, style)] ?? readTokenOpacity(id, style);
 	}
 
 	set = (opacity: number) => {
 		const id = twitchStore.channelId;
 		// Empty number input yields null/NaN — keep the previous value
 		if (!id || !Number.isFinite(opacity)) return;
+		const style = tokenStyle.value;
 		const clamped = clampTokenOpacity(opacity);
-		this.#data[id] = clamped;
-		localStorage.setItem(tokenOpacityKey(id), String(clamped));
+		this.#data[tokenOpacityId(id, style)] = clamped;
+		localStorage.setItem(tokenOpacityKey(id, style), String(clamped));
 	};
 }
 
