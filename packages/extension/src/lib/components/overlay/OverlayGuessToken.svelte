@@ -35,7 +35,7 @@
 				{#if guessCharacter && tokenStyle.value === 'icon'}
 					<Avatar.Root class="overlay__guess-avatar" data-no-border>
 						<Avatar.Image src={getImageUrl(guessCharacter.image)} alt={guessCharacter.name} />
-						<Avatar.Fallback>
+						<Avatar.Fallback data-no-border>
 							<Icon icon="material-symbols:person" width="55%" height="55%" />
 						</Avatar.Fallback>
 					</Avatar.Root>
@@ -92,10 +92,12 @@
 	cursor: pointer;
 	background-color: hsla(from var(--color-neutral-700) h s l / 0.25);
 	border: 1.5px solid hsla(from var(--color-neutral-400) h s l / 0.45);
-	transition: background-color 0.15s, box-shadow 0.15s;
+	opacity: var(--token-opacity, 1);
+	transition: background-color 0.15s, box-shadow 0.15s, opacity 0.15s;
 
 	&:hover,
 	&:focus-visible {
+		opacity: 1;
 		background-color: hsla(from var(--color-neutral-700) h s l / 0.45);
 		box-shadow: 0 0 0.5rem 0 hsla(from var(--color-neutral-500) h s l / 0.35);
 		outline: none;
@@ -116,6 +118,13 @@
 	width: 100%;
 	height: 100%;
 	border-radius: inherit;
+
+	& :global([data-avatar-fallback]) {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+	}
 }
 
 :global(.overlay__guess-placeholder-icon) {

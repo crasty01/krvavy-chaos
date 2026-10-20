@@ -3,7 +3,7 @@ import Icon from '@iconify/svelte';
 import { ToggleGroup } from 'bits-ui';
 import type { ExtensionGame, ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 import { game } from '../../functions/game.svelte';
-import { viewerOverlay, tokenStyle, type TokenStyle } from '../../stores/preference.svelte';
+import { viewerOverlay, tokenStyle, tokenOpacity, type TokenStyle } from '../../stores/preference.svelte';
 import OverlaySlider from '../form/OverlaySlider.svelte';
 
 // Unused — present so Settings shares the same tab component interface
@@ -51,6 +51,16 @@ const resetDimensions = () => {
 			<ToggleGroup.Item value="color" class="token-style-btn">Barva</ToggleGroup.Item>
 			<ToggleGroup.Item value="none" class="token-style-btn">Nic</ToggleGroup.Item>
 		</ToggleGroup.Root>
+		{#if tokenStyle.value !== 'none'}
+			<OverlaySlider
+				label="Průhlednost tokenů"
+				min={10}
+				max={100}
+				step={1}
+				unit="%"
+				bind:value={() => tokenOpacity.value, (v) => tokenOpacity.set(v)}
+			/>
+		{/if}
 	</div>
 
 	<div class="settings-group">

@@ -45,7 +45,7 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 					{#if tokenStyle.value === 'icon'}
 						<Avatar.Root class="overlay__character-avatar">
 							<Avatar.Image src={getImageUrl(character.image)} alt={character.name} />
-							<Avatar.Fallback>
+							<Avatar.Fallback data-no-border>
 								<Icon icon="material-symbols:person" width="55%" height="55%" />
 							</Avatar.Fallback>
 						</Avatar.Root>
@@ -90,8 +90,11 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 	transform: translate(-50%,-50%) rotate(calc(var(--rotation) * -1));
 	background-color: hsla(from var(--color) h s l / 0.2);
 	overflow: hidden;
+	opacity: var(--token-opacity, 1);
+	transition: opacity 0.15s;
 
 	&:hover, &:focus-visible {
+		opacity: 1;
 		background-color: hsla(from var(--color) h s l / 0.4);
 		box-shadow: 0 0 0.6rem 0 hsla(from var(--color) h s l / 0.4);
 	}
@@ -101,5 +104,12 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 	width: 100%;
 	height: 100%;
 	border-radius: inherit;
+
+	& :global([data-avatar-fallback]) {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+	}
 }
 </style>

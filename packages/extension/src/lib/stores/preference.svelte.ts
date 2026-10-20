@@ -174,3 +174,38 @@ class TokenStyleStore {
 }
 
 export const tokenStyle = new TokenStyleStore();
+
+const TOKEN_OPACITY_KEY = 'krvavy-viewer-token-opacity';
+const TOKEN_OPACITY_MIN = 10;
+const TOKEN_OPACITY_MAX = 100;
+
+const tokenOpacityKey = (channelId: string) => `${TOKEN_OPACITY_KEY}:${channelId}`;
+const clampTokenOpacity = (opacity: number) =>
+	Math.min(TOKEN_OPACITY_MAX, Math.max(TOKEN_OPACITY_MIN, opacity));
+const readTokenOpacity = (channelId: string): number => {
+	const stored = parseFloat(localStorage.getItem(tokenOpacityKey(channelId)) ?? '');
+	return Number.isFinite(stored) ? clampTokenOpacity(stored) : TOKEN_OPACITY_MAX;
+};
+
+class TokenOpacityStore {
+	// channelId → opacity in percent — populated lazily on first mutation per channel
+	#data = $state<Record<string, number>>({});
+
+	get value(): number {
+		const id = twitchStore.channelId;
+		if (!id) return TOKEN_OPACITY_MAX;
+		// Reading #data[id] makes this getter reactive to set calls
+		return this.#data[id] ?? readTokenOpacity(id);
+	}
+
+	set = (opacity: number) => {
+		const id = twitchStore.channelId;
+		// Empty number input yields null/NaN — keep the previous value
+		if (!id || !Number.isFinite(opacity)) return;
+		const clamped = clampTokenOpacity(opacity);
+		this.#data[id] = clamped;
+		localStorage.setItem(tokenOpacityKey(id), String(clamped));
+	};
+}
+
+export const tokenOpacity = new TokenOpacityStore();

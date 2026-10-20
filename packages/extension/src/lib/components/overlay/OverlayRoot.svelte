@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { ExtensionOverlaySettings } from '@krvavy-chaos/shared/types/web';
 import type { Snippet } from 'svelte';
+import { tokenOpacity } from '../../stores/preference.svelte';
 
 let { children, config }: {
 	children?: Snippet;
@@ -12,6 +13,7 @@ let { children, config }: {
 	id="overlay"
 	class="overlay"
 	style:--token-size="{config.tokenSize}vmin"
+	style:--token-opacity={tokenOpacity.value / 100}
 	style:--overlay-radius="{config.radius}vmin"
   style:--offset-x="{config.offsetX}vmin"
   style:--offset-y="{config.offsetY}vmin"
