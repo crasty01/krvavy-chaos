@@ -41,6 +41,7 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 				<div
 					{...props}
 					class="overlay__character-token"
+					data-token-style={tokenStyle.value}
 				>
 					{#if tokenStyle.value === 'icon'}
 						<Avatar.Root class="overlay__character-avatar">
@@ -96,6 +97,11 @@ let character = $derived(gamePlayer.characterId ? characters.get(gamePlayer.char
 	&:hover, &:focus-visible {
 		opacity: 1;
 		box-shadow: 0 0 0.6rem 0 hsla(from var(--color) h s l / 0.4);
+	}
+
+	/* Solid color tokens only brighten a bit on hover instead of becoming fully opaque */
+	&[data-token-style='color']:is(:hover, :focus-visible) {
+		opacity: min(1, var(--token-opacity, 1) + 0.2);
 	}
 }
 

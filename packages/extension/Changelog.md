@@ -1,3 +1,12 @@
+Changelog 1.2.1
+New Features
+Token opacity setting: The Settings tab has a new token opacity slider (0–100 %), shown when the token style is image or color. The value is saved per channel and separately for each token style (defaults: image 100 %, color 20 %). Hovering a token makes it fully opaque; color tokens only brighten slightly.
+
+Changes
+Images from our domain: Added support for loading character and script images from our own domain, which is now listed in the extension's Image Domains.
+Solid token backgrounds: Overlay and guess tokens now use solid background and border colors. Transparency is controlled by the new opacity setting instead of being built into the colors.
+Avatar fallback fix: The placeholder icon shown when a character image can't be loaded is now centered in the token and has no border.
+
 Changelog 1.2.0
 Changes
 Players tab Twitch links only: Player profile links now exclusively link to a player's Twitch channel (when available) and show a live indicator if the player is currently streaming. External links to other platforms (YouTube, Instagram, etc.) have been removed to comply with Twitch Extension policies (rule 4.6.1).

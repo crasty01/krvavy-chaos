@@ -31,7 +31,7 @@
 {#snippet pickerTrigger(extraProps: Record<string, unknown>)}
 	<CharacterPicker characters={scriptCharacters} selectedId={guessId} onselect={onguess}>
 		{#snippet children(popoverProps)}
-			<div class="overlay__guess-token" {...mergeProps(popoverProps, extraProps)} title={guessCharacter?.name ?? 'Hádat postavu'}>
+			<div class="overlay__guess-token" data-token-style={tokenStyle.value} {...mergeProps(popoverProps, extraProps)} title={guessCharacter?.name ?? 'Hádat postavu'}>
 				{#if guessCharacter && tokenStyle.value === 'icon'}
 					<Avatar.Root class="overlay__guess-avatar" data-no-border>
 						<Avatar.Image src={getImageUrl(guessCharacter.image)} alt={guessCharacter.name} />
@@ -105,6 +105,11 @@
 		.overlay__guess-edit {
 			opacity: 1;
 		}
+	}
+
+	/* Solid color tokens only brighten a bit on hover instead of becoming fully opaque */
+	&[data-token-style='color']:is(:hover, :focus-visible) {
+		opacity: min(1, var(--token-opacity, 1) + 0.2);
 	}
 }
 
